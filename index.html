@@ -1,70 +1,150 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="black">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>DevPortal · JavaScript Playground</title>
 <style>
-  :root{
-    --bg:#0f1115; --panel:#161a21; --panel2:#1b2029; --line:#262c38; --text:#e6e9ef; --muted:#8a93a6;
-    --accent:#6ea8fe; --accent2:#4f8cf0; --ok:#5fd38d; --warn:#f2c14e; --err:#ff6b6b;
-    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  /* ───────── Themes: every colour comes from these variables ───────── */
+  :root, [data-theme="black"]{
+    color-scheme:dark;
+    --page:#0f1115; --panel:#161a21; --panel2:#1b2029; --line:#262c38;
+    --text:#e6e9ef; --muted:#8a93a6; --accent:#6ea8fe; --accent2:#4f8cf0; --accent-text:#ffffff;
+    --ok:#5fd38d; --warn:#f2c14e; --err:#ff6b6b;
+    --editor:#0f1115; --gutter:#161a21; --pbg:#0f1115; --blur:0px; --glow:none;
+    --font:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
   }
+  [data-theme="dark"]{
+    --page:#232834; --panel:#2a303d; --panel2:#323a49; --line:#404858;
+    --text:#dfe3ec; --muted:#98a1b3; --accent:#8ab4f8; --accent2:#5b8def;
+    --editor:#232834; --gutter:#2a303d; --pbg:#232834;
+  }
+  [data-theme="light"]{
+    color-scheme:light;
+    --page:#f4f6fa; --panel:#ffffff; --panel2:#eef1f6; --line:#d9dee8;
+    --text:#1b2230; --muted:#667085; --accent:#2563eb; --accent2:#2563eb;
+    --ok:#16a34a; --warn:#b7791f; --err:#dc2626;
+    --editor:#ffffff; --gutter:#f4f6fa; --pbg:#ffffff;
+  }
+  [data-theme="matrix"]{
+    --page:#000000; --panel:rgba(0,14,2,.74); --panel2:rgba(0,36,6,.82); --line:#0c4a18;
+    --text:#39ff6a; --muted:#1fa23f; --accent:#00ff41; --accent2:#00cc33; --accent-text:#001a05;
+    --ok:#00ff41; --warn:#d6ff3a; --err:#ff3b3b;
+    --editor:rgba(0,10,2,.80); --gutter:rgba(0,20,4,.88); --pbg:#000a02; --blur:2px;
+    --glow:0 0 14px rgba(0,255,65,.22);
+    --font:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  [data-theme="jarvis"]{
+    --page:radial-gradient(ellipse at 50% 40%,#04263d 0%,#020f1c 60%,#01070f 100%);
+    --panel:rgba(4,30,52,.62); --panel2:rgba(8,48,78,.72); --line:rgba(0,229,255,.28);
+    --text:#d4f6ff; --muted:#6fb6c9; --accent:#00e5ff; --accent2:#00b8d4; --accent-text:#00131a;
+    --ok:#3dffb0; --warn:#ffd24a; --err:#ff5c7a;
+    --editor:rgba(2,18,32,.70); --gutter:rgba(3,26,46,.82); --pbg:#020f1c; --blur:6px;
+    --glow:0 0 16px rgba(0,229,255,.25);
+  }
+  [data-theme="heaven"]{
+    color-scheme:light;
+    --page:linear-gradient(165deg,#fffdf5 0%,#fbeec0 45%,#f1d37c 100%);
+    --panel:rgba(255,251,236,.55); --panel2:rgba(255,243,200,.62); --line:rgba(184,134,11,.38);
+    --text:#4a3708; --muted:#8a6d1d; --accent:#b8860b; --accent2:#d4a017; --accent-text:#ffffff;
+    --ok:#2e8b57; --warn:#c77d00; --err:#c0392b;
+    --editor:rgba(255,252,240,.55); --gutter:rgba(251,238,192,.62); --pbg:#fff6dc; --blur:10px;
+    --glow:0 0 20px rgba(212,160,23,.30);
+    --font:Georgia,"Times New Roman",serif;
+  }
+
   *{box-sizing:border-box}
   html,body{height:100%;margin:0}
-  body{background:var(--bg);color:var(--text);font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:flex;flex-direction:column}
-  header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap}
-  .brand{font-weight:700;letter-spacing:.2px}
-  .brand span{color:var(--accent)}
+  body{background:var(--page);background-attachment:fixed;color:var(--text);font:14px/1.45 var(--font);display:flex;flex-direction:column}
+  #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:none}
+  [data-theme="matrix"] #bg{opacity:.65}
+  [data-theme="jarvis"] #bg{opacity:.9}
+  header,main{position:relative;z-index:1}
+  header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap;backdrop-filter:blur(var(--blur));box-shadow:var(--glow)}
+  .brand{font-weight:700;letter-spacing:.2px;margin-right:4px}
+  .brand b{color:var(--accent)}
+  [data-theme="matrix"] .brand{text-shadow:0 0 8px var(--accent)}
+  [data-theme="jarvis"] .brand{text-transform:uppercase;letter-spacing:2px;text-shadow:0 0 10px var(--accent)}
+  [data-theme="heaven"] .brand{letter-spacing:1px}
   .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
   .spacer{flex:1}
-  select,button{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;cursor:pointer}
-  button:hover,select:hover{border-color:#3a4254}
-  button.primary{background:var(--accent2);border-color:var(--accent2);color:#fff;font-weight:600}
-  button.primary:hover{background:#6199f5}
+  .group{display:flex;gap:6px;align-items:center}
+  select,button,input.name{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+  select option{background:var(--pbg);color:var(--text)}
+  button:hover,select:hover{border-color:var(--accent)}
+  button svg{width:14px;height:14px;vertical-align:-2px;margin-right:4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  button.primary{background:var(--accent2);border-color:var(--accent2);color:var(--accent-text);font-weight:600;box-shadow:var(--glow)}
+  button.primary:hover{filter:brightness(1.12)}
   label.chk{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;cursor:pointer}
+  .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
   main{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
   @media (max-width:820px){main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
   .pane{display:flex;flex-direction:column;min-height:0;min-width:0}
   .pane + .pane{border-left:1px solid var(--line)}
   @media (max-width:820px){.pane + .pane{border-left:0;border-top:1px solid var(--line)}}
-  .bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;min-height:38px}
+  .bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;min-height:38px;backdrop-filter:blur(var(--blur))}
+  input.name{padding:3px 8px;font-size:12px;width:230px;max-width:60%;cursor:text;font-family:ui-monospace,Menlo,Consolas,monospace}
   .tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:6px 10px;color:var(--muted)}
   .tab.active{color:var(--text);border-bottom-color:var(--accent)}
   .badge{background:var(--err);color:#fff;border-radius:99px;font-size:10px;padding:0 6px;margin-left:4px;display:none}
-  .editor{flex:1;display:flex;min-height:0;background:var(--bg);font-family:var(--mono);font-size:13px;line-height:20px}
-  #gutter{width:44px;padding:10px 8px 10px 0;text-align:right;color:#4a5265;background:var(--panel);overflow:hidden;user-select:none;white-space:pre;border-right:1px solid var(--line)}
+  .editor{flex:1;display:flex;min-height:0;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:13px;line-height:20px;position:relative}
+  .editor.drop::after{content:"Drop a .js file to import";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--accent);font:600 16px var(--font);border:2px dashed var(--accent);opacity:.94}
+  #gutter{width:44px;padding:10px 8px 10px 0;text-align:right;color:var(--muted);opacity:.8;background:var(--gutter);overflow:hidden;user-select:none;white-space:pre;border-right:1px solid var(--line)}
   #code{flex:1;resize:none;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:10px 12px;white-space:pre;overflow:auto;tab-size:2;caret-color:var(--accent)}
   .view{flex:1;min-height:0;position:relative}
   .view > *{position:absolute;inset:0}
-  #frameWrap{background:#fff}
-  #frameWrap iframe{width:100%;height:100%;border:0;background:#fff}
-  #empty{display:flex;align-items:center;justify-content:center;color:#888;font-size:13px;background:#fff}
-  #console{overflow:auto;background:var(--bg);font-family:var(--mono);font-size:12.5px;padding:6px 0}
-  .ln{padding:3px 14px;border-bottom:1px solid #1a1f29;white-space:pre-wrap;word-break:break-word}
-  .ln.warn{color:var(--warn);background:#2a2412}
-  .ln.error{color:var(--err);background:#2b1717}
+  #frameWrap{background:var(--pbg)}
+  #frameWrap iframe{width:100%;height:100%;border:0;background:var(--pbg)}
+  #empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
+  #console{overflow:auto;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;padding:6px 0}
+  .ln{padding:3px 14px;border-bottom:1px solid var(--line);white-space:pre-wrap;word-break:break-word}
+  .ln.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+  .ln.error{color:var(--err);background:color-mix(in srgb,var(--err) 12%,transparent)}
   .ln.info{color:var(--accent)}
   .ln.sys{color:var(--muted);font-style:italic}
   .hint{margin-left:auto;font-size:11px;color:var(--muted)}
-  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-family:var(--mono);font-size:11px}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--panel2);color:var(--text);border:1px solid var(--accent);padding:8px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:10;pointer-events:none;box-shadow:var(--glow);max-width:90vw}
+  #toast.show{opacity:1;transform:translateX(-50%)}
+  @media (max-width:980px){.lbl{display:none}}
 </style>
 </head>
 <body>
+<canvas id="bg"></canvas>
 <header>
-  <div class="brand">Dev<span>Portal</span> <span style="color:var(--muted);font-weight:400">/ Playground</span></div>
+  <div class="brand">Dev<b>Portal</b> <span style="color:var(--muted);font-weight:400">/ Playground</span></div>
   <span class="tag">JavaScript</span>
   <div class="spacer"></div>
-  <select id="examples" aria-label="Load an example"></select>
-  <label class="chk"><input type="checkbox" id="auto"> Auto-run</label>
-  <button id="reset" title="Reset to example">Reset</button>
-  <button id="stop">Stop</button>
-  <button id="run" class="primary">▶ Run</button>
+  <div class="group">
+    <select id="examples" aria-label="Load an example"></select>
+    <select id="theme" aria-label="Theme" title="Theme">
+      <option value="black">Black</option>
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="matrix">Neon · Matrix</option>
+      <option value="jarvis">Neon · Jarvis</option>
+      <option value="heaven">Heaven</option>
+    </select>
+  </div>
+  <span class="sep"></span>
+  <div class="group">
+    <button id="import" title="Import a .js file into the editor"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="save" title="Save the editor contents to a .js file"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Save</span></button>
+    <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.txt,.json,text/*" hidden>
+  </div>
+  <span class="sep"></span>
+  <div class="group">
+    <label class="chk"><input type="checkbox" id="auto"> Auto-run</label>
+    <button id="reset" title="Reset to the selected example">Reset</button>
+    <button id="stop">Stop</button>
+    <button id="run" class="primary">▶ Run</button>
+  </div>
 </header>
 <main>
   <section class="pane">
-    <div class="bar"><span>script.js</span><span class="hint"><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to run</span></div>
-    <div class="editor">
+    <div class="bar"><input class="name" id="fname" value="script.js" spellcheck="false" aria-label="File name"><span class="hint"><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to run</span></div>
+    <div class="editor" id="editor">
       <div id="gutter">1</div>
       <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="JavaScript code"></textarea>
     </div>
@@ -81,25 +161,44 @@
     </div>
   </section>
 </main>
+<div id="toast" role="status"></div>
 
 <script>
 (function(){
+  /* ───────── Examples ─────────
+     Inside every example you get: a full-size <canvas id="canvas">, a <div id="app"> overlay,
+     and a THEME object { bg, fg, muted, accent, accent2, ok, warn, err, fade(alpha) }
+     that follows the selected portal theme. */
   const EXAMPLES = {
-"Hello, console": `// console.log output appears in the Console tab.
-const greet = name => \`Hello, \${name}!\`;
+
+"Hello, console": String.raw`// console.log output appears in the Console tab.
+const greet = name => "Hello, " + name + "!";
 console.log(greet("DevPortal"));
 
 const nums = [5, 3, 8, 1, 9, 2];
 console.log("sorted:", [...nums].sort((a, b) => a - b));
-console.table && console.log("sum:", nums.reduce((a, b) => a + b, 0));
+console.log("sum:", nums.reduce((a, b) => a + b, 0));
 console.log({ nested: { ok: true, list: [1, 2, 3] } });
 console.warn("This is a warning");
 
-// Output also drops into the page. Try it:
-document.body.innerHTML = "<h2 style='font-family:system-ui;padding:20px'>Hello from the DOM 👋</h2>";
+// Output can also go into the page. THEME follows the portal theme.
+document.body.innerHTML =
+  "<h2 style='font-family:system-ui;padding:20px;color:" + THEME.accent + "'>Hello from the DOM 👋</h2>";
 `,
-"Canvas: bouncing balls": `// A <canvas id="canvas"> is provided (fills the preview).
-const canvas = document.getElementById("canvas");
+
+"Async & errors": String.raw`// Promises, timers, and error reporting (with line numbers).
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function main() {
+  console.log("start");
+  for (let n = 1; n <= 3; n++) { await wait(400); console.log("tick", n); }
+  console.info("about to fail...");
+  await wait(300);
+  null.boom();   // <- this throws
+}
+main();
+`,
+
+"Canvas: bouncing balls": String.raw`const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const balls = Array.from({ length: 25 }, () => ({
   x: Math.random() * canvas.width, y: Math.random() * canvas.height,
@@ -108,14 +207,14 @@ const balls = Array.from({ length: 25 }, () => ({
 }));
 
 function frame() {
-  ctx.fillStyle = "rgba(15,17,21,.25)";
+  ctx.fillStyle = THEME.fade(.25);              // translucent fill = motion trails
   ctx.fillRect(0, 0, canvas.width, canvas.height);
   for (const b of balls) {
     b.x += b.vx; b.y += b.vy;
     if (b.x < b.r || b.x > canvas.width - b.r) b.vx *= -1;
     if (b.y < b.r || b.y > canvas.height - b.r) b.vy *= -1;
     ctx.beginPath();
-    ctx.fillStyle = \`hsl(\${b.h},80%,60%)\`;
+    ctx.fillStyle = "hsl(" + b.h + ",80%,60%)";
     ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
     ctx.fill();
   }
@@ -123,15 +222,16 @@ function frame() {
 }
 frame();
 `,
-"Canvas: sine waves": `const canvas = document.getElementById("canvas");
+
+"Canvas: sine waves": String.raw`const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 let t = 0;
 function draw() {
-  const { width: w, height: h } = canvas;
-  ctx.fillStyle = "#0f1115"; ctx.fillRect(0, 0, w, h);
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, w, h);
   for (let k = 0; k < 6; k++) {
     ctx.beginPath();
-    ctx.strokeStyle = \`hsl(\${200 + k * 25},85%,\${55 + k * 3}%)\`;
+    ctx.strokeStyle = "hsl(" + (200 + k * 25) + ",85%," + (55 + k * 3) + "%)";
     ctx.lineWidth = 2;
     for (let x = 0; x <= w; x += 3) {
       const y = h / 2 + Math.sin(x * 0.012 + t + k * 0.6) * (30 + k * 18) * Math.sin(t * 0.5 + k);
@@ -144,25 +244,33 @@ function draw() {
 }
 draw();
 `,
-"DOM: interactive counter": `// Build UI with plain DOM code inside <div id="app">.
-const app = document.getElementById("app");
-app.style.cssText = "font-family:system-ui;padding:24px;text-align:center";
-let count = 0;
 
-const label = document.createElement("div");
-label.style.cssText = "font-size:64px;font-weight:700;margin:16px";
-const mk = (txt, fn) => {
-  const b = document.createElement("button");
-  b.textContent = txt;
-  b.style.cssText = "font-size:20px;padding:8px 20px;margin:4px;border-radius:8px;border:1px solid #ccc;cursor:pointer";
-  b.onclick = fn;
-  return b;
-};
-const render = () => { label.textContent = count; console.log("count =", count); };
-app.append(label, mk("−", () => { count--; render(); }), mk("Reset", () => { count = 0; render(); }), mk("+", () => { count++; render(); }));
-render();
+"Canvas: particle trail": String.raw`const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const parts = [];
+canvas.addEventListener("mousemove", e => {
+  const r = canvas.getBoundingClientRect();
+  for (let k = 0; k < 4; k++) parts.push({
+    x: e.clientX - r.left, y: e.clientY - r.top,
+    vx: (Math.random() - .5) * 3, vy: (Math.random() - .5) * 3 - 1,
+    life: 1, h: (performance.now() / 8) % 360
+  });
+});
+(function loop() {
+  ctx.fillStyle = THEME.fade(.2); ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let k = parts.length - 1; k >= 0; k--) {
+    const p = parts[k];
+    p.x += p.vx; p.y += p.vy; p.life -= 0.015;
+    if (p.life <= 0) { parts.splice(k, 1); continue; }
+    ctx.fillStyle = "hsla(" + p.h + ",90%,60%," + p.life + ")";
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4 * p.life + 1, 0, 6.283); ctx.fill();
+  }
+  requestAnimationFrame(loop);
+})();
+console.log("Move your mouse over the preview");
 `,
-"Visualize: bubble sort": `// Animated bar chart of a sorting algorithm.
+
+"Visualize: bubble sort": String.raw`// Animated bar chart of a sorting algorithm.
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 const N = 40;
@@ -170,10 +278,10 @@ const arr = Array.from({ length: N }, () => 10 + Math.random() * (canvas.height 
 let i = 0, j = 0, swaps = 0, done = false;
 
 function draw() {
-  ctx.fillStyle = "#0f1115"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
   const bw = canvas.width / N;
   arr.forEach((v, k) => {
-    ctx.fillStyle = done ? "#5fd38d" : (k === j || k === j + 1) ? "#ff6b6b" : "#6ea8fe";
+    ctx.fillStyle = done ? THEME.ok : (k === j || k === j + 1) ? THEME.err : THEME.accent;
     ctx.fillRect(k * bw + 1, canvas.height - v, bw - 2, v);
   });
 }
@@ -189,63 +297,399 @@ function step() {
 }
 step();
 `,
-"Mouse: particle trail": `const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-const parts = [];
-canvas.addEventListener("mousemove", e => {
-  const r = canvas.getBoundingClientRect();
-  for (let k = 0; k < 4; k++) parts.push({
-    x: e.clientX - r.left, y: e.clientY - r.top,
-    vx: (Math.random() - .5) * 3, vy: (Math.random() - .5) * 3 - 1,
-    life: 1, h: (performance.now() / 8) % 360
-  });
-});
-(function loop() {
-  ctx.fillStyle = "rgba(15,17,21,.2)"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-  for (let k = parts.length - 1; k >= 0; k--) {
-    const p = parts[k];
-    p.x += p.vx; p.y += p.vy; p.life -= 0.015;
-    if (p.life <= 0) { parts.splice(k, 1); continue; }
-    ctx.fillStyle = \`hsla(\${p.h},90%,60%,\${p.life})\`;
-    ctx.beginPath(); ctx.arc(p.x, p.y, 4 * p.life + 1, 0, 6.283); ctx.fill();
-  }
-  requestAnimationFrame(loop);
-})();
-console.log("Move your mouse over the preview");
+
+"DOM: interactive counter": String.raw`// Build UI with plain DOM code inside <div id="app">.
+const app = document.getElementById("app");
+app.style.cssText = "font-family:system-ui;padding:24px;text-align:center;color:" + THEME.fg;
+let count = 0;
+
+const label = document.createElement("div");
+label.style.cssText = "font-size:64px;font-weight:700;margin:16px;color:" + THEME.accent;
+const mk = (txt, fn) => {
+  const b = document.createElement("button");
+  b.textContent = txt;
+  b.style.cssText = "font-size:20px;padding:8px 20px;margin:4px;border-radius:8px;cursor:pointer;" +
+    "border:1px solid " + THEME.accent + ";background:transparent;color:" + THEME.fg;
+  b.onclick = fn;
+  return b;
+};
+const render = () => { label.textContent = count; console.log("count =", count); };
+app.append(label, mk("−", () => { count--; render(); }), mk("Reset", () => { count = 0; render(); }), mk("+", () => { count++; render(); }));
+render();
 `,
-"Async & errors": `// Promises, timers, and error reporting (with line numbers).
-const wait = ms => new Promise(r => setTimeout(r, ms));
-async function main() {
-  console.log("start");
-  for (let n = 1; n <= 3; n++) { await wait(400); console.log("tick", n); }
-  console.info("about to fail...");
-  await wait(300);
-  null.boom();   // <- line 8: this throws
+
+"Traffic flow: nodes & roads": String.raw`// Cars flow between intersections. Roads turn green → red as they congest.
+// Click an intersection to close it and watch traffic reroute.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+const nodes = [
+  [.08,.18],[.34,.10],[.62,.20],[.92,.12],
+  [.18,.52],[.45,.48],[.72,.55],[.92,.50],
+  [.10,.88],[.38,.86],[.66,.90],[.92,.86]
+].map((p, i) => ({ id: i, x: p[0] * W, y: p[1] * H, blocked: false }));
+
+const roads = [[0,1],[1,2],[2,3],[0,4],[1,5],[2,6],[3,7],[4,5],[5,6],[6,7],[4,8],[5,9],[6,10],[7,11],[8,9],[9,10],[10,11]]
+  .map(r => ({ a: nodes[r[0]], b: nodes[r[1]], load: 0 }));
+roads.forEach(r => r.len = Math.hypot(r.a.x - r.b.x, r.a.y - r.b.y));
+const adj = nodes.map(n => roads.filter(r => r.a === n || r.b === n));
+const other = (road, node) => road.a === node ? road.b : road.a;
+
+const cars = Array.from({ length: 120 }, () => {
+  const road = roads[Math.random() * roads.length | 0];
+  return { road, from: Math.random() < .5 ? road.a : road.b, t: Math.random() };
+});
+let passed = 0, perSec = 0;
+setInterval(() => { perSec = passed; passed = 0; }, 1000);
+
+function update() {
+  roads.forEach(r => r.load = 0);
+  cars.forEach(c => c.road.load++);
+  for (const c of cars) {
+    c.t += (2.4 / (1 + c.road.load * 0.35)) / c.road.len;   // busier road = slower
+    if (c.t >= 1) {
+      const node = other(c.road, c.from);
+      let options = adj[node.id].filter(r => r !== c.road && !other(r, node).blocked);
+      if (!options.length) options = [c.road];                // dead end: turn around
+      c.road = options[Math.random() * options.length | 0];
+      c.from = node; c.t = 0; passed++;
+    }
+  }
 }
-main();
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  for (const r of roads) {
+    const jam = Math.min(1, r.load / 8);
+    ctx.strokeStyle = "hsl(" + (130 - jam * 130) + ",80%,50%)";
+    ctx.lineWidth = 3 + jam * 6; ctx.globalAlpha = .55;
+    ctx.beginPath(); ctx.moveTo(r.a.x, r.a.y); ctx.lineTo(r.b.x, r.b.y); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  for (const c of cars) {
+    const to = other(c.road, c.from);
+    ctx.fillStyle = THEME.fg;
+    ctx.beginPath();
+    ctx.arc(c.from.x + (to.x - c.from.x) * c.t, c.from.y + (to.y - c.from.y) * c.t, 2.6, 0, 6.283);
+    ctx.fill();
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold 11px system-ui";
+  for (const n of nodes) {
+    ctx.fillStyle = THEME.bg; ctx.strokeStyle = n.blocked ? THEME.err : THEME.accent; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(n.x, n.y, 12, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = n.blocked ? THEME.err : THEME.fg;
+    ctx.fillText(n.blocked ? "✕" : String.fromCharCode(65 + n.id), n.x, n.y + 1);
+  }
+  ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.font = "13px system-ui"; ctx.fillStyle = THEME.fg;
+  ctx.fillText("Throughput: " + perSec + " intersections/s  ·  click a node to close it", 14, H - 12);
+}
+
+canvas.addEventListener("click", e => {
+  const rc = canvas.getBoundingClientRect();
+  const x = e.clientX - rc.left, y = e.clientY - rc.top;
+  const n = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 20);
+  if (n) { n.blocked = !n.blocked; console.log("Intersection", String.fromCharCode(65 + n.id), n.blocked ? "closed" : "open"); }
+});
+(function loop() { update(); draw(); requestAnimationFrame(loop); })();
+`,
+
+"World map: live connections": String.raw`// Stylised world map (rough hand-drawn continents, equirectangular projection)
+// with animated connections between cities.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const s = Math.min(W / 360, H / 180), ox = (W - 360 * s) / 2, oy = (H - 180 * s) / 2;
+const P = (lon, lat) => [ox + (lon + 180) * s, oy + (90 - lat) * s];
+
+const land = [
+  // North America
+  [[-168,66],[-156,71],[-125,70],[-95,72],[-82,69],[-64,60],[-56,52],[-66,44],[-76,36],[-81,25],[-90,29],[-97,26],[-97,20],[-88,16],[-83,9],[-78,8],[-86,14],[-95,16],[-105,20],[-110,24],[-115,31],[-118,34],[-124,40],[-124,48],[-135,57],[-150,60],[-165,60]],
+  // Greenland
+  [[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-72,76],[-55,68]],
+  // South America
+  [[-78,8],[-72,12],[-62,10],[-50,0],[-35,-5],[-39,-15],[-48,-26],[-58,-38],[-65,-42],[-68,-52],[-74,-50],[-73,-37],[-71,-18],[-81,-5],[-80,0]],
+  // Europe + Asia
+  [[-10,36],[-9,43],[-2,48],[2,51],[8,55],[10,59],[5,62],[15,69],[30,71],[60,69],[80,73],[105,77],[140,72],[170,70],[180,66],[160,60],[155,52],[142,46],[135,35],[128,38],[122,40],[122,30],[110,20],[105,10],[100,4],[104,1],[98,8],[93,20],[80,15],[77,8],[72,20],[67,25],[57,25],[50,30],[44,36],[36,35],[28,37],[24,38],[16,40],[12,44],[8,44],[3,43],[-5,36]],
+  // Africa
+  [[-17,21],[-6,36],[10,37],[32,31],[34,28],[43,12],[51,12],[40,-3],[40,-15],[33,-26],[20,-35],[15,-26],[12,-6],[9,4],[-8,4],[-17,14]],
+  // Australia
+  [[114,-22],[122,-18],[131,-12],[142,-11],[146,-19],[153,-27],[150,-37],[140,-38],[131,-31],[115,-34]],
+  // Japan
+  [[130,31],[135,34],[141,38],[142,45],[138,37]]
+];
+const cities = [["New York",-74,40.7],["San Francisco",-122.4,37.8],["São Paulo",-46.6,-23.5],["London",-0.1,51.5],
+  ["Cape Town",18.4,-33.9],["Mumbai",72.9,19.1],["Singapore",103.8,1.35],["Tokyo",139.7,35.7],["Sydney",151.2,-33.9],["Dubai",55.3,25.2]];
+
+const arcs = [], ripples = [];
+setInterval(() => {
+  const a = cities[Math.random() * cities.length | 0];
+  let b; do { b = cities[Math.random() * cities.length | 0]; } while (b === a);
+  arcs.push({ a: P(a[1], a[2]), b: P(b[1], b[2]), t: 0 });
+}, 450);
+
+function pt(arc, t) {   // point on a quadratic curve that bows upward
+  const mx = (arc.a[0] + arc.b[0]) / 2, my = (arc.a[1] + arc.b[1]) / 2 - Math.hypot(arc.b[0] - arc.a[0], arc.b[1] - arc.a[1]) * .25;
+  const u = 1 - t;
+  return [u * u * arc.a[0] + 2 * u * t * mx + t * t * arc.b[0], u * u * arc.a[1] + 2 * u * t * my + t * t * arc.b[1]];
+}
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  // graticule
+  ctx.strokeStyle = THEME.muted; ctx.globalAlpha = .18; ctx.lineWidth = 1;
+  for (let lon = -180; lon <= 180; lon += 30) { const [x] = P(lon, 0); ctx.beginPath(); ctx.moveTo(x, oy); ctx.lineTo(x, oy + 180 * s); ctx.stroke(); }
+  for (let lat = -90; lat <= 90; lat += 30) { const [, y] = P(0, lat); ctx.beginPath(); ctx.moveTo(ox, y); ctx.lineTo(ox + 360 * s, y); ctx.stroke(); }
+  // land
+  for (const poly of land) {
+    ctx.beginPath();
+    poly.forEach((p, i) => { const [x, y] = P(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    ctx.closePath();
+    ctx.globalAlpha = .2; ctx.fillStyle = THEME.accent; ctx.fill();
+    ctx.globalAlpha = .8; ctx.strokeStyle = THEME.accent; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // arcs
+  for (let i = arcs.length - 1; i >= 0; i--) {
+    const arc = arcs[i]; arc.t += .014;
+    ctx.beginPath(); ctx.strokeStyle = THEME.accent2; ctx.lineWidth = 1.5; ctx.globalAlpha = .7;
+    for (let k = 0; k <= 30; k++) { const p = pt(arc, Math.min(arc.t, 1) * k / 30); k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+    ctx.stroke(); ctx.globalAlpha = 1;
+    const h = pt(arc, Math.min(arc.t, 1));
+    ctx.fillStyle = THEME.fg; ctx.beginPath(); ctx.arc(h[0], h[1], 2.5, 0, 6.283); ctx.fill();
+    if (arc.t >= 1) { ripples.push({ x: arc.b[0], y: arc.b[1], r: 0 }); arcs.splice(i, 1); }
+  }
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const r = ripples[i]; r.r += .6;
+    if (r.r > 18) { ripples.splice(i, 1); continue; }
+    ctx.strokeStyle = THEME.ok; ctx.globalAlpha = 1 - r.r / 18; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  // cities
+  ctx.font = "11px system-ui"; ctx.textAlign = "left";
+  for (const c of cities) {
+    const [x, y] = P(c[1], c[2]);
+    ctx.fillStyle = THEME.warn; ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 6.283); ctx.fill();
+    ctx.fillStyle = THEME.fg; ctx.fillText(c[0], x + 7, y + 4);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Charts: live trend": String.raw`// Streaming price chart: line + area, 10-point moving average, volume bars, hover crosshair.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const N = 90;
+let price = 100;
+const next = () => {
+  const open = price;
+  price = Math.max(5, price + (Math.random() - .48) * 2.2);
+  return { p: price, v: 20 + Math.random() * 80, up: price >= open };
+};
+const data = Array.from({ length: N }, next);
+setInterval(() => { data.push(next()); data.shift(); }, 300);
+
+const pad = { l: 56, r: 16, t: 52, b: 26 };
+let mouse = null;
+canvas.addEventListener("mousemove", e => { const r = canvas.getBoundingClientRect(); mouse = { x: e.clientX - r.left }; });
+canvas.addEventListener("mouseleave", () => mouse = null);
+
+function sma(k) {
+  return data.map((_, i) => i < k - 1 ? null : data.slice(i - k + 1, i + 1).reduce((a, d) => a + d.p, 0) / k);
+}
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  const cw = W - pad.l - pad.r;
+  const priceH = (H - pad.t - pad.b) * .68;
+  const volTop = pad.t + priceH + 12, volH = H - pad.b - volTop;
+  const ps = data.map(d => d.p);
+  const lo = Math.min(...ps) - 1, hi = Math.max(...ps) + 1;
+  const X = i => pad.l + i / (N - 1) * cw;
+  const Y = p => pad.t + (1 - (p - lo) / (hi - lo)) * priceH;
+
+  // grid + y labels
+  ctx.font = "11px system-ui"; ctx.textAlign = "right"; ctx.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) {
+    const p = lo + (hi - lo) * k / 4, y = Y(p);
+    ctx.strokeStyle = THEME.muted; ctx.globalAlpha = .25;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+    ctx.globalAlpha = 1; ctx.fillStyle = THEME.muted; ctx.fillText(p.toFixed(1), pad.l - 8, y + 4);
+  }
+
+  // area under the line
+  const g = ctx.createLinearGradient(0, pad.t, 0, pad.t + priceH);
+  g.addColorStop(0, THEME.accent + "66"); g.addColorStop(1, THEME.accent + "00");
+  ctx.beginPath(); ctx.moveTo(X(0), pad.t + priceH);
+  data.forEach((d, i) => ctx.lineTo(X(i), Y(d.p)));
+  ctx.lineTo(X(N - 1), pad.t + priceH); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+
+  // price line
+  ctx.beginPath(); ctx.strokeStyle = THEME.accent; ctx.lineWidth = 2;
+  data.forEach((d, i) => i ? ctx.lineTo(X(i), Y(d.p)) : ctx.moveTo(X(i), Y(d.p)));
+  ctx.stroke();
+
+  // moving average
+  ctx.beginPath(); ctx.strokeStyle = THEME.warn; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  let started = false;
+  sma(10).forEach((v, i) => { if (v == null) return; started ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)); started = true; });
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // volume
+  const bw = cw / N;
+  data.forEach((d, i) => {
+    ctx.fillStyle = d.up ? THEME.ok : THEME.err; ctx.globalAlpha = .75;
+    const h = d.v / 100 * volH; ctx.fillRect(X(i) - bw / 2 + 1, volTop + volH - h, bw - 2, h);
+  });
+  ctx.globalAlpha = 1;
+
+  // title + delta
+  const last = ps[N - 1], first = ps[0], pct = (last - first) / first * 100;
+  ctx.textAlign = "left"; ctx.fillStyle = THEME.fg; ctx.font = "bold 20px system-ui";
+  ctx.fillText("ACME  " + last.toFixed(2), pad.l, 30);
+  ctx.fillStyle = pct >= 0 ? THEME.ok : THEME.err; ctx.font = "bold 14px system-ui";
+  ctx.fillText((pct >= 0 ? "▲ +" : "▼ ") + pct.toFixed(2) + "%", pad.l + 140, 30);
+  ctx.fillStyle = THEME.muted; ctx.font = "11px system-ui";
+  ctx.fillText("— price    - - 10-pt moving average", W - 250, 30);
+
+  // crosshair
+  if (mouse && mouse.x > pad.l && mouse.x < W - pad.r) {
+    const i = Math.max(0, Math.min(N - 1, Math.round((mouse.x - pad.l) / cw * (N - 1))));
+    ctx.strokeStyle = THEME.fg; ctx.globalAlpha = .5; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(X(i), pad.t); ctx.lineTo(X(i), H - pad.b); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = THEME.accent; ctx.beginPath(); ctx.arc(X(i), Y(data[i].p), 4, 0, 6.283); ctx.fill();
+    const label = data[i].p.toFixed(2);
+    const bx = Math.min(X(i) + 8, W - 70);
+    ctx.fillStyle = THEME.fg; ctx.fillRect(bx, Y(data[i].p) - 22, 60, 20);
+    ctx.fillStyle = THEME.bg; ctx.font = "bold 12px system-ui"; ctx.fillText(label, bx + 8, Y(data[i].p) - 8);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Charts: bar race": String.raw`// Animated horizontal bar chart that re-ranks as values change.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const items = ["Python","JavaScript","TypeScript","Go","Rust","Java","C#","Kotlin"].map((name, i) => ({
+  name, value: 30 + Math.random() * 60, shown: 0, y: i * 40, hue: i * 43
+}));
+setInterval(() => items.forEach(it => it.value = Math.max(5, it.value + (Math.random() - .45) * 14)), 700);
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  const sorted = [...items].sort((a, b) => b.value - a.value);
+  const max = Math.max(...items.map(i => i.value));
+  const rowH = Math.min(46, (H - 50) / items.length);
+  ctx.font = "bold 16px system-ui"; ctx.fillStyle = THEME.fg; ctx.textAlign = "left";
+  ctx.fillText("Popularity index (simulated)", 20, 28);
+  sorted.forEach((it, rank) => {
+    it.y += (50 + rank * rowH - it.y) * .12;          // glide to new rank
+    it.shown += (it.value - it.shown) * .12;           // ease the bar length
+    const w = (W - 190) * it.shown / max;
+    ctx.fillStyle = "hsl(" + it.hue + ",75%,55%)";
+    ctx.fillRect(110, it.y, w, rowH - 8);
+    ctx.fillStyle = THEME.fg; ctx.font = "13px system-ui"; ctx.textAlign = "right";
+    ctx.fillText(it.name, 100, it.y + rowH / 2 + 1);
+    ctx.textAlign = "left"; ctx.fillText(it.shown.toFixed(0), 116 + w, it.y + rowH / 2 + 1);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Media: video embedder": String.raw`// Paste a YouTube, Vimeo or direct .mp4 link and press Load.
+// Note: embedding needs internet access, and it works when this page runs from your own
+// computer / GitHub Pages (hosting sandboxes such as claude.ai block embedded sites).
+const app = document.getElementById("app");
+app.style.cssText = "padding:16px;font-family:system-ui;overflow:auto;color:" + THEME.fg;
+const field = "flex:1;padding:9px 12px;border-radius:8px;border:1px solid " + THEME.muted +
+  ";background:transparent;color:" + THEME.fg + ";font:inherit";
+app.innerHTML =
+  '<div style="display:flex;gap:8px;max-width:900px;margin:0 auto 12px">' +
+    '<input id="u" style="' + field + '" value="https://www.youtube.com/watch?v=aqz-KE-bpKQ">' +
+    '<button id="go" style="padding:9px 18px;border-radius:8px;border:0;cursor:pointer;font-weight:600;background:' +
+      THEME.accent2 + ';color:#fff">Load</button>' +
+  '</div>' +
+  '<div id="stage" style="max-width:900px;margin:auto;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"></div>' +
+  '<p id="msg" style="max-width:900px;margin:10px auto;font-size:13px;color:' + THEME.muted + '"></p>';
+
+const $ = id => document.getElementById(id);
+
+function build(url) {
+  url = url.trim();
+  let m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/) || url.match(/^([\w-]{11})$/);
+  if (m) return { kind: "YouTube", id: m[1], open: "https://www.youtube.com/watch?v=" + m[1],
+    html: '<iframe src="https://www.youtube-nocookie.com/embed/' + m[1] + '?rel=0" title="YouTube video" ' +
+      'style="width:100%;height:100%;border:0" allowfullscreen ' +
+      'allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen" ' +
+      'referrerpolicy="strict-origin-when-cross-origin"></iframe>' };
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (m) return { kind: "Vimeo", id: m[1], open: "https://vimeo.com/" + m[1],
+    html: '<iframe src="https://player.vimeo.com/video/' + m[1] + '" title="Vimeo video" ' +
+      'style="width:100%;height:100%;border:0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>' };
+  if (/^https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?$/i.test(url))
+    return { kind: "Video file", id: url, open: url,
+      html: '<video src="' + url + '" controls style="width:100%;height:100%"></video>' };
+  return null;
+}
+
+function load() {
+  const v = build($("u").value);
+  if (!v) { console.error("Couldn't recognise that link. Try a YouTube, Vimeo, or .mp4 URL."); return; }
+  $("stage").innerHTML = v.html;
+  $("msg").innerHTML = v.kind + " loaded. If the player stays blank, " +
+    '<a style="color:' + THEME.accent + '" href="' + v.open + '" target="_blank" rel="noopener">open it in a new tab</a>.';
+  console.log("Loaded", v.kind, v.id);
+}
+$("go").onclick = load;
+$("u").addEventListener("keydown", e => { if (e.key === "Enter") load(); });
+load();
 `
   };
 
+  const GROUPS = {
+    "Basics": ["Hello, console", "Async & errors"],
+    "Canvas & animation": ["Canvas: bouncing balls", "Canvas: sine waves", "Canvas: particle trail", "Visualize: bubble sort"],
+    "Data, maps & flow": ["Traffic flow: nodes & roads", "World map: live connections", "Charts: live trend", "Charts: bar race"],
+    "UI & media": ["DOM: interactive counter", "Media: video embedder"]
+  };
+
   const $ = id => document.getElementById(id);
-  const code = $("code"), gutter = $("gutter"), consoleEl = $("console"),
-        wrap = $("frameWrap"), badge = $("errBadge"), sel = $("examples");
-  let errCount = 0, autoTimer = null, runId = 0, frame = null;
+  const code = $("code"), gutter = $("gutter"), consoleEl = $("console"), wrap = $("frameWrap"),
+        badge = $("errBadge"), sel = $("examples"), themeSel = $("theme"), fname = $("fname"), toastEl = $("toast");
+  let errCount = 0, autoTimer = null, runId = 0, frame = null, toastTimer = null, running = false;
 
-  // examples dropdown
-  Object.keys(EXAMPLES).forEach(k => { const o = document.createElement("option"); o.textContent = k; sel.appendChild(o); });
+  Object.keys(GROUPS).forEach(g => {
+    const og = document.createElement("optgroup"); og.label = g;
+    GROUPS[g].forEach(k => { const o = document.createElement("option"); o.textContent = k; og.appendChild(o); });
+    sel.appendChild(og);
+  });
 
-  // safe storage
   const store = {
     get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
     set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
   };
+  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".js";
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+  }
 
-  // editor
+  /* ───────── Editor ───────── */
   function updateGutter(){
     const n = code.value.split("\n").length;
     let s = ""; for (let i = 1; i <= n; i++) s += i + "\n";
     gutter.textContent = s;
     gutter.scrollTop = code.scrollTop;
+  }
+  function setCode(text, name){
+    code.value = text; updateGutter();
+    store.set("devportal.js.code", text);
+    if (name) { fname.value = name; store.set("devportal.js.fname", name); }
   }
   code.addEventListener("scroll", () => { gutter.scrollTop = code.scrollTop; });
   code.addEventListener("input", () => {
@@ -253,6 +697,7 @@ main();
     store.set("devportal.js.code", code.value);
     if ($("auto").checked) { clearTimeout(autoTimer); autoTimer = setTimeout(run, 700); }
   });
+  fname.addEventListener("change", () => store.set("devportal.js.fname", fname.value));
   code.addEventListener("keydown", e => {
     if (e.key === "Tab") {
       e.preventDefault();
@@ -265,36 +710,76 @@ main();
     }
   });
 
-  // tabs
+  /* ───────── Import / Save / Copy ───────── */
+  function importFile(file){
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast("That file is too large (limit 2 MB)."); return; }
+    const r = new FileReader();
+    r.onload = () => { setCode(String(r.result), file.name); toast("Imported " + file.name); run(); };
+    r.onerror = () => toast("Couldn't read that file.");
+    r.readAsText(file);
+  }
+  $("import").onclick = () => $("file").click();
+  $("file").onchange = e => { importFile(e.target.files[0]); e.target.value = ""; };
+
+  const ed = $("editor");
+  ["dragenter","dragover"].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); ed.classList.add("drop"); }));
+  ["dragleave","drop"].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); ed.classList.remove("drop"); }));
+  ed.addEventListener("drop", e => importFile(e.dataTransfer.files[0]));
+
+  $("save").onclick = () => {
+    let name = (fname.value.trim() || "script.js").replace(/[\\/:*?"<>|]+/g, "-");
+    if (!/\.[A-Za-z0-9]+$/.test(name)) name += ".js";
+    fname.value = name;
+    const url = URL.createObjectURL(new Blob([code.value], { type: "text/javascript" }));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast("Saving " + name + "… (if nothing downloads here, use Copy)");
+  };
+  $("copy").onclick = async () => {
+    try { await navigator.clipboard.writeText(code.value); toast("Code copied to clipboard"); }
+    catch(e){
+      code.select();
+      try { document.execCommand("copy"); toast("Code copied to clipboard"); }
+      catch(e2){ toast("Copy blocked by the browser. Select the code and copy manually."); }
+    }
+  };
+
+  /* ───────── Tabs & console ───────── */
   function showTab(name){
     document.querySelectorAll(".tab[data-tab]").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
     wrap.style.display = name === "preview" ? "" : "none";
     consoleEl.style.display = name === "console" ? "" : "none";
   }
   document.querySelectorAll(".tab[data-tab]").forEach(t => t.onclick = () => showTab(t.dataset.tab));
-
-  // console
   function addLine(level, text){
     const d = document.createElement("div");
-    d.className = "ln " + level;
-    d.textContent = text;
-    consoleEl.appendChild(d);
-    consoleEl.scrollTop = consoleEl.scrollHeight;
+    d.className = "ln " + level; d.textContent = text;
+    consoleEl.appendChild(d); consoleEl.scrollTop = consoleEl.scrollHeight;
     if (level === "error") { errCount++; badge.textContent = errCount; badge.style.display = "inline"; }
   }
   function clearConsole(){ consoleEl.innerHTML = ""; errCount = 0; badge.style.display = "none"; }
   $("clear").onclick = clearConsole;
 
-  // runner
-  function buildDoc(userCode){
+  /* ───────── Runner (sandboxed iframe) ───────── */
+  function readTheme(){
+    const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+    return { name: document.documentElement.dataset.theme, bg: g("--pbg"), fg: g("--text"), muted: g("--muted"),
+             accent: g("--accent"), accent2: g("--accent2"), ok: g("--ok"), warn: g("--warn"), err: g("--err") };
+  }
+  function buildDoc(userCode, theme){
     const head = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
-html,body{margin:0;height:100%}body{background:#fff}
-#canvas{display:block;width:100%;height:100%;background:#0f1115}
+html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-family:system-ui,sans-serif}
+#canvas{display:block;width:100%;height:100%}
 #app{position:absolute;inset:0;overflow:auto;pointer-events:none}#app>*{pointer-events:auto}
 </style></head><body><canvas id="canvas"></canvas><div id="app"></div>
 <script>
 (function(){
   var id=${runId};
+  var T=window.THEME=${JSON.stringify(theme)};
+  (function(){var h=T.bg.replace("#","");T.rgb=[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];
+    T.fade=function(a){return "rgba("+T.rgb.join(",")+","+a+")"}})();
   function ser(v,seen){
     seen=seen||[];
     if(typeof v==="string")return v;
@@ -325,8 +810,7 @@ html,body{margin:0;height:100%}body{background:#fff}
   });
   window.addEventListener("unhandledrejection",function(e){send("error",["Unhandled promise rejection: "+ser(e.reason)])});
   window.canvas=document.getElementById("canvas");
-  function fit(){canvas.width=canvas.clientWidth;canvas.height=canvas.clientHeight}
-  fit();
+  canvas.width=canvas.clientWidth||innerWidth||640;canvas.height=canvas.clientHeight||innerHeight||400;
 })();
 <\/script><script>
 `;
@@ -334,19 +818,19 @@ html,body{margin:0;height:100%}body{background:#fff}
     const safe = userCode.replace(/<\/script/gi, "<\\/script");
     return head.replace("OFFSET", offset) + safe + "\n<\/script></body></html>";
   }
-
-  function stop(){
-    if (frame) { frame.remove(); frame = null; }
-    runId++;
-  }
+  function stop(){ if (frame) { frame.remove(); frame = null; } runId++; running = false; }
   function run(){
     clearTimeout(autoTimer);
-    stop(); clearConsole();
+    stop(); clearConsole(); showTab("preview");
     const empty = $("empty"); if (empty) empty.style.display = "none";
     frame = document.createElement("iframe");
-    frame.setAttribute("sandbox", "allow-scripts");
-    frame.srcdoc = buildDoc(code.value);
+    frame.setAttribute("sandbox", "allow-scripts allow-popups");
+    frame.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture");
+    frame.setAttribute("allowfullscreen", "");
     wrap.appendChild(frame);
+    void frame.offsetWidth;                       // force layout so the canvas gets a real size
+    frame.srcdoc = buildDoc(code.value, readTheme());
+    running = true;
     addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
   }
   window.addEventListener("message", e => {
@@ -358,14 +842,107 @@ html,body{margin:0;height:100%}body{background:#fff}
 
   $("run").onclick = run;
   $("stop").onclick = () => { stop(); addLine("sys", "■ stopped"); };
-  sel.onchange = () => { code.value = EXAMPLES[sel.value]; updateGutter(); store.set("devportal.js.code", code.value); run(); };
-  $("reset").onclick = () => { code.value = EXAMPLES[sel.value]; updateGutter(); store.set("devportal.js.code", code.value); };
+  sel.onchange = () => { setCode(EXAMPLES[sel.value], slug(sel.value)); run(); };
+  $("reset").onclick = () => { setCode(EXAMPLES[sel.value], slug(sel.value)); toast("Reset to “" + sel.value + "”"); };
 
-  // init
+  /* ───────── Themes + animated backgrounds ───────── */
+  const fxc = $("bg"), fx = fxc.getContext("2d");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let fxRaf = 0, fxKind = null, fxS = {};
+  const FX_THEMES = { matrix: 1, jarvis: 1, heaven: 1 };
+
+  const draw = {
+    matrix(){
+      const w = fxc.width, h = fxc.height;
+      fx.fillStyle = "rgba(0,0,0,.1)"; fx.fillRect(0, 0, w, h);
+      fx.font = "16px monospace";
+      const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789";
+      fxS.tick = (fxS.tick || 0) + 1;
+      if (fxS.tick % 2) return;
+      fxS.drops.forEach((d, i) => {
+        const ch = chars[Math.random() * chars.length | 0];
+        fx.fillStyle = "#00ff41"; fx.fillText(chars[Math.random() * chars.length | 0], i * 16, (d - 1) * 16);
+        fx.fillStyle = "#d2ffdc"; fx.fillText(ch, i * 16, d * 16);
+        fxS.drops[i] = (d * 16 > h && Math.random() > .975) ? 0 : d + 1;
+      });
+    },
+    jarvis(t){
+      const w = fxc.width, h = fxc.height, cx = w / 2, cy = h / 2;
+      fx.clearRect(0, 0, w, h);
+      fx.strokeStyle = "rgba(0,229,255,.07)"; fx.lineWidth = 1;
+      for (let x = 0; x < w; x += 48) { fx.beginPath(); fx.moveTo(x, 0); fx.lineTo(x, h); fx.stroke(); }
+      for (let y = 0; y < h; y += 48) { fx.beginPath(); fx.moveTo(0, y); fx.lineTo(w, y); fx.stroke(); }
+      const rings = [[110, 1, [70, 24], .5], [160, -1.4, [10, 14], .4], [215, .8, [120, 40], .35], [290, -.5, [30, 60], .25]];
+      for (const [r, sp, dash, a] of rings) {
+        fx.save(); fx.translate(cx, cy); fx.rotate(t * sp * .35);
+        fx.strokeStyle = "rgba(0,229,255," + a + ")"; fx.lineWidth = 2; fx.setLineDash(dash);
+        fx.beginPath(); fx.arc(0, 0, r, 0, 6.283); fx.stroke(); fx.restore();
+      }
+      fx.save(); fx.translate(cx, cy); fx.rotate(-t * .12); fx.strokeStyle = "rgba(0,229,255,.35)"; fx.lineWidth = 1;
+      for (let i = 0; i < 90; i++) { const a = i / 90 * 6.283, l = i % 5 ? 6 : 14; fx.beginPath();
+        fx.moveTo(Math.cos(a) * 340, Math.sin(a) * 340); fx.lineTo(Math.cos(a) * (340 + l), Math.sin(a) * (340 + l)); fx.stroke(); }
+      fx.restore();
+      fx.save(); fx.translate(cx, cy); fx.rotate(t * .9);
+      const g = fx.createLinearGradient(0, 0, 330, 0); g.addColorStop(0, "rgba(0,229,255,.35)"); g.addColorStop(1, "rgba(0,229,255,0)");
+      fx.strokeStyle = g; fx.lineWidth = 2; fx.beginPath(); fx.moveTo(0, 0); fx.lineTo(330, 0); fx.stroke(); fx.restore();
+      fx.fillStyle = "rgba(0,229,255,.05)"; fx.fillRect(0, (t * 90) % h, w, 3);
+    },
+    heaven(t){
+      const w = fxc.width, h = fxc.height;
+      fx.clearRect(0, 0, w, h);
+      for (let i = 0; i < 6; i++) {            // rays of light
+        fx.save(); fx.translate(w * .5, -40); fx.rotate(-.55 + i * .22 + Math.sin(t * .15 + i) * .05);
+        const g = fx.createLinearGradient(0, 0, 0, h * 1.2);
+        g.addColorStop(0, "rgba(255,214,102,.30)"); g.addColorStop(1, "rgba(255,214,102,0)");
+        fx.fillStyle = g; fx.beginPath(); fx.moveTo(0, 0); fx.lineTo(-70, h * 1.2); fx.lineTo(70, h * 1.2); fx.closePath(); fx.fill();
+        fx.restore();
+      }
+      for (const c of fxS.clouds) {            // drifting clouds
+        c.x += c.v; if (c.x - c.r > w) c.x = -c.r;
+        const g = fx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+        g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
+        fx.fillStyle = g; fx.beginPath(); fx.arc(c.x, c.y, c.r, 0, 6.283); fx.fill();
+      }
+      for (const s of fxS.stars) {             // golden sparkles
+        s.y -= s.v / 60; if (s.y < -.02) s.y = 1.02;
+        const a = .3 + .7 * Math.abs(Math.sin(t * 1.5 + s.p)), x = s.x * w, y = s.y * h, r = s.r * (.6 + a * .6);
+        fx.strokeStyle = "rgba(212,160,23," + a + ")"; fx.lineWidth = 1.2;
+        fx.beginPath(); fx.moveTo(x - r * 2, y); fx.lineTo(x + r * 2, y); fx.moveTo(x, y - r * 2); fx.lineTo(x, y + r * 2); fx.stroke();
+        fx.fillStyle = "rgba(255,226,130," + a + ")"; fx.beginPath(); fx.arc(x, y, r, 0, 6.283); fx.fill();
+      }
+    }
+  };
+  function startFx(kind){
+    cancelAnimationFrame(fxRaf); fxKind = kind;
+    fxc.width = innerWidth; fxc.height = innerHeight;
+    fx.clearRect(0, 0, fxc.width, fxc.height);
+    if (!FX_THEMES[kind]) { fxc.style.display = "none"; return; }
+    fxc.style.display = "block";
+    if (kind === "matrix") { fxS = { drops: Array.from({ length: Math.ceil(fxc.width / 16) }, () => -Math.random() * 60 | 0) }; fx.fillStyle = "#000"; fx.fillRect(0, 0, fxc.width, fxc.height); }
+    if (kind === "heaven") fxS = {
+      stars: Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: 1 + Math.random() * 3, v: .02 + Math.random() * .06, p: Math.random() * 6.28 })),
+      clouds: Array.from({ length: 7 }, () => ({ x: Math.random() * fxc.width, y: Math.random() * fxc.height, r: 120 + Math.random() * 180, v: .08 + Math.random() * .2 }))
+    };
+    const loop = ms => { draw[kind](ms / 1000); if (!reduceMotion) fxRaf = requestAnimationFrame(loop); };
+    loop(0);
+  }
+  addEventListener("resize", () => { clearTimeout(startFx.t); startFx.t = setTimeout(() => startFx(fxKind), 200); });
+
+  function applyTheme(name, rerun){
+    document.documentElement.dataset.theme = name;
+    themeSel.value = name;
+    store.set("devportal.js.theme", name);
+    startFx(name);
+    if (rerun && running) run();     // so the preview's THEME colours update
+  }
+  themeSel.onchange = () => applyTheme(themeSel.value, true);
+
+  /* ───────── Init ───────── */
+  const savedTheme = store.get("devportal.js.theme");
+  applyTheme(savedTheme && [...themeSel.options].some(o => o.value === savedTheme) ? savedTheme : "black", false);
   const saved = store.get("devportal.js.code");
-  code.value = saved || EXAMPLES["Canvas: bouncing balls"];
-  if (!saved) sel.value = "Canvas: bouncing balls";
-  updateGutter();
+  sel.value = "Canvas: bouncing balls";
+  setCode(saved || EXAMPLES["Canvas: bouncing balls"], saved ? (store.get("devportal.js.fname") || "script.js") : slug("Canvas: bouncing balls"));
   run();
 })();
 </script>
