@@ -1,3 +1,5 @@
+<p align="center"><img src="DevPortalByGau.jpg" alt="DevPortal by Gau" width="640"></p>
+
 # DevPortal
 
 A dev portal for writing, running, and visualizing code. Starting with a JavaScript playground.
