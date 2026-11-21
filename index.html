@@ -177,23 +177,16 @@
     <div class="bar">
       <button class="tab active" data-tab="preview">Preview</button>
       <button class="tab" data-tab="console">Console<span class="badge" id="errBadge">0</span></button>
-      <button class="tab" data-tab="registry" title="Terraform Registry (registry.terraform.io)">Registry</button>
+      <button class="tab" data-tab="registry" id="docsTab">Docs</button>
       <button class="tab" id="clear" style="margin-left:auto;font-size:12px">Clear console</button>
     </div>
     <div class="view">
       <div id="frameWrap"><div id="empty">Press Run to see your output here</div></div>
       <div id="console" style="display:none"></div>
       <div id="registry">
-        <div class="rgbar"><b>Terraform Registry</b>
-          <button data-url="https://registry.terraform.io/">Home</button>
-          <button data-url="https://registry.terraform.io/browse/providers">Providers</button>
-          <button data-url="https://registry.terraform.io/browse/modules">Modules</button>
-          <button data-url="https://registry.terraform.io/providers/hashicorp/aws/latest/docs">AWS docs</button>
-          <button data-url="https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs">Azure docs</button>
-          <button data-url="https://registry.terraform.io/providers/hashicorp/google/latest/docs">GCP docs</button>
-          <a id="rgOpen" href="https://registry.terraform.io/" target="_blank" rel="noopener">Open in new tab ↗</a></div>
-        <iframe id="rgFrame" title="Terraform Registry" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
-        <div class="rgnote">Live site, embedded. If this stays blank, registry.terraform.io (or the page hosting DevPortal) is refusing to be framed — use “Open in new tab”.</div>
+        <div class="rgbar" id="rgBar"></div>
+        <iframe id="rgFrame" title="Reference documentation" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
+        <div class="rgnote" id="rgNote"></div>
       </div>
     </div>
   </section>
@@ -1204,13 +1197,47 @@ builtins.input = _no_input
     }
   };
 
+
+  /* ───────── Reference docs tab (one per language) ───────── */
+  const DOCS = {
+    javascript: { tab: "MDN", title: "MDN · JavaScript", home: "https://developer.mozilla.org/en-US/docs/Web/JavaScript", links: [
+      ["Guide", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"], ["Reference", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference"],
+      ["Canvas API", "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"], ["Fetch", "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"],
+      ["Promise", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"], ["Array", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"]] },
+    python: { tab: "Python Docs", title: "Python docs", home: "https://docs.python.org/3/", links: [
+      ["Tutorial", "https://docs.python.org/3/tutorial/index.html"], ["Library", "https://docs.python.org/3/library/index.html"],
+      ["NumPy", "https://numpy.org/doc/stable/"], ["pandas", "https://pandas.pydata.org/docs/"], ["matplotlib", "https://matplotlib.org/stable/index.html"], ["Pyodide", "https://pyodide.org/en/stable/"]] },
+    terraform: { tab: "Registry", title: "Terraform Registry", home: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs", links: [
+      ["AWS", "https://registry.terraform.io/providers/hashicorp/aws/latest/docs"], ["Azure", "https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs"],
+      ["GCP", "https://registry.terraform.io/providers/hashicorp/google/latest/docs"], ["Providers", "https://registry.terraform.io/browse/providers"],
+      ["Modules", "https://registry.terraform.io/browse/modules"], ["Registry home", "https://registry.terraform.io/"]] }
+  };
+  function docsHome(){
+    if (lang !== "terraform") return DOCS[lang].home;
+    const m = code.value.match(/\b(azurerm|google|aws)\b/);
+    const hit = m && DOCS.terraform.links.find(l => l[1].includes("/hashicorp/" + m[1] + "/"));
+    return hit ? hit[1] : DOCS.terraform.home;
+  }
+  function openDoc(url){ $("rgFrame").src = url; $("rgOpen").href = url; }
+  function loadDocs(force){ if (force || !$("rgFrame").getAttribute("src")) openDoc(docsHome()); }
+  function applyDocs(){
+    const d = DOCS[lang];
+    $("docsTab").textContent = d.tab;
+    const bar = $("rgBar"); bar.innerHTML = "";
+    const b = document.createElement("b"); b.textContent = d.title; bar.appendChild(b);
+    d.links.forEach(l => { const x = document.createElement("button"); x.textContent = l[0]; x.onclick = () => openDoc(l[1]); bar.appendChild(x); });
+    const a = document.createElement("a"); a.id = "rgOpen"; a.href = docsHome(); a.target = "_blank"; a.rel = "noopener"; a.textContent = "Open in new tab ↗"; bar.appendChild(a);
+    $("rgNote").textContent = "Live site, embedded. If this stays blank, the site (or the page hosting DevPortal) refuses to be framed — use “Open in new tab”.";
+    $("rgFrame").removeAttribute("src");
+    if ($("registry").classList.contains("on")) loadDocs(true);
+  }
   /* ───────── Tabs & console ───────── */
   function showTab(name){
     document.querySelectorAll(".tab[data-tab]").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
     wrap.style.display = name === "preview" ? "" : "none";
     consoleEl.style.display = name === "console" ? "" : "none";
     $("registry").classList.toggle("on", name === "registry");
-    if (name === "registry" && tfApi.onRegistryShown) tfApi.onRegistryShown();
+    if (name === "registry") loadDocs(false);
   }
   document.querySelectorAll(".tab[data-tab]").forEach(t => t.onclick = () => showTab(t.dataset.tab));
   function addLine(level, text){
@@ -1382,6 +1409,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
     buildExamples();
     if (!keepEditor) loadSaved();
+    applyDocs();
   }
   document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
     if (b.dataset.lang !== lang) { setLang(b.dataset.lang); if (lang === "terraform") { clearConsole(); showTab("preview"); window.TFUI.activate(); } else run(); }
@@ -1492,6 +1520,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
   buildExamples();
   loadSaved();
+  applyDocs();
   if (lang === "terraform") window.TFUI.activate(); else run();
 })();
 </script>

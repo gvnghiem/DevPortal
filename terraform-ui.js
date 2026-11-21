@@ -493,6 +493,8 @@ css.textContent = `
 .tfchip[data-s=busy]{color:var(--accent);border-color:var(--accent)}
 .tfchip[data-s=ok]{color:var(--ok);border-color:var(--ok)}
 .tfchip[data-s=err]{color:var(--err);border-color:var(--err)}
+#tfCmd{padding:4px 12px;font:12px ui-monospace,Menlo,Consolas,monospace;background:var(--editor);color:var(--muted);border-bottom:1px solid var(--line)}
+#tfCmd span{color:var(--accent);font-weight:600}
 #tfStage{position:relative;flex:1;min-height:0}
 #tfSvg{position:absolute;inset:0;width:100%;height:100%}
 #tfEmpty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);text-align:center;padding:20px;line-height:1.6}
@@ -588,23 +590,20 @@ function mount(a) {
     '<label class="tfchip" style="border:0">speed <select id="tfSpeed"><option value="2">2×</option><option value="4">4×</option><option value="8" selected>8×</option><option value="20">20×</option><option value="100">100×</option><option value="0">instant</option></select></label>' +
     '<button data-c="reset" title="Forget all state (like deleting terraform.tfstate)">reset state</button>' +
     '<span class="tfchip" id="tfStatus" data-s="idle">idle</span></div>' +
+    '<div id="tfCmd">$ terraform <span>(ready)</span></div>' +
+    '' +
     '<div id="tfStage"><div id="tfEmpty"><div>Edit the Terraform on the left — resources appear here as a diagram.<br>Press <b>▶ Run</b> to init, plan and apply.</div></div>' +
     '<svg id="tfSvg" xmlns="http://www.w3.org/2000/svg"><defs><marker id="tfarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--muted)"/></marker></defs><g id="tfG"></g></svg>' +
     '<div id="tfBanner"></div><div id="tfLegend"></div><div id="tfDetail"></div></div>' +
     '<div id="tfProg"><span id="tfCount">0 / 0</span><div class="bar"><i id="tfBar"></i></div><span id="tfClock">0:00 sim</span></div>' +
     '<div id="tfLog"></div>';
   wrap.appendChild(view);
-  ["tfSvg", "tfG", "tfEmpty", "tfBanner", "tfLegend", "tfDetail", "tfCount", "tfBar", "tfClock", "tfLog", "tfStatus", "tfSpeed"].forEach(i => els[i] = document.getElementById(i));
+  ["tfSvg", "tfG", "tfEmpty", "tfBanner", "tfLegend", "tfDetail", "tfCount", "tfBar", "tfClock", "tfLog", "tfCmd", "tfStatus", "tfSpeed"].forEach(i => els[i] = document.getElementById(i));
   els.tfLegend.innerHTML = [["var(--ok)", "create"], ["var(--warn)", "update/replace"], ["var(--err)", "destroy"], ["var(--accent)", "in progress"]].map(x => '<span><i style="background:' + x[0] + '"></i>' + x[1] + '</span>').join("");
   view.querySelectorAll(".tfbar button[data-c]").forEach(b => b.onclick = () => command(b.dataset.c));
   els.tfSpeed.onchange = () => { speed = +els.tfSpeed.value; };
   els.tfSvg.addEventListener("click", e => { if (!e.target.closest(".tfn")) els.tfDetail.style.display = "none"; });
 
-  /* registry tab */
-  const rg = document.getElementById("registry"), frame = document.getElementById("rgFrame");
-  const open = url => { frame.src = url; document.getElementById("rgOpen").href = url; };
-  rg.querySelectorAll("[data-url]").forEach(b => b.onclick = () => open(b.dataset.url));
-  api.onRegistryShown = () => { if (!frame.getAttribute("src")) open("https://registry.terraform.io/"); };
 }
 
 function status(text, s) { els.tfStatus.textContent = text; els.tfStatus.dataset.s = s || "idle"; }
@@ -633,7 +632,7 @@ function out(lines, forced) {
   while (els.tfLog.childElementCount > 400) els.tfLog.firstChild.remove();
   els.tfLog.scrollTop = els.tfLog.scrollHeight;
 }
-function cmdEcho(c) { out("$ terraform " + c, "info"); }
+function cmdEcho(c) { els.tfCmd.innerHTML = "$ terraform <span>" + c.replace(/</g, "&lt;") + "</span>"; out("$ terraform " + c, "info"); }
 
 /* config */
 function getCfg(announce) {
