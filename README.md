@@ -2,7 +2,7 @@
 
 # DevPortal
 
-A dev portal for writing, running, and visualizing code. Playgrounds for JavaScript and Python, switched from the header.
+A dev portal for writing, running, and visualizing code. Playgrounds for JavaScript, Python and Terraform, switched from the header.
 
 ## Playground
 
@@ -34,6 +34,16 @@ Python runs in your browser using [Pyodide](https://pyodide.org) (CPython compil
 - matplotlib figures render into the preview and pick up the theme colours
 - Examples: hello, algorithms & timing, errors, canvas particles, matplotlib trend / scatter / Mandelbrot, pandas summary
 - `input()` isn't available; Stop discards the runtime (the next run reloads it from cache)
+
+## Terraform (simulator)
+A mock IaC experience — **no real cloud calls, nothing is created anywhere**. Write real HCL on the left; the preview is a live infrastructure diagram.
+- Command bar: `init`, `validate`, `plan`, `apply`, `destroy`, `state list`, `output`, plus pause/resume, a simulation speed control and *reset state*. **▶ Run** = init → plan → apply.
+- The diagram forms as Terraform executes: nodes appear from your config (dashed = planned), dependency edges draw in, nodes pulse while *Creating…*, then turn green with a ✓. Updates, replacements, destroys and failures each get their own animation. Click a node to inspect its attributes.
+- The Console tab shows real-format Terraform output: plan diffs (`+ ~ - -/+`, *(known after apply)*, `# forces replacement`), `Creating… / Still creating… [10s elapsed] / Creation complete after 3s [id=…]`, `Apply complete! Resources: …`, outputs, and `╷ Error:` diagnostics with the offending line. A short log tail is also shown under the diagram.
+- State persists between applies (browser localStorage), so editing and re-applying gives real in-place updates, replacements and drift-free no-ops. Parallelism is 10, in simulated time.
+- Supports `resource`/`data`/`variable`/`locals`/`output`, `count`, `for_each`, `depends_on`, splats, `for` expressions, conditionals, templates, heredocs and ~60 built-in functions. Mock schemas cover common AWS, Azure and GCP resources plus random/null/local; unknown resource types still work with generic behaviour. Modules and provisioners aren't supported.
+- **Registry** tab (next to Console) embeds registry.terraform.io with quick links. If the site or the page hosting the portal blocks framing it stays blank — use *Open in new tab*.
+- Examples: VPC + EC2, three-tier web app, serverless API, S3 data lake, RDS, Azure, GCP, an apply-time failure and a config-error showcase.
 
 ## Notes
 - Code runs in `iframe sandbox="allow-scripts allow-popups"`, isolated from the page.
