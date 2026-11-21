@@ -67,6 +67,9 @@
   .brand .logo{height:54px;width:auto;display:block;border-radius:8px;border:1px solid var(--line);box-shadow:var(--glow)}
   .brand .sub{color:var(--muted);font-weight:400}
   [data-theme="jarvis"] .brand .sub{text-transform:uppercase;letter-spacing:2px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:0;border-radius:0;background:transparent;color:var(--muted);padding:6px 12px}
+  .seg button.on{background:var(--accent2);color:var(--accent-text);font-weight:600}
   .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
   .spacer{flex:1}
   .group{display:flex;gap:6px;align-items:center}
@@ -89,7 +92,7 @@
   .tab.active{color:var(--text);border-bottom-color:var(--accent)}
   .badge{background:var(--err);color:#fff;border-radius:99px;font-size:10px;padding:0 6px;margin-left:4px;display:none}
   .editor{flex:1;display:flex;min-height:0;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:13px;line-height:20px;position:relative}
-  .editor.drop::after{content:"Drop a .js file to import";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--accent);font:600 16px var(--font);border:2px dashed var(--accent);opacity:.94}
+  .editor.drop::after{content:"Drop a .js or .py file to import";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--accent);font:600 16px var(--font);border:2px dashed var(--accent);opacity:.94}
   #gutter{width:44px;padding:10px 8px 10px 0;text-align:right;color:var(--muted);opacity:.8;background:var(--gutter);overflow:hidden;user-select:none;white-space:pre;border-right:1px solid var(--line)}
   #code{flex:1;resize:none;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:10px 12px;white-space:pre;overflow:auto;tab-size:2;caret-color:var(--accent)}
   .view{flex:1;min-height:0;position:relative}
@@ -107,14 +110,14 @@
   kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px}
   #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--panel2);color:var(--text);border:1px solid var(--accent);padding:8px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:10;pointer-events:none;box-shadow:var(--glow);max-width:90vw}
   #toast.show{opacity:1;transform:translateX(-50%)}
-  @media (max-width:980px){.lbl{display:none}}
+  @media (max-width:1560px){.lbl{display:none}}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
 <header>
   <div class="brand"><img class="logo" alt="DevPortal by Gau" src="data:image/jpeg;base64,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"><span class="sub">/ Playground</span></div>
-  <span class="tag">JavaScript</span>
+  <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="javascript" class="on">JavaScript</button><button type="button" data-lang="python">Python</button></div>
   <div class="spacer"></div>
   <div class="group">
     <select id="examples" aria-label="Load an example"></select>
@@ -129,10 +132,10 @@
   </div>
   <span class="sep"></span>
   <div class="group">
-    <button id="import" title="Import a .js file into the editor"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Import</span></button>
-    <button id="save" title="Save the editor contents to a .js file"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Save</span></button>
+    <button id="import" title="Import a .js or .py file into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.py,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
@@ -147,7 +150,7 @@
     <div class="bar"><input class="name" id="fname" value="script.js" spellcheck="false" aria-label="File name"><span class="hint"><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to run</span></div>
     <div class="editor" id="editor">
       <div id="gutter">1</div>
-      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="JavaScript code"></textarea>
+      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor"></textarea>
     </div>
   </section>
   <section class="pane">
@@ -659,22 +662,426 @@ load();
     "UI & media": ["DOM: interactive counter", "Media: video embedder"]
   };
 
+  /* ───────── Python examples ───────── */
+  const PY_EXAMPLES = {
+
+"Hello, Python": String.raw`# print() goes to the Console tab. The first run downloads the Python runtime (~10 MB, then cached).
+# Other packages (numpy, matplotlib, pandas...) load automatically when you import them.
+import sys
+print("Python", sys.version.split()[0], "running in your browser (WebAssembly)")
+
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+print(greet("DevPortal"))
+
+nums = [5, 3, 8, 1, 9, 2]
+print("sorted:", sorted(nums), "| sum:", sum(nums))
+print({n: n * n for n in nums if n % 2})
+
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: float
+    y: float
+    def dist(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+
+p = Point(3, 4)
+print(p, "distance:", p.dist())
+
+# show_html() puts HTML on the page. THEME follows the portal theme.
+show_html(f"<h2 style='font-family:system-ui;padding:20px;color:{THEME.accent}'>Hello from Python 🐍</h2>")
+`,
+
+"Algorithms & timing": String.raw`# Pure-Python algorithms with timing. Output goes to the Console tab.
+import time
+from functools import lru_cache
+
+def sieve(n):
+    flags = [True] * (n + 1)
+    flags[0] = flags[1] = False
+    for i in range(2, int(n ** 0.5) + 1):
+        if flags[i]:
+            for j in range(i * i, n + 1, i):
+                flags[j] = False
+    return [i for i, f in enumerate(flags) if f]
+
+def is_prime(n):
+    if n < 2:
+        return False
+    i = 2
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 1
+    return True
+
+def timed(label, fn, *args):
+    t0 = time.perf_counter()
+    out = fn(*args)
+    print(f"{label:<26}{(time.perf_counter() - t0) * 1000:9.2f} ms")
+    return out
+
+N = 100_000
+a = timed("sieve of Eratosthenes", sieve, N)
+b = timed("trial division", lambda n: [i for i in range(n + 1) if is_prime(i)], N)
+print("primes found:", len(a), "| same result:", a == b)
+
+@lru_cache(maxsize=None)
+def fib(n):
+    return n if n < 2 else fib(n - 1) + fib(n - 2)
+
+print("fib(90) =", fib(90))
+`,
+
+"Errors & tracebacks": String.raw`# Exceptions show a clean traceback in the Console tab.
+try:
+    int("not a number")
+except ValueError as e:
+    print("caught:", e)
+
+def risky(n):
+    return 10 / n
+
+for n in (2, 1, 0):
+    print(n, "->", risky(n))   # the last one raises ZeroDivisionError
+`,
+
+"Canvas: particles": String.raw`# Draw on the canvas from Python through the JS bridge. Move the mouse to push the particles.
+import math, random
+from pyodide.ffi import create_proxy
+from js import requestAnimationFrame
+
+ctx = canvas.getContext("2d")
+W, H = canvas.width, canvas.height
+parts = [dict(x=random.uniform(0, W), y=random.uniform(0, H),
+              vx=random.uniform(-1, 1), vy=random.uniform(-1, 1)) for _ in range(70)]
+mouse = dict(x=-999, y=-999)
+
+def on_move(e):
+    r = canvas.getBoundingClientRect()
+    mouse["x"], mouse["y"] = e.clientX - r.left, e.clientY - r.top
+canvas.addEventListener("mousemove", create_proxy(on_move))
+
+def frame(_t=None):
+    ctx.fillStyle = THEME.fade(0.2)
+    ctx.fillRect(0, 0, W, H)
+    for p in parts:
+        dx, dy = p["x"] - mouse["x"], p["y"] - mouse["y"]
+        d = math.hypot(dx, dy)
+        if d < 90:
+            p["vx"] += dx / (d + 1) * 0.35
+            p["vy"] += dy / (d + 1) * 0.35
+        p["vx"] *= 0.99
+        p["vy"] *= 0.99
+        p["x"] = (p["x"] + p["vx"]) % W
+        p["y"] = (p["y"] + p["vy"]) % H
+    ctx.lineWidth = 1
+    ctx.strokeStyle = THEME.accent2
+    for i, a in enumerate(parts):
+        for b in parts[i + 1:]:
+            d = math.hypot(a["x"] - b["x"], a["y"] - b["y"])
+            if d < 80:
+                ctx.globalAlpha = 1 - d / 80
+                ctx.beginPath()
+                ctx.moveTo(a["x"], a["y"])
+                ctx.lineTo(b["x"], b["y"])
+                ctx.stroke()
+    ctx.globalAlpha = 1
+    ctx.fillStyle = THEME.accent
+    for p in parts:
+        ctx.beginPath()
+        ctx.arc(p["x"], p["y"], 2.5, 0, 6.283)
+        ctx.fill()
+    requestAnimationFrame(proxy)
+
+proxy = create_proxy(frame)
+frame()
+print("Move your mouse over the preview")
+`,
+
+"Matplotlib: trend chart": String.raw`# Charts render into the preview. Colours follow the portal theme.
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(7)
+days = np.arange(120)
+price = 100 + np.cumsum(rng.normal(0.2, 1.6, days.size))
+avg = np.convolve(price, np.ones(10) / 10, mode="valid")
+
+fig, (ax, vol) = plt.subplots(2, 1, figsize=(8, 5.2), sharex=True,
+                              gridspec_kw={"height_ratios": [3, 1]})
+ax.plot(days, price, lw=2, label="price")
+ax.plot(days[9:], avg, "--", lw=1.6, label="10-day average")
+ax.fill_between(days, price, price.min(), alpha=0.15)
+ax.set_title(f"ACME  {price[-1]:.2f}  ({(price[-1] / price[0] - 1) * 100:+.1f}%)")
+ax.legend()
+ax.grid(alpha=0.25)
+
+colors = [THEME.ok if d >= 0 else THEME.err for d in np.diff(price, prepend=price[0])]
+vol.bar(days, rng.integers(20, 100, days.size), color=colors)
+vol.set_ylabel("volume")
+plt.tight_layout()
+plt.show()
+`,
+
+"Matplotlib: scatter & histogram": String.raw`import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(1)
+clusters = [rng.normal(centre, 0.8, (80, 2)) for centre in ((0, 0), (3, 2), (-2, 3))]
+
+fig, (a, b) = plt.subplots(1, 2, figsize=(9, 4))
+for i, pts in enumerate(clusters):
+    a.scatter(pts[:, 0], pts[:, 1], s=22, alpha=0.8, label=f"cluster {i + 1}")
+a.set_title("Scatter")
+a.legend()
+a.grid(alpha=0.25)
+
+b.hist(np.concatenate([c[:, 0] for c in clusters]), bins=24, alpha=0.9)
+b.set_title("Histogram of x")
+b.grid(alpha=0.25)
+plt.tight_layout()
+plt.show()
+`,
+
+"Mandelbrot set": String.raw`# numpy + matplotlib: vectorised Mandelbrot.
+import numpy as np
+import matplotlib.pyplot as plt
+
+w, h, max_iter = 520, 340, 70
+x = np.linspace(-2.2, 0.9, w)
+y = np.linspace(-1.2, 1.2, h)
+c = x[None, :] + 1j * y[:, None]
+z = np.zeros_like(c)
+counts = np.zeros(c.shape, dtype=int)
+for _ in range(max_iter):
+    mask = np.abs(z) <= 2
+    z[mask] = z[mask] ** 2 + c[mask]
+    counts[mask] += 1
+
+fig, ax = plt.subplots(figsize=(8, 5.2))
+ax.imshow(counts, extent=(-2.2, 0.9, -1.2, 1.2), cmap="magma", origin="lower")
+ax.set_title("Mandelbrot set")
+ax.set_xlabel("Re")
+ax.set_ylabel("Im")
+plt.tight_layout()
+plt.show()
+`,
+
+"Pandas: sales summary": String.raw`# pandas DataFrame -> HTML table on the page, plus a text summary in the Console.
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(3)
+df = pd.DataFrame({
+    "region": rng.choice(["North", "South", "East", "West"], 200),
+    "product": rng.choice(["Widget", "Gadget", "Gizmo"], 200),
+    "units": rng.integers(1, 40, 200),
+    "price": rng.uniform(5, 50, 200).round(2),
+})
+df["revenue"] = df.units * df.price
+summary = df.pivot_table(index="region", columns="product", values="revenue", aggfunc="sum").round(0)
+print(summary)
+print("\nTop region:", summary.sum(axis=1).idxmax())
+
+css = ("<style>.t{font-family:system-ui;padding:20px;color:" + THEME.fg + "}"
+       ".t table{border-collapse:collapse;min-width:360px}"
+       ".t th,.t td{padding:8px 14px;border:1px solid " + THEME.muted + ";text-align:right}"
+       ".t th{color:" + THEME.accent + "}</style>")
+show_html(css + "<div class='t'><h3>Revenue by region and product</h3>" + summary.to_html(border=0) + "</div>")
+`
+  };
+
+  const PY_GROUPS = {
+    "Basics": ["Hello, Python", "Algorithms & timing", "Errors & tracebacks"],
+    "Canvas": ["Canvas: particles"],
+    "Charts (matplotlib)": ["Matplotlib: trend chart", "Matplotlib: scatter & histogram", "Mandelbrot set"],
+    "Data": ["Pandas: sales summary"]
+  };
+
+  /* Python-side helpers, run once after the runtime loads */
+  const PY_PRELUDE = String.raw`
+import os, io, json, base64, types, builtins
+os.environ["MPLBACKEND"] = "AGG"
+import js
+
+class _Theme(types.SimpleNamespace):
+    def fade(self, a):
+        h = self.bg.lstrip("#")
+        r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+        return f"rgba({r},{g},{b},{a})"
+
+def show_html(html, append=False):
+    app = js.document.getElementById("app")
+    app.innerHTML = (app.innerHTML + html) if append else html
+
+def _emit_image(b64):
+    img = js.document.createElement("img")
+    img.src = "data:image/png;base64," + b64
+    img.style.cssText = "max-width:100%;display:block;margin:12px auto;border-radius:8px"
+    js.document.getElementById("app").appendChild(img)
+
+def _setup_matplotlib(t):
+    import matplotlib
+    matplotlib.use("AGG")
+    import matplotlib.pyplot as plt
+    from cycler import cycler
+    plt.close("all")
+    matplotlib.rcParams.update({
+        "figure.facecolor": t["bg"], "axes.facecolor": t["bg"], "savefig.facecolor": t["bg"],
+        "axes.edgecolor": t["muted"], "axes.labelcolor": t["fg"], "text.color": t["fg"],
+        "xtick.color": t["muted"], "ytick.color": t["muted"], "grid.color": t["muted"],
+        "legend.facecolor": t["bg"], "legend.edgecolor": t["muted"],
+        "axes.prop_cycle": cycler(color=[t["accent"], t["warn"], t["ok"], t["err"], t["accent2"], t["muted"]]),
+    })
+    def show(*args, **kwargs):
+        for n in plt.get_fignums():
+            buf = io.BytesIO()
+            plt.figure(n).savefig(buf, format="png", dpi=110)
+            _emit_image(base64.b64encode(buf.getvalue()).decode())
+        plt.close("all")
+    plt.show = show
+
+def _no_input(prompt=""):
+    raise RuntimeError("input() isn't available in the playground. Use variables instead.")
+builtins.input = _no_input
+`;
+
+  /* Runs inside the sandboxed Python iframe (no backticks / dollar-braces in here) */
+  const PY_RUNTIME = String.raw`
+(function(){
+  var VERS = __VERS__, PRELUDE = __PRELUDE__, cur = 0, py = null, pending = null, used = false, booting = false;
+  function send(o){ o.devportal = true; parent.postMessage(o, "*"); }
+  function log(level, text, id){ send({ id: id == null ? cur : id, level: level, text: text }); }
+  function status(t){
+    var s = document.getElementById("status");
+    s.textContent = t || ""; s.style.display = t ? "block" : "none";
+    if (t) send({ kind: "status", text: t });
+  }
+  // track timers so a re-run can cancel everything the previous run started
+  var tr = { raf: {}, to: {}, iv: {} };
+  var _raf = window.requestAnimationFrame.bind(window), _to = window.setTimeout.bind(window), _iv = window.setInterval.bind(window);
+  window.requestAnimationFrame = function(cb){ var id = _raf(function(t){ delete tr.raf[id]; cb(t); }); tr.raf[id] = 1; return id; };
+  window.setTimeout = function(cb, ms){ var a = [].slice.call(arguments, 2); var id = _to(function(){ delete tr.to[id]; if (typeof cb === "function") cb.apply(null, a); }, ms); tr.to[id] = 1; return id; };
+  window.setInterval = function(cb, ms){ var a = [].slice.call(arguments, 2); var id = _iv(function(){ cb.apply(null, a); }, ms); tr.iv[id] = 1; return id; };
+  function cancelAll(){
+    for (var k in tr.raf) cancelAnimationFrame(+k);
+    for (var k2 in tr.to) clearTimeout(+k2);
+    for (var k3 in tr.iv) clearInterval(+k3);
+    tr = { raf: {}, to: {}, iv: {} };
+  }
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement("script"); s.src = src; s.onload = res;
+      s.onerror = function(){ rej(new Error("failed to load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+  async function boot(){
+    booting = true;
+    status("Loading Python runtime… (first time downloads ~10 MB)");
+    var base = null;
+    for (var i = 0; i < VERS.length; i++) {
+      var b = "https://cdn.jsdelivr.net/pyodide/v" + VERS[i] + "/full/";
+      try { await loadScript(b + "pyodide.js"); base = b; break; } catch (e) {}
+    }
+    if (!base) {
+      status("");
+      log("error", "Couldn't load the Python runtime from cdn.jsdelivr.net. Check your internet connection and that the site isn't blocked.", pending && pending.id);
+      send({ kind: "done", id: pending && pending.id, visual: false });
+      pending = null; booting = false;
+      return;
+    }
+    try {
+      py = await loadPyodide({ indexURL: base });
+      py.setStdout({ batched: function(s){ log("log", s); } });
+      py.setStderr({ batched: function(s){ log("warn", s); } });
+      await py.runPythonAsync(PRELUDE);
+    } catch (e) {
+      status(""); log("error", "Python runtime failed to start: " + (e && e.message || e), pending && pending.id);
+      send({ kind: "done", id: pending && pending.id, visual: false });
+      pending = null; booting = false; py = null;
+      return;
+    }
+    booting = false;
+    status("");
+    if (pending) { var m = pending; pending = null; run(m); }
+  }
+  async function run(m){
+    if (!py) { pending = m; if (!booting) boot(); return; }
+    cur = m.id;
+    var T = m.theme;
+    document.documentElement.style.background = T.bg; document.body.style.background = T.bg; document.body.style.color = T.fg;
+    cancelAll();
+    document.getElementById("app").innerHTML = "";
+    var old = document.getElementById("canvas"), c = old.cloneNode(false);
+    old.parentNode.replaceChild(c, old);
+    c.width = c.clientWidth || innerWidth || 640; c.height = c.clientHeight || innerHeight || 400;
+    used = false;
+    var gc = c.getContext.bind(c);
+    c.getContext = function(){ used = true; return gc.apply(null, arguments); };
+    window.THEME = T;
+    try {
+      await py.loadPackagesFromImports(m.code, {
+        messageCallback: function(t){ status(t); },
+        errorCallback: function(t){ log("warn", t); }
+      });
+      status("");
+      py.globals.set("_theme_json", JSON.stringify(T));
+      py.runPython("THEME_OBJ = _Theme(**json.loads(_theme_json))");
+      if (/^\s*(?:import|from)\s+matplotlib/m.test(m.code)) py.runPython("_setup_matplotlib(json.loads(_theme_json))");
+      var ns = py.runPython("{'__name__': '__main__'}");
+      ns.set("THEME", py.globals.get("THEME_OBJ"));
+      ns.set("show_html", py.globals.get("show_html"));
+      ns.set("canvas", c);
+      await py.runPythonAsync(m.code, { globals: ns });
+    } catch (e) {
+      var msg = String((e && e.message) || e), i = msg.indexOf('  File "<exec>"');
+      if (i > -1) msg = "Traceback (most recent call last):\n" + msg.slice(i);
+      log("error", msg.replace(/\s+$/, ""));
+    } finally {
+      status("");
+      send({ kind: "done", id: m.id, visual: used || document.getElementById("app").childNodes.length > 0 });
+    }
+  }
+  addEventListener("message", function(e){
+    var m = e.data;
+    if (e.source !== parent || !m) return;
+    if (m.devportalRun) run(m); else if (m.devportalHalt) cancelAll();
+  });
+  send({ kind: "boot" });
+  boot();
+})();
+`;
+
   const $ = id => document.getElementById(id);
   const code = $("code"), gutter = $("gutter"), consoleEl = $("console"), wrap = $("frameWrap"),
         badge = $("errBadge"), sel = $("examples"), themeSel = $("theme"), fname = $("fname"), toastEl = $("toast");
-  let errCount = 0, autoTimer = null, runId = 0, frame = null, toastTimer = null, running = false;
+  let errCount = 0, autoTimer = null, runId = 0, jsFrame = null, pyFrame = null, pyBooted = false, pyPending = null,
+      toastTimer = null, running = false, lang = "javascript";
 
-  Object.keys(GROUPS).forEach(g => {
-    const og = document.createElement("optgroup"); og.label = g;
-    GROUPS[g].forEach(k => { const o = document.createElement("option"); o.textContent = k; og.appendChild(o); });
-    sel.appendChild(og);
-  });
+  const LANGS = {
+    javascript: { examples: EXAMPLES, groups: GROUPS, ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
+    python:     { examples: PY_EXAMPLES, groups: PY_GROUPS, ext: ".py", mime: "text/x-python", indent: "    ", def: "Hello, Python", key: "py" }
+  };
+  const L = () => LANGS[lang];
 
   const store = {
     get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
     set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
   };
-  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + ".js";
+  const lkey = n => "devportal." + L().key + "." + n;
+  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + L().ext;
+  function buildExamples(){
+    sel.innerHTML = "";
+    Object.keys(L().groups).forEach(g => {
+      const og = document.createElement("optgroup"); og.label = g;
+      L().groups[g].forEach(k => { const o = document.createElement("option"); o.textContent = k; og.appendChild(o); });
+      sel.appendChild(og);
+    });
+  }
   function toast(msg){
     toastEl.textContent = msg; toastEl.classList.add("show");
     clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
@@ -689,25 +1096,33 @@ load();
   }
   function setCode(text, name){
     code.value = text; updateGutter();
-    store.set("devportal.js.code", text);
-    if (name) { fname.value = name; store.set("devportal.js.fname", name); }
+    store.set(lkey("code"), text);
+    if (name) { fname.value = name; store.set(lkey("fname"), name); }
+  }
+  function insertText(t){
+    code.focus();
+    if (!document.execCommand("insertText", false, t)) {      // keeps undo history where supported
+      code.setRangeText(t, code.selectionStart, code.selectionEnd, "end");
+      code.dispatchEvent(new Event("input"));
+    }
   }
   code.addEventListener("scroll", () => { gutter.scrollTop = code.scrollTop; });
   code.addEventListener("input", () => {
     updateGutter();
-    store.set("devportal.js.code", code.value);
+    store.set(lkey("code"), code.value);
     if ($("auto").checked) { clearTimeout(autoTimer); autoTimer = setTimeout(run, 700); }
   });
-  fname.addEventListener("change", () => store.set("devportal.js.fname", fname.value));
+  fname.addEventListener("change", () => store.set(lkey("fname"), fname.value));
   code.addEventListener("keydown", e => {
     if (e.key === "Tab") {
-      e.preventDefault();
-      const s = code.selectionStart, en = code.selectionEnd;
-      code.value = code.value.slice(0, s) + "  " + code.value.slice(en);
-      code.selectionStart = code.selectionEnd = s + 2;
-      code.dispatchEvent(new Event("input"));
+      e.preventDefault(); insertText(L().indent);
     } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
       e.preventDefault(); run();
+    } else if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && code.selectionStart === code.selectionEnd) {
+      const before = code.value.slice(0, code.selectionStart), line = before.slice(before.lastIndexOf("\n") + 1);
+      let ind = (line.match(/^[ \t]*/) || [""])[0];
+      if (lang === "python" ? /:\s*(#.*)?$/.test(line) : /[{(\[]\s*$/.test(line)) ind += L().indent;
+      if (ind) { e.preventDefault(); insertText("\n" + ind); }
     }
   });
 
@@ -716,7 +1131,12 @@ load();
     if (!file) return;
     if (file.size > 2 * 1024 * 1024) { toast("That file is too large (limit 2 MB)."); return; }
     const r = new FileReader();
-    r.onload = () => { setCode(String(r.result), file.name); toast("Imported " + file.name); run(); };
+    r.onload = () => {
+      const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
+      const target = ext === ".py" ? "python" : [".js", ".mjs", ".cjs"].includes(ext) ? "javascript" : lang;
+      if (target !== lang) setLang(target, true);
+      setCode(String(r.result), file.name); toast("Imported " + file.name); run();
+    };
     r.onerror = () => toast("Couldn't read that file.");
     r.readAsText(file);
   }
@@ -729,10 +1149,10 @@ load();
   ed.addEventListener("drop", e => importFile(e.dataTransfer.files[0]));
 
   $("save").onclick = () => {
-    let name = (fname.value.trim() || "script.js").replace(/[\\/:*?"<>|]+/g, "-");
-    if (!/\.[A-Za-z0-9]+$/.test(name)) name += ".js";
+    let name = (fname.value.trim() || "script").replace(/[\\/:*?"<>|]+/g, "-");
+    if (!/\.[A-Za-z0-9]+$/.test(name)) name += L().ext;
     fname.value = name;
-    const url = URL.createObjectURL(new Blob([code.value], { type: "text/javascript" }));
+    const url = URL.createObjectURL(new Blob([code.value], { type: L().mime }));
     const a = document.createElement("a");
     a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
@@ -763,7 +1183,7 @@ load();
   function clearConsole(){ consoleEl.innerHTML = ""; errCount = 0; badge.style.display = "none"; }
   $("clear").onclick = clearConsole;
 
-  /* ───────── Runner (sandboxed iframe) ───────── */
+  /* ───────── Runner (sandboxed iframes) ───────── */
   function readTheme(){
     const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
     return { name: document.documentElement.dataset.theme, bg: g("--pbg"), fg: g("--text"), muted: g("--muted"),
@@ -819,32 +1239,108 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     const safe = userCode.replace(/<\/script/gi, "<\\/script");
     return head.replace("OFFSET", offset) + safe + "\n<\/script></body></html>";
   }
-  function stop(){ if (frame) { frame.remove(); frame = null; } runId++; running = false; }
-  function run(){
-    clearTimeout(autoTimer);
-    stop(); clearConsole(); showTab("preview");
-    const empty = $("empty"); if (empty) empty.style.display = "none";
-    frame = document.createElement("iframe");
-    frame.setAttribute("sandbox", "allow-scripts allow-popups");
-    frame.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture");
-    frame.setAttribute("allowfullscreen", "");
-    wrap.appendChild(frame);
-    void frame.offsetWidth;                       // force layout so the canvas gets a real size
-    frame.srcdoc = buildDoc(code.value, readTheme());
+  /* ----- Python: one persistent sandboxed iframe running Pyodide ----- */
+  const PYODIDE_VERSIONS = ["0.29.5", "0.27.7"];   // tried in order
+  function buildPyDoc(theme){
+    const js = PY_RUNTIME.replace("__VERS__", () => JSON.stringify(PYODIDE_VERSIONS))
+                         .replace("__PRELUDE__", () => JSON.stringify(PY_PRELUDE));
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+      'html,body{margin:0;height:100%;background:' + theme.bg + ';color:' + theme.fg + ';font-family:system-ui,sans-serif}' +
+      '#canvas{display:block;width:100%;height:100%}' +
+      '#app{position:absolute;inset:0;overflow:auto;padding:8px}#app:empty{display:none}' +
+      '#status{position:absolute;left:0;right:0;bottom:0;padding:8px 14px;font-size:12px;background:rgba(0,0,0,.55);color:#fff;pointer-events:none}' +
+      '</style></head><body><canvas id="canvas"></canvas><div id="app"></div><div id="status">Starting Python…</div>' +
+      '<script>' + js + '<\/script></body></html>';
+  }
+  function ensurePyFrame(){
+    if (pyFrame) return;
+    pyBooted = false;
+    pyFrame = document.createElement("iframe");
+    pyFrame.setAttribute("sandbox", "allow-scripts allow-popups");
+    wrap.appendChild(pyFrame);
+    void pyFrame.offsetWidth;
+    pyFrame.srcdoc = buildPyDoc(readTheme());
+  }
+  function runPython(){
+    if (jsFrame) { jsFrame.remove(); jsFrame = null; }
+    ensurePyFrame();
+    pyFrame.style.display = "";
+    const msg = { devportalRun: true, id: ++runId, code: code.value, theme: readTheme() };
+    if (pyBooted) pyFrame.contentWindow.postMessage(msg, "*"); else pyPending = msg;
     running = true;
     addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
   }
+  function stopPython(){ if (pyFrame) { pyFrame.remove(); pyFrame = null; } pyBooted = false; pyPending = null; runId++; running = false; }
+
+  /* ----- JavaScript ----- */
+  function stopJs(){ if (jsFrame) { jsFrame.remove(); jsFrame = null; } runId++; running = false; }
+  function runJs(){
+    stopJs();
+    if (pyFrame) pyFrame.style.display = "none";
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "allow-scripts allow-popups");
+    jsFrame.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture");
+    jsFrame.setAttribute("allowfullscreen", "");
+    wrap.appendChild(jsFrame);
+    void jsFrame.offsetWidth;                      // force layout so the canvas gets a real size
+    jsFrame.srcdoc = buildDoc(code.value, readTheme());
+    running = true;
+    addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
+  }
+
+  function run(){
+    clearTimeout(autoTimer);
+    clearConsole(); showTab("preview");
+    const empty = $("empty"); if (empty) empty.style.display = "none";
+    if (lang === "python") runPython(); else runJs();
+  }
   window.addEventListener("message", e => {
     const d = e.data;
-    if (!d || !d.devportal || d.id !== runId) return;
+    if (!d || !d.devportal) return;
+    if (d.kind === "boot") {
+      if (pyFrame && e.source === pyFrame.contentWindow) {
+        pyBooted = true;
+        if (pyPending) { pyFrame.contentWindow.postMessage(pyPending, "*"); pyPending = null; }
+      }
+      return;
+    }
+    if (d.kind === "status") { if (lang === "python") addLine("sys", d.text); return; }
+    if (d.kind === "done") { if (d.id === runId && !d.visual && !errCount) showTab("console"); return; }
+    if (d.id !== runId) return;
     addLine(d.level, d.text);
     if (d.level === "error") showTab("console");
   });
 
+  /* ----- Language switching ----- */
+  function park(){        // stop whatever the current language is running before leaving it
+    if (lang === "javascript") stopJs();
+    else if (pyFrame) {
+      try { pyFrame.contentWindow.postMessage({ devportalHalt: true }, "*"); } catch(e){}
+      pyFrame.style.display = "none"; pyPending = null; runId++; running = false;
+    }
+  }
+  function loadSaved(){
+    const savedCode = store.get(lkey("code"));
+    sel.value = L().def;
+    setCode(savedCode || L().examples[L().def], savedCode ? (store.get(lkey("fname")) || "script" + L().ext) : slug(L().def));
+  }
+  function setLang(next, keepEditor){
+    if (next === lang) return;
+    park();
+    lang = next;
+    store.set("devportal.lang", lang);
+    document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+    buildExamples();
+    if (!keepEditor) loadSaved();
+  }
+  document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
+    if (b.dataset.lang !== lang) { setLang(b.dataset.lang); run(); }
+  });
+
   $("run").onclick = run;
-  $("stop").onclick = () => { stop(); addLine("sys", "■ stopped"); };
-  sel.onchange = () => { setCode(EXAMPLES[sel.value], slug(sel.value)); run(); };
-  $("reset").onclick = () => { setCode(EXAMPLES[sel.value], slug(sel.value)); toast("Reset to “" + sel.value + "”"); };
+  $("stop").onclick = () => { if (lang === "python") stopPython(); else stopJs(); addLine("sys", "■ stopped"); };
+  sel.onchange = () => { setCode(L().examples[sel.value], slug(sel.value)); run(); };
+  $("reset").onclick = () => { setCode(L().examples[sel.value], slug(sel.value)); toast("Reset to “" + sel.value + "”"); };
 
   /* ───────── Themes + animated backgrounds ───────── */
   const fxc = $("bg"), fx = fxc.getContext("2d");
@@ -941,9 +1437,10 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   /* ───────── Init ───────── */
   const savedTheme = store.get("devportal.js.theme");
   applyTheme(savedTheme && [...themeSel.options].some(o => o.value === savedTheme) ? savedTheme : "black", false);
-  const saved = store.get("devportal.js.code");
-  sel.value = "Canvas: bouncing balls";
-  setCode(saved || EXAMPLES["Canvas: bouncing balls"], saved ? (store.get("devportal.js.fname") || "script.js") : slug("Canvas: bouncing balls"));
+  lang = store.get("devportal.lang") === "python" ? "python" : "javascript";
+  document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  buildExamples();
+  loadSaved();
   run();
 })();
 </script>
