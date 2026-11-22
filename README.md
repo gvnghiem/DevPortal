@@ -53,7 +53,7 @@ A mock IaC experience — **no real cloud calls, nothing is created anywhere**. 
 
 ## More languages
 
-Pick a language from the drop-down in the header (10 in total).
+Pick a language from the drop-down in the header (11 in total).
 
 | Language | How it runs | Isolation |
 |---|---|---|
@@ -66,6 +66,7 @@ Pick a language from the drop-down in the header (10 in total).
 | **C / C++** | Offline **simulator** ([JSCPP](https://github.com/felixhao28/JSCPP), a C/C++ interpreter) in a sandboxed iframe + Web Worker; Stop kills it. Subset only: no structs, classes, STL, references or `new`. Optional “Real compiler” engine = Judge0 (below). | sandboxed iframe + worker |
 | Rust | Compiled on the official Rust Playground. | **remote** |
 | **Java** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (public class must be `Main`). | **remote** |
+| **C#** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (Mono, so C# 7-era syntax: no records, no top-level statements; use a classic `static void Main`). | **remote** |
 
 **Privacy note:** Rust, Java and the optional real C/C++ compiler send your code to a public online sandbox
 (play.rust-lang.org / ce.judge0.com), need internet access, and are blocked inside the claude.ai artifact viewer.
