@@ -131,13 +131,15 @@
   #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--panel2);color:var(--text);border:1px solid var(--accent);padding:8px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:10;pointer-events:none;box-shadow:var(--glow);max-width:90vw}
   #toast.show{opacity:1;transform:translateX(-50%)}
   @media (max-width:1560px){.lbl{display:none}}
+  @media (max-width:1760px){.seg button{padding:6px 8px}header{gap:6px;padding:10px 10px}#examples{max-width:170px}#theme{max-width:120px}label.chk{font-size:12px}}
+  @media (max-width:1500px){label.chk{display:none}}
 </style>
 </head>
 <body>
 <canvas id="bg"></canvas>
 <header>
   <div class="brand"><img class="logo" alt="DevPortal by Gau" src="data:image/jpeg;base64,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"><span class="sub">/ Playground</span></div>
-  <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="javascript" class="on">JavaScript</button><button type="button" data-lang="python">Python</button><button type="button" data-lang="terraform">Terraform</button></div>
+  <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="javascript" class="on">JavaScript</button><button type="button" data-lang="typescript">TypeScript</button><button type="button" data-lang="python">Python</button><button type="button" data-lang="rust">Rust</button><button type="button" data-lang="terraform">Terraform</button></div>
   <div class="spacer"></div>
   <div class="group">
     <select id="examples" aria-label="Load an example"></select>
@@ -152,14 +154,15 @@
   </div>
   <span class="sep"></span>
   <div class="group">
-    <button id="import" title="Import a .js, .py or .tf file into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="import" title="Import a .js, .ts, .py, .rs or .tf file into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
     <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.py,.tf,.hcl,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.ts,.tsx,.py,.rs,.tf,.hcl,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
     <label class="chk"><input type="checkbox" id="auto"> Auto-run</label>
+    <button id="blank" title="Clear the editor, console and preview for a blank slate">Clear</button>
     <button id="reset" title="Reset to the selected example">Reset</button>
     <button id="stop">Stop</button>
     <button id="run" class="primary">▶ Run</button>
@@ -195,6 +198,7 @@
 
 <script src="terraform-sim.js"></script>
 <script src="terraform-ui.js"></script>
+<script src="langs-extra.js"></script>
 <script>
 (function(){
   /* ───────── Examples ─────────
@@ -1090,10 +1094,14 @@ builtins.input = _no_input
   let errCount = 0, autoTimer = null, runId = 0, jsFrame = null, pyFrame = null, pyBooted = false, pyPending = null,
       toastTimer = null, running = false, lang = "javascript";
 
+  const NEW = "✦ New (blank)";
+  function withNew(ex, gr){ return { examples: Object.assign({ [NEW]: "" }, ex), groups: Object.assign({ New: [NEW] }, gr) }; }
   const LANGS = {
-    javascript: { examples: EXAMPLES, groups: GROUPS, ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
-    python:     { examples: PY_EXAMPLES, groups: PY_GROUPS, ext: ".py", mime: "text/x-python", indent: "    ", def: "Hello, Python", key: "py" },
-    terraform:  { examples: window.TF_EXAMPLES, groups: window.TF_GROUPS, ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" }
+    javascript: { ...withNew(EXAMPLES, GROUPS), ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
+    typescript: { ...withNew(window.TS_EXAMPLES, window.TS_GROUPS), ext: ".ts", mime: "text/typescript", indent: "  ", def: "Hello, TypeScript", key: "ts" },
+    python:     { ...withNew(PY_EXAMPLES, PY_GROUPS), ext: ".py", mime: "text/x-python", indent: "    ", def: "Hello, Python", key: "py" },
+    rust:       { ...withNew(window.RUST_EXAMPLES, window.RUST_GROUPS), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, Rust", key: "rs" },
+    terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" }
   };
   const L = () => LANGS[lang];
 
@@ -1102,7 +1110,7 @@ builtins.input = _no_input
     set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
   };
   const lkey = n => "devportal." + L().key + "." + n;
-  const slug = s => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + L().ext;
+  const slug = s => s === NEW ? "untitled" + L().ext : s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + L().ext;
   function buildExamples(){
     sel.innerHTML = "";
     Object.keys(L().groups).forEach(g => {
@@ -1163,7 +1171,7 @@ builtins.input = _no_input
     const r = new FileReader();
     r.onload = () => {
       const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
-      const target = ext === ".py" ? "python" : [".tf", ".hcl"].includes(ext) ? "terraform" : [".js", ".mjs", ".cjs"].includes(ext) ? "javascript" : lang;
+      const target = ext === ".py" ? "python" : ext === ".rs" ? "rust" : [".ts", ".tsx", ".mts"].includes(ext) ? "typescript" : [".tf", ".hcl"].includes(ext) ? "terraform" : [".js", ".mjs", ".cjs"].includes(ext) ? "javascript" : lang;
       if (target !== lang) setLang(target, true);
       setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
     };
@@ -1207,6 +1215,13 @@ builtins.input = _no_input
     python: { tab: "Python Docs", title: "Python docs", home: "https://docs.python.org/3/", links: [
       ["Tutorial", "https://docs.python.org/3/tutorial/index.html"], ["Library", "https://docs.python.org/3/library/index.html"],
       ["NumPy", "https://numpy.org/doc/stable/"], ["pandas", "https://pandas.pydata.org/docs/"], ["matplotlib", "https://matplotlib.org/stable/index.html"], ["Pyodide", "https://pyodide.org/en/stable/"]] },
+    typescript: { tab: "TS Docs", title: "TypeScript docs", home: "https://www.typescriptlang.org/docs/", links: [
+      ["Handbook", "https://www.typescriptlang.org/docs/handbook/intro.html"], ["TS for JS devs", "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html"],
+      ["Everyday types", "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"], ["Generics", "https://www.typescriptlang.org/docs/handbook/2/generics.html"],
+      ["Utility types", "https://www.typescriptlang.org/docs/handbook/utility-types.html"], ["MDN JS", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"]] },
+    rust: { tab: "Rust Docs", title: "Rust docs", home: "https://doc.rust-lang.org/book/", links: [
+      ["The Book", "https://doc.rust-lang.org/book/"], ["Rust by Example", "https://doc.rust-lang.org/rust-by-example/"],
+      ["std", "https://doc.rust-lang.org/std/"], ["Cargo", "https://doc.rust-lang.org/cargo/"], ["Error index", "https://doc.rust-lang.org/error_codes/"], ["Playground", "https://play.rust-lang.org/"]] },
     terraform: { tab: "Registry", title: "Terraform Registry", home: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs", links: [
       ["AWS", "https://registry.terraform.io/providers/hashicorp/aws/latest/docs"], ["Azure", "https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs"],
       ["GCP", "https://registry.terraform.io/providers/hashicorp/google/latest/docs"], ["Providers", "https://registry.terraform.io/browse/providers"],
@@ -1340,7 +1355,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
 
   /* ----- JavaScript ----- */
   function stopJs(){ if (jsFrame) { jsFrame.remove(); jsFrame = null; } runId++; running = false; }
-  function runJs(){
+  function runJs(src){
     stopJs();
     if (pyFrame) pyFrame.style.display = "none";
     jsFrame = document.createElement("iframe");
@@ -1349,15 +1364,102 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     jsFrame.setAttribute("allowfullscreen", "");
     wrap.appendChild(jsFrame);
     void jsFrame.offsetWidth;                      // force layout so the canvas gets a real size
-    jsFrame.srcdoc = buildDoc(code.value, readTheme());
+    jsFrame.srcdoc = buildDoc(typeof src === "string" ? src : code.value, readTheme());
     running = true;
     addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
   }
 
+
+  /* ----- TypeScript (compiled in the browser with the TypeScript compiler) ----- */
+  let tsLoading = null, tsToken = 0;
+  function loadScriptHost(src){ return new Promise((res, rej) => { const el = document.createElement("script"); el.src = src; el.onload = res; el.onerror = () => rej(new Error("load failed")); document.head.appendChild(el); }); }
+  function loadTs(){
+    if (window.ts && window.ts.transpileModule) return Promise.resolve(window.ts);
+    if (tsLoading) return tsLoading;
+    const urls = ["https://cdn.jsdelivr.net/npm/typescript@5.6.3/lib/typescript.js", "https://cdnjs.cloudflare.com/ajax/libs/typescript/5.6.3/typescript.min.js", "https://unpkg.com/typescript@5.6.3/lib/typescript.js"];
+    tsLoading = (async () => {
+      for (const u of urls) { try { await loadScriptHost(u); if (window.ts && window.ts.transpileModule) return window.ts; } catch (e) {} }
+      tsLoading = null; throw new Error("Couldn't load the TypeScript compiler (needs internet access).");
+    })();
+    return tsLoading;
+  }
+  async function runTs(){
+    const my = ++tsToken;
+    stopJs(); if (pyFrame) pyFrame.style.display = "none";
+    addLine("sys", "▶ compiling TypeScript…");
+    let ts;
+    try { ts = await loadTs(); } catch (e) { addLine("error", e.message); showTab("console"); return; }
+    if (my !== tsToken) return;
+    const out = ts.transpileModule(code.value, { reportDiagnostics: true, fileName: "main.ts", compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.None } });
+    const diags = out.diagnostics || [];
+    if (diags.length) {
+      diags.forEach(d => {
+        const pos = d.file && d.start != null ? d.file.getLineAndCharacterOfPosition(d.start) : null;
+        addLine("error", "TS" + d.code + (pos ? "  (line " + (pos.line + 1) + ")" : "") + ": " + ts.flattenDiagnosticMessageText(d.messageText, "\n"));
+      });
+      showTab("console"); return;
+    }
+    runJs(out.outputText);
+  }
+
+  /* ----- Rust (compiled & run on the official Rust Playground) ----- */
+  let rustCtl = null;
+  function rustAbort(){ if (rustCtl) { rustCtl.abort(); rustCtl = null; } }
+  function rustFrame(html){
+    stopJs();
+    const t = readTheme();
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "");
+    wrap.appendChild(jsFrame);
+    jsFrame.srcdoc = '<!DOCTYPE html><meta charset="utf-8"><body style="margin:0;background:' + t.bg + ';color:' + t.fg + '"><pre style="margin:0;padding:14px 16px;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap">' + html + '</pre>';
+  }
+  const esc = x => String(x).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  async function runRust(){
+    rustAbort(); if (pyFrame) pyFrame.style.display = "none";
+    const ctl = rustCtl = new AbortController(), timer = setTimeout(() => ctl.abort(), 60000);
+    const t = readTheme();
+    rustFrame('<span style="color:' + t.muted + '">Compiling on play.rust-lang.org…</span>');
+    running = true; const my = ++runId;
+    addLine("sys", "▶ compiling on play.rust-lang.org (your code is sent there)…");
+    try {
+      const r = await fetch("https://play.rust-lang.org/execute", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ channel: "stable", mode: "debug", edition: "2021", crateType: "bin", tests: false, code: code.value, backtrace: false }) });
+      const j = await r.json();
+      if (my !== runId) return;
+      const lines = String(j.stderr || "").split("\n");
+      const info = lines.filter(l => /^\s+(Compiling|Finished|Running)\b/.test(l)), rest = lines.filter(l => !/^\s+(Compiling|Finished|Running)\b/.test(l)).join("\n").trim();
+      info.forEach(l => addLine("sys", l.trim()));
+      String(j.stdout || "").replace(/\n$/, "").split("\n").forEach(l => { if (j.stdout) addLine("log", l); });
+      if (rest) addLine(j.success ? "warn" : "error", rest);
+      let html = esc(j.stdout || "");
+      if (!j.success) html += (html ? "\n" : "") + '<span style="color:' + t.err + '">' + esc(rest || j.exitDetail || "Compilation failed") + "</span>";
+      else if (rest) html += '\n\n<span style="color:' + t.warn + '">' + esc(rest) + "</span>";
+      if (!j.stdout && j.success) html = '<span style="color:' + t.muted + '">(program finished with no output)</span>' + (rest ? html : "");
+      rustFrame(html);
+      if (!j.success) showTab("console");
+    } catch (e) {
+      if (my !== runId) return;
+      const msg = e.name === "AbortError" ? "Timed out after 60s." : "Couldn't reach play.rust-lang.org — Rust needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy).";
+      addLine("error", msg); rustFrame('<span style="color:' + t.err + '">' + esc(msg) + "</span>"); showTab("console");
+    } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
+  }
+
   const tfApi = { getCode: () => code.value, addLine, showTab: n => showTab(n), toast: m => toast(m) };
   function afterLoad(){        // after an example / import: Terraform only redraws, it never auto-applies
+    if (sel.value === NEW) { blank(); return; }
     if (lang === "terraform") { window.TFUI.resetState(); window.TFUI.activate(); } else run();
   }
+  function blank(){            // fresh slate: empty editor, cleared console + preview
+    clearTimeout(autoTimer); rustAbort(); tsToken++;
+    if (lang === "terraform") { window.TFUI.resetState(); window.TFUI.activate(); }
+    else { park(); if (pyFrame) pyFrame.style.display = "none"; }
+    sel.value = NEW; setCode("", "untitled" + L().ext);
+    clearConsole(); showTab("preview");
+    const e = $("empty"); if (e) { e.style.display = ""; e.textContent = "Blank slate — write some " + L().ext.slice(1) + " and press Run"; }
+    if (lang === "terraform") window.TFUI.activate();
+    code.focus();
+  }
+  $("blank").onclick = blank;
   function run(){
     clearTimeout(autoTimer);
     const empty = $("empty"); if (empty) empty.style.display = "none";
@@ -1368,7 +1470,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     }
     window.TFUI.deactivate();
     clearConsole(); showTab("preview");
-    if (lang === "python") runPython(); else runJs();
+    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "typescript") runTs(); else runJs();
   }
   window.addEventListener("message", e => {
     const d = e.data;
@@ -1390,16 +1492,17 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   /* ----- Language switching ----- */
   function park(){        // stop whatever the current language is running before leaving it
     if (lang === "terraform") window.TFUI.deactivate();
-    else if (lang === "javascript") stopJs();
-    else if (pyFrame) {
-      try { pyFrame.contentWindow.postMessage({ devportalHalt: true }, "*"); } catch(e){}
-      pyFrame.style.display = "none"; pyPending = null; runId++; running = false;
-    }
+    else if (lang === "python") {
+      if (pyFrame) {
+        try { pyFrame.contentWindow.postMessage({ devportalHalt: true }, "*"); } catch(e){}
+        pyFrame.style.display = "none"; pyPending = null; runId++; running = false;
+      }
+    } else { rustAbort(); tsToken++; stopJs(); }
   }
   function loadSaved(){
-    const savedCode = store.get(lkey("code"));
-    sel.value = L().def;
-    setCode(savedCode || L().examples[L().def], savedCode ? (store.get(lkey("fname")) || "script" + L().ext) : slug(L().def));
+    const savedCode = store.get(lkey("code")), has = savedCode !== null;
+    sel.value = has && savedCode === "" ? NEW : L().def;
+    setCode(has ? savedCode : L().examples[L().def], has ? (store.get(lkey("fname")) || "script" + L().ext) : slug(L().def));
   }
   function setLang(next, keepEditor){
     if (next === lang) return;
@@ -1416,9 +1519,9 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   });
 
   $("run").onclick = run;
-  $("stop").onclick = () => { if (lang === "terraform") { window.TFUI.stop(); return; } if (lang === "python") stopPython(); else stopJs(); addLine("sys", "■ stopped"); };
-  sel.onchange = () => { setCode(L().examples[sel.value], slug(sel.value)); afterLoad(); };
-  $("reset").onclick = () => { setCode(L().examples[sel.value], slug(sel.value)); if (lang === "terraform") afterLoad(); toast("Reset to “" + sel.value + "”"); };
+  $("stop").onclick = () => { if (lang === "terraform") { window.TFUI.stop(); return; } if (lang === "python") stopPython(); else { rustAbort(); tsToken++; stopJs(); } addLine("sys", "■ stopped"); };
+  sel.onchange = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); afterLoad(); };
+  $("reset").onclick = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); if (lang === "terraform") afterLoad(); toast("Reset to “" + sel.value + "”"); };
 
   /* ───────── Themes + animated backgrounds ───────── */
   const fxc = $("bg"), fx = fxc.getContext("2d");
@@ -1516,7 +1619,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   const savedTheme = store.get("devportal.js.theme");
   applyTheme(savedTheme && [...themeSel.options].some(o => o.value === savedTheme) ? savedTheme : "black", false);
   window.TFUI.mount(tfApi);
-  { const sl = store.get("devportal.lang"); lang = sl === "python" || sl === "terraform" ? sl : "javascript"; }
+  { const sl = store.get("devportal.lang"); lang = ["python", "terraform", "typescript", "rust"].includes(sl) ? sl : "javascript"; }
   document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
   buildExamples();
   loadSaved();

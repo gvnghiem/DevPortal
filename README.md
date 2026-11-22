@@ -2,7 +2,7 @@
 
 # DevPortal
 
-A dev portal for writing, running, and visualizing code. Playgrounds for JavaScript, Python and Terraform, switched from the header.
+A dev portal for writing, running, and visualizing code. Playgrounds for JavaScript, TypeScript, Python, Rust and Terraform, switched from the header.
 
 ## Playground
 
@@ -34,6 +34,12 @@ Python runs in your browser using [Pyodide](https://pyodide.org) (CPython compil
 - matplotlib figures render into the preview and pick up the theme colours
 - Examples: hello, algorithms & timing, errors, canvas particles, matplotlib trend / scatter / Mandelbrot, pandas summary
 - `input()` isn't available; Stop discards the runtime (the next run reloads it from cache)
+
+## TypeScript & Rust
+- **TypeScript** is compiled in the browser with the TypeScript compiler (loaded from a CDN on first use), then run in the same sandboxed preview as JavaScript, so canvas/`THEME`/DOM examples work. It transpiles only: syntax errors are reported with line numbers, but types aren't checked.
+- **Rust** is compiled and run on the official [Rust Playground](https://play.rust-lang.org) — your code is sent there, so it needs internet access (it won't work inside the claude.ai artifact viewer). stdout shows in the preview and Console; compiler errors and warnings show in the Console.
+- Every language has a **✦ New (blank)** example and a **Clear** button (before Reset) that empties the editor, console and preview.
+- Each language also has its own reference tab: MDN, TS Docs, Python Docs, Rust Docs, Terraform Registry.
 
 ## Terraform (simulator)
 A mock IaC experience — **no real cloud calls, nothing is created anywhere**. Write real HCL on the left; the preview is a live infrastructure diagram.
