@@ -144,6 +144,7 @@
     <optgroup label="Web"><option value="javascript">JavaScript (+ React)</option><option value="typescript">TypeScript</option></optgroup>
     <optgroup label="Scripting"><option value="python">Python</option><option value="shell">Shell (Bash)</option></optgroup>
     <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option></optgroup>
+    <optgroup label="Databases"><option value="sql">SQL</option></optgroup>
     <optgroup label="Infrastructure"><option value="terraform">Terraform</option><option value="ansible">Ansible</option></optgroup>
   </select><select id="engine" aria-label="C/C++ engine" title="C/C++ engine: the offline simulator is isolated in your browser; the real compiler sends your code to a public online sandbox (Judge0)" style="display:none"><option value="sim">Simulator (offline)</option><option value="real">Real compiler (online)</option></select></div>
   <div class="spacer"></div>
@@ -163,7 +164,7 @@
     <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
     <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.sql,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
@@ -210,6 +211,7 @@
 <script src="shell-ui.js"></script>
 <script src="ansible-sim.js"></script>
 <script src="ansible-ui.js"></script>
+<script src="sql-ui.js"></script>
 <script>
 (function(){
   /* ───────── Examples ─────────
@@ -1119,10 +1121,11 @@ builtins.input = _no_input
     cpp:        { ...withNew(gx("cpp"), gg("cpp")), ext: ".cpp", mime: "text/x-c++src", indent: "    ", def: "Hello, C++", key: "cpp" },
     java:       { ...withNew(gx("java"), gg("java")), ext: ".java", mime: "text/x-java", indent: "    ", def: "Hello, Java", key: "java" },
     terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" },
+    sql:        { ...withNew(gx("sql"), gg("sql")), ext: ".sql", mime: "application/sql", indent: "  ", def: "SQLite: hello, temp table", key: "sql" },
     ansible:    { ...withNew(gx("ansible"), gg("ansible")), ext: ".yml", mime: "text/yaml", indent: "  ", def: "Web server (nginx)", key: "an" }
   };
   /* simulator languages: a view inside the preview pane instead of an iframe (Terraform, Ansible, Shell) */
-  const SIMS = { terraform: window.TFUI, ansible: window.ANUI, shell: window.SHUI };
+  const SIMS = { terraform: window.TFUI, ansible: window.ANUI, shell: window.SHUI, sql: window.SQLUI };
   const sim = () => SIMS[lang];
   const L = () => LANGS[lang];
 
@@ -1193,7 +1196,7 @@ builtins.input = _no_input
     r.onload = () => {
       const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
       const MAP = { ".py": "python", ".rs": "rust", ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".tf": "terraform", ".hcl": "terraform", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascript",
-        ".java": "java", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sh": "shell", ".bash": "shell" };
+        ".java": "java", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sql": "sql", ".sh": "shell", ".bash": "shell" };
       const target = MAP[ext] || lang;
       if (target !== lang) setLang(target, true);
       setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
@@ -1251,6 +1254,9 @@ builtins.input = _no_input
       ["C reference", "https://en.cppreference.com/w/c"], ["stdio.h", "https://en.cppreference.com/w/c/io"], ["string.h", "https://en.cppreference.com/w/c/string/byte"], ["stdlib.h", "https://en.cppreference.com/w/c/memory"], ["GNU C manual", "https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html"]] },
     cpp: { tab: "C++ Docs", title: "C++ reference", home: "https://en.cppreference.com/w/cpp", links: [
       ["C++ reference", "https://en.cppreference.com/w/cpp"], ["Containers", "https://en.cppreference.com/w/cpp/container"], ["Algorithms", "https://en.cppreference.com/w/cpp/algorithm"], ["Strings", "https://en.cppreference.com/w/cpp/string"], ["learncpp.com", "https://www.learncpp.com/"]] },
+    sql: { tab: "SQL Docs", title: "SQL docs", home: "https://www.sqlite.org/lang.html", links: [
+      ["SQLite SQL", "https://www.sqlite.org/lang.html"], ["SQLite functions", "https://www.sqlite.org/lang_corefunc.html"], ["Window functions", "https://www.sqlite.org/windowfunctions.html"],
+      ["PostgreSQL SQL", "https://www.postgresql.org/docs/current/sql.html"], ["Mode SQL tutorial", "https://mode.com/sql-tutorial/"]] },
     ansible: { tab: "Ansible Docs", title: "Ansible docs", home: "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html", links: [
       ["Built-in modules", "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html"], ["Playbooks guide", "https://docs.ansible.com/ansible/latest/playbook_guide/index.html"], ["Inventory", "https://docs.ansible.com/ansible/latest/inventory_guide/index.html"],
       ["Conditionals", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html"], ["Loops", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html"], ["Filters", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html"]] },
@@ -1575,7 +1581,9 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     if (sel.value === NEW) { blank(); return; }
     if (sim()) {
       if (lang === "ansible" && sim().setInventory) sim().setInventory(((GEN.ansible || {}).inventories || {})[sel.value] || window.AnsibleSim.DEFAULT_INVENTORY);
-      sim().resetState(); sim().activate();
+      sim().resetState();
+      if (lang === "sql") sim().onExample(code.value);
+      sim().activate();
     } else run();
   }
   function blank(){            // fresh slate: empty editor, cleared console + preview
