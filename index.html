@@ -143,7 +143,7 @@
   <div class="group"><select id="langSel" aria-label="Language" title="Language">
     <optgroup label="Web"><option value="javascript">JavaScript (+ React)</option><option value="typescript">TypeScript</option></optgroup>
     <optgroup label="Scripting"><option value="python">Python</option><option value="shell">Shell (Bash)</option></optgroup>
-    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option></optgroup>
+    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option><option value="csharp">C#</option></optgroup>
     <optgroup label="Infrastructure"><option value="terraform">Terraform</option><option value="ansible">Ansible</option></optgroup>
   </select><select id="engine" aria-label="C/C++ engine" title="C/C++ engine: the offline simulator is isolated in your browser; the real compiler sends your code to a public online sandbox (Judge0)" style="display:none"><option value="sim">Simulator (offline)</option><option value="real">Real compiler (online)</option></select></div>
   <div class="spacer"></div>
@@ -160,10 +160,10 @@
   </div>
   <span class="sep"></span>
   <div class="group">
-    <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .cs .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
     <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.cs,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
@@ -1118,6 +1118,7 @@ builtins.input = _no_input
     c:          { ...withNew(gx("c"), gg("c")), ext: ".c", mime: "text/x-csrc", indent: "    ", def: "Hello, C", key: "c" },
     cpp:        { ...withNew(gx("cpp"), gg("cpp")), ext: ".cpp", mime: "text/x-c++src", indent: "    ", def: "Hello, C++", key: "cpp" },
     java:       { ...withNew(gx("java"), gg("java")), ext: ".java", mime: "text/x-java", indent: "    ", def: "Hello, Java", key: "java" },
+    csharp:     { ...withNew(gx("csharp"), gg("csharp")), ext: ".cs", mime: "text/x-csharp", indent: "    ", def: "Hello, C#", key: "cs" },
     terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" },
     ansible:    { ...withNew(gx("ansible"), gg("ansible")), ext: ".yml", mime: "text/yaml", indent: "  ", def: "Web server (nginx)", key: "an" }
   };
@@ -1193,7 +1194,7 @@ builtins.input = _no_input
     r.onload = () => {
       const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
       const MAP = { ".py": "python", ".rs": "rust", ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".tf": "terraform", ".hcl": "terraform", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascript",
-        ".java": "java", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sh": "shell", ".bash": "shell" };
+        ".java": "java", ".cs": "csharp", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sh": "shell", ".bash": "shell" };
       const target = MAP[ext] || lang;
       if (target !== lang) setLang(target, true);
       setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
@@ -1247,6 +1248,8 @@ builtins.input = _no_input
       ["std", "https://doc.rust-lang.org/std/"], ["Cargo", "https://doc.rust-lang.org/cargo/"], ["Error index", "https://doc.rust-lang.org/error_codes/"], ["Playground", "https://play.rust-lang.org/"]] },
     java: { tab: "Java Docs", title: "Java docs", home: "https://docs.oracle.com/en/java/javase/21/docs/api/", links: [
       ["API (Java 21)", "https://docs.oracle.com/en/java/javase/21/docs/api/"], ["Learn Java", "https://dev.java/learn/"], ["Tutorials", "https://docs.oracle.com/javase/tutorial/"], ["Language spec", "https://docs.oracle.com/javase/specs/jls/se21/html/index.html"]] },
+    csharp: { tab: "C# Docs", title: "C# docs", home: "https://learn.microsoft.com/en-us/dotnet/csharp/", links: [
+      ["C# guide", "https://learn.microsoft.com/en-us/dotnet/csharp/"], ["Tour of C#", "https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/"], ["LINQ", "https://learn.microsoft.com/en-us/dotnet/csharp/linq/"], ["Async / await", "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/"], [".NET API browser", "https://learn.microsoft.com/en-us/dotnet/api/"], ["Language spec", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/introduction"]] },
     c: { tab: "C Docs", title: "C reference", home: "https://en.cppreference.com/w/c", links: [
       ["C reference", "https://en.cppreference.com/w/c"], ["stdio.h", "https://en.cppreference.com/w/c/io"], ["string.h", "https://en.cppreference.com/w/c/string/byte"], ["stdlib.h", "https://en.cppreference.com/w/c/memory"], ["GNU C manual", "https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html"]] },
     cpp: { tab: "C++ Docs", title: "C++ reference", home: "https://en.cppreference.com/w/cpp", links: [
@@ -1542,7 +1545,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     rustAbort(); if (pyFrame) pyFrame.style.display = "none";
     const ctl = rustCtl = new AbortController(), timer = setTimeout(() => ctl.abort(), 45000);
     const t = readTheme();
-    const label = { 62: "Java (OpenJDK)", 50: "C (GCC)", 54: "C++ (GCC)" }[langId];
+    const label = { 51: "C# (Mono)", 62: "Java (OpenJDK)", 50: "C (GCC)", 54: "C++ (GCC)" }[langId];
     rustFrame('<span style="color:' + t.muted + '">Compiling ' + label + ' on ce.judge0.com…</span>');
     running = true; const my = ++runId;
     addLine("sys", "▶ compiling " + label + " on ce.judge0.com (your code is sent to that public sandbox)…" + (langId === 62 ? " The public class must be named Main." : ""));
@@ -1565,7 +1568,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       if (!ok) showTab("console");
     } catch (e) {
       if (my !== runId) return;
-      const m = e.name === "AbortError" ? "Timed out after 45s." : "Couldn't reach ce.judge0.com — " + label + " needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy). " + (langId === 62 ? "" : "Switch the engine back to the offline simulator to keep working without a network.");
+      const m = e.name === "AbortError" ? "Timed out after 45s." : "Couldn't reach ce.judge0.com — " + label + " needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy). " + (langId === 62 || langId === 51 ? "" : "Switch the engine back to the offline simulator to keep working without a network.");
       addLine("error", m); rustFrame('<span style="color:' + t.err + '">' + esc(m) + "</span>"); showTab("console");
     } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
   }
@@ -1600,7 +1603,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     Object.values(SIMS).forEach(x => x && x.deactivate());
     clearConsole(); showTab("preview");
     if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "typescript") runTs();
-    else if (lang === "java") runJudge(62, "Main.java"); else if (lang === "c" || lang === "cpp") { if ($("engine").value === "real") runJudge(lang === "c" ? 50 : 54, "main." + lang); else runCpp(); }
+    else if (lang === "java") runJudge(62, "Main.java"); else if (lang === "csharp") runJudge(51, "Program.cs"); else if (lang === "c" || lang === "cpp") { if ($("engine").value === "real") runJudge(lang === "c" ? 50 : 54, "main." + lang); else runCpp(); }
     else runJs();
   }
   window.addEventListener("message", e => {
