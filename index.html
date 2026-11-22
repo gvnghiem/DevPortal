@@ -164,7 +164,7 @@
     <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .cs .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
     <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.sql,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.cs,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.sql,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
@@ -1197,7 +1197,7 @@ builtins.input = _no_input
     r.onload = () => {
       const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
       const MAP = { ".py": "python", ".rs": "rust", ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".tf": "terraform", ".hcl": "terraform", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascript",
-        ".java": "java", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sql": "sql", ".sh": "shell", ".bash": "shell" };
+        ".java": "java", ".cs": "csharp", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sql": "sql", ".sh": "shell", ".bash": "shell" };
       const target = MAP[ext] || lang;
       if (target !== lang) setLang(target, true);
       setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
