@@ -51,6 +51,29 @@ A mock IaC experience — **no real cloud calls, nothing is created anywhere**. 
 - **Registry** tab (next to Console) embeds registry.terraform.io with quick links. If the site or the page hosting the portal blocks framing it stays blank — use *Open in new tab*.
 - Examples: VPC + EC2, three-tier web app, serverless API, S3 data lake, RDS, Azure, GCP, an apply-time failure and a config-error showcase.
 
+## More languages
+
+Pick a language from the drop-down in the header (10 in total).
+
+| Language | How it runs | Isolation |
+|---|---|---|
+| JavaScript (+ **React**) | Sandboxed iframe. Start a file with `// @react` (or call `ReactDOM.createRoot`) and JSX just works — React 18 + Babel load from a CDN, hooks are in scope. | sandboxed iframe |
+| TypeScript | Transpiled in the browser, then run like JS. Includes full pages: tech landing, social feed, stock market. | sandboxed iframe |
+| Python | Pyodide (WebAssembly). | sandboxed iframe |
+| **Shell (Bash)** | A simulated bash + coreutils (`ls grep sed awk sort uniq cut find xargs tree …`) over a **virtual filesystem** with an interactive prompt. | pure JS, no real shell |
+| **Ansible** | Playbook simulator: YAML + Jinja subset, INI inventory, simulated hosts that keep state between runs (idempotency!), `--check`, handlers, loops, `when`, `block/rescue`, tags, `-e`. | pure JS, no SSH |
+| Terraform | Plan/apply simulator with an animated diagram. | pure JS |
+| **C / C++** | Offline **simulator** ([JSCPP](https://github.com/felixhao28/JSCPP), a C/C++ interpreter) in a sandboxed iframe + Web Worker; Stop kills it. Subset only: no structs, classes, STL, references or `new`. Optional “Real compiler” engine = Judge0 (below). | sandboxed iframe + worker |
+| Rust | Compiled on the official Rust Playground. | **remote** |
+| **Java** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (public class must be `Main`). | **remote** |
+
+**Privacy note:** Rust, Java and the optional real C/C++ compiler send your code to a public online sandbox
+(play.rust-lang.org / ce.judge0.com), need internet access, and are blocked inside the claude.ai artifact viewer.
+Everything else runs entirely in your browser and cannot touch your computer.
+
+Examples live as real files under `examples/<lang>/`. After editing them run `python3 tools/build-examples.py`
+to regenerate `examples-gen.js`. The C/C++ simulator needs the page to be served over http(s) (GitHub Pages or `python3 -m http.server`), not opened from `file://`.
+
 ## Notes
 - Code runs in `iframe sandbox="allow-scripts allow-popups"`, isolated from the page.
 - The video embedder and the Python runtime need internet access and a normal browser context (local file or GitHub Pages); Pyodide loads from `cdn.jsdelivr.net`.

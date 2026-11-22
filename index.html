@@ -117,7 +117,8 @@
   .view{flex:1;min-height:0;position:relative}
   .view > *{position:absolute;inset:0}
   #frameWrap{background:var(--pbg)}
-  #tfView{position:absolute;inset:0}
+  #tfView,#anView,#shView{position:absolute;inset:0}
+  #langSel{font-weight:600;border-color:var(--accent2);max-width:190px}#engine{max-width:170px}
   #frameWrap iframe{width:100%;height:100%;border:0;background:var(--pbg)}
   #empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
   #console{overflow:auto;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;padding:6px 0}
@@ -139,7 +140,12 @@
 <canvas id="bg"></canvas>
 <header>
   <div class="brand"><img class="logo" alt="DevPortal by Gau" src="data:image/jpeg;base64,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"><span class="sub">/ Playground</span></div>
-  <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="javascript" class="on">JavaScript</button><button type="button" data-lang="typescript">TypeScript</button><button type="button" data-lang="python">Python</button><button type="button" data-lang="rust">Rust</button><button type="button" data-lang="terraform">Terraform</button></div>
+  <div class="group"><select id="langSel" aria-label="Language" title="Language">
+    <optgroup label="Web"><option value="javascript">JavaScript (+ React)</option><option value="typescript">TypeScript</option></optgroup>
+    <optgroup label="Scripting"><option value="python">Python</option><option value="shell">Shell (Bash)</option></optgroup>
+    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option></optgroup>
+    <optgroup label="Infrastructure"><option value="terraform">Terraform</option><option value="ansible">Ansible</option></optgroup>
+  </select><select id="engine" aria-label="C/C++ engine" title="C/C++ engine: the offline simulator is isolated in your browser; the real compiler sends your code to a public online sandbox (Judge0)" style="display:none"><option value="sim">Simulator (offline)</option><option value="real">Real compiler (online)</option></select></div>
   <div class="spacer"></div>
   <div class="group">
     <select id="examples" aria-label="Load an example"></select>
@@ -154,10 +160,10 @@
   </div>
   <span class="sep"></span>
   <div class="group">
-    <button id="import" title="Import a .js, .ts, .py, .rs or .tf file into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
     <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
     <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
-    <input type="file" id="file" accept=".js,.mjs,.cjs,.ts,.tsx,.py,.rs,.tf,.hcl,.txt,.json,text/*" hidden>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.txt,.json,text/*" hidden>
   </div>
   <span class="sep"></span>
   <div class="group">
@@ -199,6 +205,11 @@
 <script src="terraform-sim.js"></script>
 <script src="terraform-ui.js"></script>
 <script src="langs-extra.js"></script>
+<script src="examples-gen.js"></script>
+<script src="shell-sim.js"></script>
+<script src="shell-ui.js"></script>
+<script src="ansible-sim.js"></script>
+<script src="ansible-ui.js"></script>
 <script>
 (function(){
   /* ───────── Examples ─────────
@@ -1096,13 +1107,23 @@ builtins.input = _no_input
 
   const NEW = "✦ New (blank)";
   function withNew(ex, gr){ return { examples: Object.assign({ [NEW]: "" }, ex), groups: Object.assign({ New: [NEW] }, gr) }; }
+  const GEN = window.GEN || {};
+  const gx = k => (GEN[k] && GEN[k].examples) || {}, gg = k => (GEN[k] && GEN[k].groups) || {};
   const LANGS = {
-    javascript: { ...withNew(EXAMPLES, GROUPS), ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
-    typescript: { ...withNew(window.TS_EXAMPLES, window.TS_GROUPS), ext: ".ts", mime: "text/typescript", indent: "  ", def: "Hello, TypeScript", key: "ts" },
+    javascript: { ...withNew({ ...EXAMPLES, ...gx("react") }, { ...GROUPS, "React": (gg("react").Components || []) }), ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
+    typescript: { ...withNew({ ...window.TS_EXAMPLES, ...gx("ts") }, { ...window.TS_GROUPS, "Pages": (gg("ts").Pages || []) }), ext: ".ts", mime: "text/typescript", indent: "  ", def: "Hello, TypeScript", key: "ts" },
     python:     { ...withNew(PY_EXAMPLES, PY_GROUPS), ext: ".py", mime: "text/x-python", indent: "    ", def: "Hello, Python", key: "py" },
-    rust:       { ...withNew(window.RUST_EXAMPLES, window.RUST_GROUPS), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, Rust", key: "rs" },
-    terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" }
+    shell:      { ...withNew(gx("shell"), gg("shell")), ext: ".sh", mime: "text/x-shellscript", indent: "  ", def: "Hello & navigation", key: "sh" },
+    rust:       { ...withNew({ ...window.RUST_EXAMPLES, ...gx("rust") }, { ...window.RUST_GROUPS, ...gg("rust") }), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, Rust", key: "rs" },
+    c:          { ...withNew(gx("c"), gg("c")), ext: ".c", mime: "text/x-csrc", indent: "    ", def: "Hello, C", key: "c" },
+    cpp:        { ...withNew(gx("cpp"), gg("cpp")), ext: ".cpp", mime: "text/x-c++src", indent: "    ", def: "Hello, C++", key: "cpp" },
+    java:       { ...withNew(gx("java"), gg("java")), ext: ".java", mime: "text/x-java", indent: "    ", def: "Hello, Java", key: "java" },
+    terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" },
+    ansible:    { ...withNew(gx("ansible"), gg("ansible")), ext: ".yml", mime: "text/yaml", indent: "  ", def: "Web server (nginx)", key: "an" }
   };
+  /* simulator languages: a view inside the preview pane instead of an iframe (Terraform, Ansible, Shell) */
+  const SIMS = { terraform: window.TFUI, ansible: window.ANUI, shell: window.SHUI };
+  const sim = () => SIMS[lang];
   const L = () => LANGS[lang];
 
   const store = {
@@ -1147,7 +1168,7 @@ builtins.input = _no_input
   code.addEventListener("input", () => {
     updateGutter();
     store.set(lkey("code"), code.value);
-    if (lang === "terraform") { window.TFUI.onEdit(); return; }
+    if (sim()) { sim().onEdit(); return; }
     if ($("auto").checked) { clearTimeout(autoTimer); autoTimer = setTimeout(run, 700); }
   });
   fname.addEventListener("change", () => store.set(lkey("fname"), fname.value));
@@ -1171,7 +1192,9 @@ builtins.input = _no_input
     const r = new FileReader();
     r.onload = () => {
       const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
-      const target = ext === ".py" ? "python" : ext === ".rs" ? "rust" : [".ts", ".tsx", ".mts"].includes(ext) ? "typescript" : [".tf", ".hcl"].includes(ext) ? "terraform" : [".js", ".mjs", ".cjs"].includes(ext) ? "javascript" : lang;
+      const MAP = { ".py": "python", ".rs": "rust", ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".tf": "terraform", ".hcl": "terraform", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascript",
+        ".java": "java", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sh": "shell", ".bash": "shell" };
+      const target = MAP[ext] || lang;
       if (target !== lang) setLang(target, true);
       setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
     };
@@ -1222,6 +1245,17 @@ builtins.input = _no_input
     rust: { tab: "Rust Docs", title: "Rust docs", home: "https://doc.rust-lang.org/book/", links: [
       ["The Book", "https://doc.rust-lang.org/book/"], ["Rust by Example", "https://doc.rust-lang.org/rust-by-example/"],
       ["std", "https://doc.rust-lang.org/std/"], ["Cargo", "https://doc.rust-lang.org/cargo/"], ["Error index", "https://doc.rust-lang.org/error_codes/"], ["Playground", "https://play.rust-lang.org/"]] },
+    java: { tab: "Java Docs", title: "Java docs", home: "https://docs.oracle.com/en/java/javase/21/docs/api/", links: [
+      ["API (Java 21)", "https://docs.oracle.com/en/java/javase/21/docs/api/"], ["Learn Java", "https://dev.java/learn/"], ["Tutorials", "https://docs.oracle.com/javase/tutorial/"], ["Language spec", "https://docs.oracle.com/javase/specs/jls/se21/html/index.html"]] },
+    c: { tab: "C Docs", title: "C reference", home: "https://en.cppreference.com/w/c", links: [
+      ["C reference", "https://en.cppreference.com/w/c"], ["stdio.h", "https://en.cppreference.com/w/c/io"], ["string.h", "https://en.cppreference.com/w/c/string/byte"], ["stdlib.h", "https://en.cppreference.com/w/c/memory"], ["GNU C manual", "https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html"]] },
+    cpp: { tab: "C++ Docs", title: "C++ reference", home: "https://en.cppreference.com/w/cpp", links: [
+      ["C++ reference", "https://en.cppreference.com/w/cpp"], ["Containers", "https://en.cppreference.com/w/cpp/container"], ["Algorithms", "https://en.cppreference.com/w/cpp/algorithm"], ["Strings", "https://en.cppreference.com/w/cpp/string"], ["learncpp.com", "https://www.learncpp.com/"]] },
+    ansible: { tab: "Ansible Docs", title: "Ansible docs", home: "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html", links: [
+      ["Built-in modules", "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html"], ["Playbooks guide", "https://docs.ansible.com/ansible/latest/playbook_guide/index.html"], ["Inventory", "https://docs.ansible.com/ansible/latest/inventory_guide/index.html"],
+      ["Conditionals", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html"], ["Loops", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html"], ["Filters", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html"]] },
+    shell: { tab: "Bash Docs", title: "Bash / shell docs", home: "https://www.gnu.org/software/bash/manual/bash.html", links: [
+      ["Bash manual", "https://www.gnu.org/software/bash/manual/bash.html"], ["Coreutils", "https://www.gnu.org/software/coreutils/manual/coreutils.html"], ["grep", "https://www.gnu.org/software/grep/manual/grep.html"], ["sed", "https://www.gnu.org/software/sed/manual/sed.html"], ["awk", "https://www.gnu.org/software/gawk/manual/gawk.html"], ["explainshell", "https://explainshell.com/"]] },
     terraform: { tab: "Registry", title: "Terraform Registry", home: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs", links: [
       ["AWS", "https://registry.terraform.io/providers/hashicorp/aws/latest/docs"], ["Azure", "https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs"],
       ["GCP", "https://registry.terraform.io/providers/hashicorp/google/latest/docs"], ["Providers", "https://registry.terraform.io/browse/providers"],
@@ -1270,12 +1304,14 @@ builtins.input = _no_input
     return { name: document.documentElement.dataset.theme, bg: g("--pbg"), fg: g("--text"), muted: g("--muted"),
              accent: g("--accent"), accent2: g("--accent2"), ok: g("--ok"), warn: g("--warn"), err: g("--err") };
   }
+  const REACT_RE = /^\s*\/\/\s*@react\b|\bReactDOM\.(createRoot|render)\b/;
   function buildDoc(userCode, theme){
+    const react = REACT_RE.test(userCode);
     const head = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
 html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-family:system-ui,sans-serif}
 #canvas{display:block;width:100%;height:100%}
 #app{position:absolute;inset:0;overflow:auto;pointer-events:none}#app>*{pointer-events:auto}
-</style></head><body><canvas id="canvas"></canvas><div id="app"></div>
+</style></head><body><canvas id="canvas"></canvas><div id="app">${react ? '<div id="root"></div>' : ""}</div>
 <script>
 (function(){
   var id=${runId};
@@ -1300,7 +1336,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     }
     return String(v);
   }
-  function send(level,args){parent.postMessage({devportal:true,id:id,level:level,text:args.map(function(a){return ser(a)}).join(" ")},"*")}
+  function send(level,args){if(typeof args[0]==="string"&&args[0].indexOf("in-browser Babel transformer")===0)return;parent.postMessage({devportal:true,id:id,level:level,text:args.map(function(a){return ser(a)}).join(" ")},"*")}
   ["log","info","warn","error","debug"].forEach(function(m){
     var lvl=m==="debug"?"log":m;
     console[m]=function(){send(lvl,[].slice.call(arguments))};
@@ -1318,6 +1354,11 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
 `;
     const offset = head.split("\n").length - 1;
     const safe = userCode.replace(/<\/script/gi, "<\\/script");
+    if (react) {       // React 18 + Babel (JSX) from a CDN; hooks are in scope
+      const libs = ["https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js", "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js", "https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"];
+      return head.replace("OFFSET", offset) + "\n<\/script>" + libs.map(u => '<script src="' + u + '"><\/script>').join("") +
+        '<script type="text/babel" data-presets="react">const {useState,useEffect,useRef,useMemo,useReducer,useCallback,useContext,createContext,Fragment}=React;\n' + safe + "\n<\/script></body></html>";
+    }
     return head.replace("OFFSET", offset) + safe + "\n<\/script></body></html>";
   }
   /* ----- Python: one persistent sandboxed iframe running Pyodide ----- */
@@ -1444,33 +1485,123 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
   }
 
+  /* ----- C / C++: JSCPP interpreter, inside a sandboxed iframe, running in a Worker (Stop = kill it) ----- */
+  let cppBundle = null;
+  function cppStop(){ /* the sandbox iframe owns the worker; stopJs() removes it */ }
+  function cppRunnerMain(){          // runs inside the sandboxed iframe
+    var out = document.getElementById("o"), buf = "", gid = 0, worker = null;
+    function send(m){ parent.postMessage(Object.assign({ devportal: true, id: gid }, m), "*"); }
+    function emit(s){
+      out.appendChild(document.createTextNode(s)); out.scrollIntoView(false);
+      buf += s; var i; while ((i = buf.indexOf("\n")) >= 0) { send({ level: "log", text: buf.slice(0, i) }); buf = buf.slice(i + 1); }
+    }
+    function fin(err){ if (buf) { send({ level: "log", text: buf }); buf = ""; } if (err) { var e = document.createElement("span"); e.className = "e"; e.textContent = (out.textContent ? "\n" : "") + err; out.appendChild(e); send({ level: "error", text: err }); } send({ kind: "done", visual: true }); }
+    function workerMain(){
+      onmessage = function(e){
+        try { var rc = self.DevPortalCpp.run(e.data.code, function(s){ postMessage({ o: s }); }, { timeout: 8000 }); postMessage({ done: rc }); }
+        catch (x) { postMessage({ err: String((x && x.message) || x) }); }
+      };
+    }
+    window.addEventListener("message", function(ev){
+      if (!ev.data || !ev.data.cppRun) return;
+      gid = ev.data.id; out.textContent = ""; buf = "";
+      var bundle = document.getElementById("b").textContent;
+      try {
+        var url = URL.createObjectURL(new Blob([bundle + "\n(" + workerMain.toString() + ")();"], { type: "text/javascript" }));
+        worker = new Worker(url);
+        worker.onmessage = function(m){ var d = m.data; if (d.o !== undefined) emit(d.o); else if (d.err !== undefined) fin(d.err); else fin(); };
+        worker.onerror = function(m){ fin("Worker error: " + (m.message || "unknown")); };
+        worker.postMessage({ code: ev.data.code });
+      } catch (x) {        // Workers blocked here: run on the main thread (the 8 s limit still applies)
+        try { (0, eval)(bundle); self.DevPortalCpp.run(ev.data.code, emit, { timeout: 8000 }); fin(); } catch (y) { fin(String((y && y.message) || y)); }
+      }
+    });
+  }
+  async function runCpp(){
+    stopJs(); if (pyFrame) pyFrame.style.display = "none";
+    const t = readTheme(), isC = lang === "c";
+    addLine("sys", "▶ running in the " + (isC ? "C" : "C++") + " simulator (JSCPP — isolated in a sandboxed frame; no compiler, nothing leaves your browser)");
+    try {
+      if (!cppBundle) { const r = await fetch("jscpp.bundle.js"); if (!r.ok) throw new Error("HTTP " + r.status); cppBundle = await r.text(); }
+    } catch (e) {
+      const m = "Couldn't load the C/C++ simulator (jscpp.bundle.js): " + e.message + ". Open DevPortal over http(s) (GitHub Pages or a local server) rather than file://.";
+      addLine("error", m); rustFrame('<span style="color:' + t.err + '">' + esc(m) + "</span>"); showTab("console"); return;
+    }
+    const my = ++runId; running = true;
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "allow-scripts");
+    wrap.appendChild(jsFrame);
+    const f = jsFrame;
+    f.onload = () => { try { f.contentWindow.postMessage({ cppRun: true, id: my, code: code.value }, "*"); } catch (e) {} };
+    f.srcdoc = '<!DOCTYPE html><meta charset="utf-8"><style>html,body{margin:0;background:' + t.bg + ';color:' + t.fg + '}pre{margin:0;padding:14px 16px;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}.e{color:' + t.err + '}</style><pre id="o"></pre>' +
+      '<script type="text/plain" id="b">' + cppBundle.replace(/<\/script/gi, "<\\/script") + '<\/script><script>(' + cppRunnerMain.toString() + ')();<\/script>';
+  }
+
+  /* ----- Java (and optional real C/C++): compiled & run on the public Judge0 CE sandbox ----- */
+  async function runJudge(langId, fileName){
+    rustAbort(); if (pyFrame) pyFrame.style.display = "none";
+    const ctl = rustCtl = new AbortController(), timer = setTimeout(() => ctl.abort(), 45000);
+    const t = readTheme();
+    const label = { 62: "Java (OpenJDK)", 50: "C (GCC)", 54: "C++ (GCC)" }[langId];
+    rustFrame('<span style="color:' + t.muted + '">Compiling ' + label + ' on ce.judge0.com…</span>');
+    running = true; const my = ++runId;
+    addLine("sys", "▶ compiling " + label + " on ce.judge0.com (your code is sent to that public sandbox)…" + (langId === 62 ? " The public class must be named Main." : ""));
+    try {
+      const r = await fetch("https://ce.judge0.com/submissions?base64_encoded=false&wait=true", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source_code: code.value, language_id: langId, stdin: "", cpu_time_limit: 5, wall_time_limit: 10 }) });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json();
+      if (my !== runId) return;
+      const ok = j.status && j.status.id === 3, so = j.stdout || "", comp = j.compile_output || "", se = j.stderr || "", msg = j.message || "";
+      String(so).replace(/\n$/, "").split("\n").forEach(l => { if (so) addLine("log", l); });
+      const problem = [comp, se, msg].filter(Boolean).join("\n").trim();
+      if (problem) addLine(ok ? "warn" : "error", problem);
+      addLine("sys", (j.status ? j.status.description : "finished") + (j.time ? " · " + j.time + " s" : "") + (j.memory ? " · " + Math.round(j.memory / 1024) + " MB" : ""));
+      let html = esc(so);
+      if (!ok) html += (html ? "\n" : "") + '<span style="color:' + t.err + '">' + esc(problem || (j.status && j.status.description) || "Failed") + "</span>";
+      else if (problem) html += '\n\n<span style="color:' + t.warn + '">' + esc(problem) + "</span>";
+      if (!so && ok) html = '<span style="color:' + t.muted + '">(program finished with no output)</span>' + html;
+      rustFrame(html);
+      if (!ok) showTab("console");
+    } catch (e) {
+      if (my !== runId) return;
+      const m = e.name === "AbortError" ? "Timed out after 45s." : "Couldn't reach ce.judge0.com — " + label + " needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy). " + (langId === 62 ? "" : "Switch the engine back to the offline simulator to keep working without a network.");
+      addLine("error", m); rustFrame('<span style="color:' + t.err + '">' + esc(m) + "</span>"); showTab("console");
+    } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
+  }
+
   const tfApi = { getCode: () => code.value, addLine, showTab: n => showTab(n), toast: m => toast(m) };
-  function afterLoad(){        // after an example / import: Terraform only redraws, it never auto-applies
+  function afterLoad(){        // after an example / import: simulators only redraw, they never auto-apply
     if (sel.value === NEW) { blank(); return; }
-    if (lang === "terraform") { window.TFUI.resetState(); window.TFUI.activate(); } else run();
+    if (sim()) {
+      if (lang === "ansible" && sim().setInventory) sim().setInventory(((GEN.ansible || {}).inventories || {})[sel.value] || window.AnsibleSim.DEFAULT_INVENTORY);
+      sim().resetState(); sim().activate();
+    } else run();
   }
   function blank(){            // fresh slate: empty editor, cleared console + preview
     clearTimeout(autoTimer); rustAbort(); tsToken++;
-    if (lang === "terraform") { window.TFUI.resetState(); window.TFUI.activate(); }
+    if (sim()) { sim().resetState(); sim().activate(); }
     else { park(); if (pyFrame) pyFrame.style.display = "none"; }
     sel.value = NEW; setCode("", "untitled" + L().ext);
     clearConsole(); showTab("preview");
     const e = $("empty"); if (e) { e.style.display = ""; e.textContent = "Blank slate — write some " + L().ext.slice(1) + " and press Run"; }
-    if (lang === "terraform") window.TFUI.activate();
+    if (sim()) sim().activate();
     code.focus();
   }
   $("blank").onclick = blank;
   function run(){
     clearTimeout(autoTimer);
     const empty = $("empty"); if (empty) empty.style.display = "none";
-    if (lang === "terraform") {
+    if (sim()) {
       if (jsFrame) jsFrame.style.display = "none";
       if (pyFrame) pyFrame.style.display = "none";
-      showTab("preview"); window.TFUI.activate(); window.TFUI.runAll(); return;
+      showTab("preview"); sim().activate(); sim().runAll(); return;
     }
-    window.TFUI.deactivate();
+    Object.values(SIMS).forEach(x => x && x.deactivate());
     clearConsole(); showTab("preview");
-    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "typescript") runTs(); else runJs();
+    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "typescript") runTs();
+    else if (lang === "java") runJudge(62, "Main.java"); else if (lang === "c" || lang === "cpp") { if ($("engine").value === "real") runJudge(lang === "c" ? 50 : 54, "main." + lang); else runCpp(); }
+    else runJs();
   }
   window.addEventListener("message", e => {
     const d = e.data;
@@ -1491,7 +1622,8 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
 
   /* ----- Language switching ----- */
   function park(){        // stop whatever the current language is running before leaving it
-    if (lang === "terraform") window.TFUI.deactivate();
+    cppStop();
+    if (sim()) sim().deactivate();
     else if (lang === "python") {
       if (pyFrame) {
         try { pyFrame.contentWindow.postMessage({ devportalHalt: true }, "*"); } catch(e){}
@@ -1509,19 +1641,21 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     park();
     lang = next;
     store.set("devportal.lang", lang);
-    document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+    $("langSel").value = lang; $("engine").style.display = lang === "c" || lang === "cpp" ? "" : "none";
     buildExamples();
     if (!keepEditor) loadSaved();
     applyDocs();
   }
-  document.querySelectorAll(".seg button").forEach(b => b.onclick = () => {
-    if (b.dataset.lang !== lang) { setLang(b.dataset.lang); if (lang === "terraform") { clearConsole(); showTab("preview"); window.TFUI.activate(); } else run(); }
-  });
+  $("langSel").onchange = () => {
+    const v = $("langSel").value;
+    if (v !== lang) { setLang(v); if (sim()) { clearConsole(); showTab("preview"); sim().activate(); } else run(); }
+  };
+  $("engine").onchange = () => { store.set("devportal.engine", $("engine").value); if (lang === "c" || lang === "cpp") run(); };
 
   $("run").onclick = run;
-  $("stop").onclick = () => { if (lang === "terraform") { window.TFUI.stop(); return; } if (lang === "python") stopPython(); else { rustAbort(); tsToken++; stopJs(); } addLine("sys", "■ stopped"); };
+  $("stop").onclick = () => { if (sim()) { sim().stop(); return; } if (lang === "python") stopPython(); else { rustAbort(); cppStop(); tsToken++; stopJs(); } addLine("sys", "■ stopped"); };
   sel.onchange = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); afterLoad(); };
-  $("reset").onclick = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); if (lang === "terraform") afterLoad(); toast("Reset to “" + sel.value + "”"); };
+  $("reset").onclick = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); if (sim()) afterLoad(); toast("Reset to “" + sel.value + "”"); };
 
   /* ───────── Themes + animated backgrounds ───────── */
   const fxc = $("bg"), fx = fxc.getContext("2d");
@@ -1618,13 +1752,14 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   /* ───────── Init ───────── */
   const savedTheme = store.get("devportal.js.theme");
   applyTheme(savedTheme && [...themeSel.options].some(o => o.value === savedTheme) ? savedTheme : "black", false);
-  window.TFUI.mount(tfApi);
-  { const sl = store.get("devportal.lang"); lang = ["python", "terraform", "typescript", "rust"].includes(sl) ? sl : "javascript"; }
-  document.querySelectorAll(".seg button").forEach(b => b.classList.toggle("on", b.dataset.lang === lang));
+  Object.values(SIMS).forEach(x => x && x.mount(tfApi));
+  { const sl = store.get("devportal.lang"); lang = LANGS[sl] ? sl : "javascript"; }
+  $("langSel").value = lang; $("engine").style.display = lang === "c" || lang === "cpp" ? "" : "none";
+  { const en = store.get("devportal.engine"); if (en === "real" || en === "sim") $("engine").value = en; }
   buildExamples();
   loadSaved();
   applyDocs();
-  if (lang === "terraform") window.TFUI.activate(); else run();
+  if (sim()) sim().activate(); else run();
 })();
 </script>
 </body>
