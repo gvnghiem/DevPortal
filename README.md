@@ -53,7 +53,7 @@ A mock IaC experience — **no real cloud calls, nothing is created anywhere**. 
 
 ## More languages
 
-Pick a language from the drop-down in the header (11 in total).
+Pick a language from the drop-down in the header (12 in total).
 
 | Language | How it runs | Isolation |
 |---|---|---|
@@ -64,6 +64,7 @@ Pick a language from the drop-down in the header (11 in total).
 | **Ansible** | Playbook simulator: YAML + Jinja subset, INI inventory, simulated hosts that keep state between runs (idempotency!), `--check`, handlers, loops, `when`, `block/rescue`, tags, `-e`. | pure JS, no SSH |
 | Terraform | Plan/apply simulator with an animated diagram. | pure JS |
 | **C / C++** | Offline **simulator** ([JSCPP](https://github.com/felixhao28/JSCPP), a C/C++ interpreter) in a sandboxed iframe + Web Worker; Stop kills it. Subset only: no structs, classes, STL, references or `new`. Optional “Real compiler” engine = Judge0 (below). | sandboxed iframe + worker |
+| **SQL** (SQLite · PostgreSQL) | Pick the dialect in the SQL view. **SQLite** = [sql.js](https://github.com/sql-js/sql.js) (SQLite→WASM). **PostgreSQL** = [PGlite](https://github.com/electric-sql/pglite) (real Postgres 16 → WASM, ~13 MB first download, cached after). Per-statement results, schema browser, temp tables, 15 s timeout, 500-row cap. Engine files are fetched by the page and **SHA-384-verified** before the sandbox sees them (PGlite's JS is a local bundle). MySQL / SQL Server / Oracle have no faithful in-browser engine, so they are intentionally not offered. | engine in a `sandbox="allow-scripts"` iframe; Stop deletes it |
 | Rust | Compiled on the official Rust Playground. | **remote** |
 | **Java** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (public class must be `Main`). | **remote** |
 | **C#** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (Mono, so C# 7-era syntax: no records, no top-level statements; use a classic `static void Main`). | **remote** |

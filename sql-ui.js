@@ -1,13 +1,22 @@
 /* sql-ui.js — SQL playground view for DevPortal (window.SQLUI, same contract as TFUI/ANUI/SHUI).
- * The database engine runs inside a sandboxed iframe (no network, no same-origin access) and only talks to
+ * The database engine runs inside a sandboxed iframe (opaque origin: no access to this page, its storage or cookies; note the sandbox attribute does not block outbound fetch, so engine files are SHA-384-pinned instead) and only talks to
  * this page through postMessage. Engine files are fetched here and handed over as data, so a runaway
  * query can be killed by simply removing the iframe. Each dialect is one entry in ENGINES. */
 (function () {
 "use strict";
-const CDN = {
-  sqlite: { js: ["https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist/sql-wasm.js", "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.js", "https://unpkg.com/sql.js@1.12.0/dist/sql-wasm.js"],
-            sha384: { js: "1fHJox8K973mCCD3PTAOc0ljrAGXD2VeK8zf+vNIdx55pWPULNlpxKMkU8bF4nUd", wasm: "R/MwdqDq6/VfWyY+p8u2RAFr+3gVOgzxeJqDeDxCnpQaVqOc9tEFLu4wdQfoDpb5" },
-            wasm: ["https://cdn.jsdelivr.net/npm/sql.js@1.12.0/dist/sql-wasm.wasm", "https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.wasm", "https://unpkg.com/sql.js@1.12.0/dist/sql-wasm.wasm"] }
+const PG = "@electric-sql/pglite@0.2.17/dist/";
+const mirrors = (pkgPath) => ["https://cdn.jsdelivr.net/npm/" + pkgPath, "https://unpkg.com/" + pkgPath];
+/* Engine files fetched from a CDN. Every file is pinned by SHA-384 and verified before use. */
+const FILES = {
+  sqlite: [
+    { key: "js", kind: "text", urls: mirrors("sql.js@1.12.0/dist/sql-wasm.js").concat("https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.js"), sha384: "1fHJox8K973mCCD3PTAOc0ljrAGXD2VeK8zf+vNIdx55pWPULNlpxKMkU8bF4nUd" },
+    { key: "wasm", kind: "buf", urls: mirrors("sql.js@1.12.0/dist/sql-wasm.wasm").concat("https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.wasm"), sha384: "R/MwdqDq6/VfWyY+p8u2RAFr+3gVOgzxeJqDeDxCnpQaVqOc9tEFLu4wdQfoDpb5" }
+  ],
+  postgres: [
+    { key: "js", kind: "text", urls: ["pglite.bundle.js"], sha384: null },       // our own bundle, served with the site
+    { key: "wasm", kind: "buf", urls: mirrors(PG + "postgres.wasm"), sha384: "Ov0SvGpqQd9VdhDMY8X1uEDjyKZpJqbGbpDcN6GpNuwadZS8IrSaqsyOw++lC/5j" },
+    { key: "data", kind: "buf", urls: mirrors(PG + "postgres.data"), sha384: "4XOu3dFVixjfQbgDELRj4Qio2GRMhsS8EBt1A9rHP2lH6KsDsPy6h86vDQEy2q93" }
+  ]
 };
 const ROW_LIMIT = 500, QUERY_TIMEOUT = 15000;
 
@@ -49,8 +58,8 @@ function sqliteEngine() {
       try {
         if (m.t === "init") {
           var mod = { exports: {} };
-          new Function("module", "exports", m.js)(mod, mod.exports);
-          SQL = await mod.exports({ wasmBinary: new Uint8Array(m.wasm) });
+          new Function("module", "exports", m.files.js)(mod, mod.exports);
+          SQL = await mod.exports({ wasmBinary: new Uint8Array(m.files.wasm) });
           open(); reply(m.id, { ok: true, version: db.exec("select sqlite_version()")[0].values[0][0] });
         } else if (m.t === "run") { var r = run(m.sql, m.fresh, m.limit); r.schema = schema(); reply(m.id, r); }
         else if (m.t === "schema") reply(m.id, { schema: db ? schema() : [] });
@@ -59,8 +68,82 @@ function sqliteEngine() {
     })();
   });
 }
+function postgresEngine() {
+  var pg = null;
+  function reply(id, body) { parent.postMessage(Object.assign({ sqlr: true, id: id }, body), "*"); }
+  function cell(v, oid) {
+    if (v === null || v === undefined) return null;
+    if (v instanceof Uint8Array) return "<bytea " + v.length + " bytes>";
+    if (v instanceof Date) {
+      if (isNaN(v)) return "invalid date";
+      var iso = v.toISOString();
+      return oid === 1082 ? iso.slice(0, 10) : iso.slice(0, 19).replace("T", " ") + (oid === 1184 ? "+00" : "");   // 1082 date, 1184 timestamptz
+    }
+    if (typeof v === "bigint") return String(v);
+    if (typeof v === "object") return JSON.stringify(v);
+    return v;
+  }
+  /* split a script on top-level semicolons, honouring '..', "..", $tag$..$tag$, -- and block comments */
+  function split(sql) {
+    var out = [], i = 0, n = sql.length, start = 0;
+    function push(t) { if (t.replace(/--[^\n]*|\/\*[\s\S]*?\*\//g, "").trim()) out.push(t.replace(/^(\s*--[^\n]*\n)+/, "").trim()); }
+    while (i < n) {
+      var c = sql[i], d = sql[i + 1];
+      if (c === "-" && d === "-") { i = sql.indexOf("\n", i); if (i < 0) i = n; }
+      else if (c === "/" && d === "*") { var e = sql.indexOf("*/", i + 2); i = e < 0 ? n : e + 2; }
+      else if (c === "'" || c === '"') { var j = i + 1; while (j < n) { if (sql[j] === c) { if (sql[j + 1] === c) j += 2; else break; } else j++; } i = j + 1; }
+      else if (c === "$") { var m = /^\$([A-Za-z_]\w*)?\$/.exec(sql.slice(i, i + 64)); if (m) { var e2 = sql.indexOf(m[0], i + m[0].length); i = e2 < 0 ? n : e2 + m[0].length; } else i++; }
+      else if (c === ";") { push(sql.slice(start, i)); start = ++i; }
+      else i++;
+    }
+    push(sql.slice(start));
+    return out;
+  }
+  async function reset() { await pg.exec("DISCARD ALL"); await pg.exec("DROP SCHEMA public CASCADE; CREATE SCHEMA public;"); }
+  async function run(sql, fresh, limit) {
+    if (fresh) await reset();
+    var out = [], t0 = performance.now(), stmts = split(sql);
+    for (var k = 0; k < stmts.length; k++) {
+      var text = stmts[k], r;
+      try { r = (await pg.exec(text, { rowMode: "array" }))[0]; }
+      catch (e) { out.push({ sql: text, err: String(e.message || e) }); break; }
+      var kind = ((/^(\w+)/.exec(text) || [, ""])[1]).toUpperCase(), cols = r && r.fields ? r.fields.map(function (f) { return f.name; }) : [], oids = r && r.fields ? r.fields.map(function (f) { return f.dataTypeID; }) : [], rows = [], cut = false;
+      if (cols.length) { for (var q = 0; q < r.rows.length; q++) { if (rows.length >= limit) { cut = true; break; } rows.push(r.rows[q].map(function (v, ci) { return cell(v, oids[ci]); })); } }
+      out.push({ sql: text, cols: cols, rows: rows, cut: cut, kind: kind, modified: /^(INSERT|UPDATE|DELETE|MERGE|COPY)$/.test(kind) && r ? r.affectedRows : null });
+    }
+    return { results: out, ms: Math.round(performance.now() - t0) };
+  }
+  async function schema() {
+    var r = await pg.query("select c.relname, c.relkind, n.nspname like 'pg\\_temp%' as temp, a.attname, format_type(a.atttypid, a.atttypmod) as typ, " +
+      "exists(select 1 from pg_index i where i.indrelid = c.oid and i.indisprimary and a.attnum = any(i.indkey)) as pk " +
+      "from pg_class c join pg_namespace n on n.oid = c.relnamespace join pg_attribute a on a.attrelid = c.oid and a.attnum > 0 and not a.attisdropped " +
+      "where c.relkind in ('r','v','m') and n.nspname not in ('pg_catalog','information_schema') and n.nspname not like 'pg\\_toast%' order by temp, c.relname, a.attnum", [], { rowMode: "array" });
+    var items = [], byName = {};
+    r.rows.forEach(function (x) {
+      var key = (x[2] ? "t:" : "m:") + x[0], t = byName[key];
+      if (!t) { t = byName[key] = { name: x[0], kind: x[1] === "r" ? "table" : "view", temp: !!x[2], cols: [] }; items.push(t); }
+      t.cols.push({ n: x[3], t: x[4], pk: !!x[5] });
+    });
+    return items;
+  }
+  window.addEventListener("message", function (e) {
+    var m = e.data; if (e.source !== parent || !m || !m.sqlq) return;
+    (async function () {
+      try {
+        if (m.t === "init") {
+          new Function(m.files.js)();
+          pg = new self.PGlite({ wasmModule: await WebAssembly.compile(m.files.wasm), fsBundle: new Blob([m.files.data]) });
+          await pg.waitReady;
+          reply(m.id, { ok: true, version: (await pg.query("select version()")).rows[0].version });
+        } else if (m.t === "run") { var r = await run(m.sql, m.fresh, m.limit); r.schema = await schema(); reply(m.id, r); }
+        else if (m.t === "reset") { await reset(); reply(m.id, { ok: true }); }
+      } catch (err) { reply(m.id, { fatal: String(err.message || err) }); }
+    })();
+  });
+}
 const ENGINES = {
-  sqlite: { label: "SQLite", note: "SQLite 3 (sql.js)", fn: sqliteEngine, libs: true }
+  sqlite: { label: "SQLite", note: "SQLite 3 (sql.js)", fn: sqliteEngine },
+  postgres: { label: "PostgreSQL", note: "PostgreSQL (PGlite, real Postgres compiled to WebAssembly)", fn: postgresEngine }
 };
 
 /* ── view ── */
@@ -107,20 +190,22 @@ async function sha384(buf) {
   if (!(window.crypto && crypto.subtle)) throw new Error("the integrity check needs a secure page (https, localhost or file://)");
   return btoa(String.fromCharCode(...new Uint8Array(await crypto.subtle.digest("SHA-384", buf)))); }
 /* every downloaded engine file is checked against a pinned SHA-384 before it is ever executed */
-async function fetchFirst(urls, kind, expect) {
+async function fetchFirst(urls, kind, expect) {   // expect === null: file ships with the site itself
   let last;
   for (const u of urls) {
     try {
       const r = await fetch(u); if (!r.ok) { last = new Error("HTTP " + r.status); continue; }
       const buf = await r.arrayBuffer();
-      if (await sha384(buf) !== expect) { last = new Error("integrity check failed for " + u); continue; }
+      if (expect !== null && await sha384(buf) !== expect) { last = new Error("integrity check failed for " + u); continue; }
       return kind === "buf" ? buf : new TextDecoder().decode(buf);
     } catch (e) { last = e; }
   }
   throw new Error("couldn't download the database engine (" + (last && last.message) + ") — SQL needs internet access the first time");
 }
-async function engineLibs(d) {
-  if (!libCache[d]) { const c = CDN[d]; libCache[d] = Promise.all([fetchFirst(c.js, "text", c.sha384.js), fetchFirst(c.wasm, "buf", c.sha384.wasm)]).catch(e => { delete libCache[d]; throw e; }); }
+function engineFiles(d) {
+  if (!libCache[d]) {
+    libCache[d] = Promise.all(FILES[d].map(f => fetchFirst(f.urls, f.kind, f.sha384))).then(list => Object.fromEntries(FILES[d].map((f, k) => [f.key, list[k]]))).catch(e => { delete libCache[d]; throw e; });
+  }
   return libCache[d];
 }
 function killEngine(why) {
@@ -144,7 +229,7 @@ function startEngine() {
   if (ready) return ready;
   const mine = ready = (async () => {
     status("loading " + ENGINES[dialect].label + "…", "run");
-    const [js, wasm] = await engineLibs(dialect);
+    const files = await engineFiles(dialect);
     if (ready !== mine) throw new Error("engine stopped");
     frame = document.createElement("iframe");
     frame.setAttribute("sandbox", "allow-scripts");       // no same-origin, no forms, no popups: pure compute
@@ -152,8 +237,7 @@ function startEngine() {
     const loaded = new Promise(r => { frame.onload = r; });
     frame.srcdoc = "<!DOCTYPE html><meta charset=utf-8><script>(" + ENGINES[dialect].fn.toString() + ")();<\/script>";
     view.appendChild(frame); await loaded;
-    const info = await post({ t: "init", js, wasm }, []);
-    return info;
+    return post({ t: "init", files });
   })();
   ready.catch(() => { if (ready === mine) ready = null; });
   return ready;
@@ -195,7 +279,7 @@ function renderSchema(items) {
   els.side.querySelectorAll("b[data-t]").forEach(b => b.onclick = () => adhoc('SELECT * FROM "' + b.dataset.t.replace(/"/g, '""') + '" LIMIT 100;'));
 }
 
-async function execute(sql, fresh, toConsoleOnError) {
+async function execute(sql, fresh) {
   if (busy) return; const my = ++token;
   setBusy(true); status("running", "run");
   try {
@@ -205,13 +289,12 @@ async function execute(sql, fresh, toConsoleOnError) {
     renderSchema(r.schema || []);
     const failed = r.results.some(x => x.err);
     status((failed ? "error" : "ok") + " · " + r.ms + " ms", failed ? "err" : "ok");
-    if (failed && toConsoleOnError) api.showTab("console");
   } catch (e) {
     if (my !== token) return;
-    els.out.innerHTML = '<div class="sqres"><div class="msg err">✕ ' + esc(e.message) + "</div></div>"; api.addLine("error sql", e.message); status("error", "err"); if (toConsoleOnError) api.showTab("console");
+    els.out.innerHTML = '<div class="sqres"><div class="msg err">✕ ' + esc(e.message) + "</div></div>"; api.addLine("error sql", e.message); status("error", "err");
   } finally { if (my === token) setBusy(false); }
 }
-const runAll = () => { api.showTab("preview"); return execute(api.getCode(), els.fresh.checked, true); };
+const runAll = () => { api.showTab("preview"); return execute(api.getCode(), els.fresh.checked); };
 function adhoc(sql) { if (sql.trim()) execute(sql, false); }
 
 function mount(a) {
