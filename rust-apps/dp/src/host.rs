@@ -11,6 +11,8 @@ extern "C" {
     fn dp_text(ptr: *const u8, len: u32, x: f32, y: f32, size: f32, rgba: u32);
     fn dp_cursor(kind: u32);
     fn dp_log(ptr: *const u8, len: u32);
+    fn dp_blit(ptr: *const u8, sw: u32, sh: u32, x: f32, y: f32, w: f32, h: f32);
+    fn dp_open_file();
 }
 
 pub struct HostGfx;
@@ -27,6 +29,10 @@ impl Gfx for HostGfx {
     fn text(&mut self, s: &str, x: f32, y: f32, size: f32, c: Rgba) { unsafe { dp_text(s.as_ptr(), s.len() as u32, x, y, size, c.0) } }
     fn cursor(&mut self, k: Cursor) { unsafe { dp_cursor(k as u32) } }
     fn log(&mut self, s: &str) { unsafe { dp_log(s.as_ptr(), s.len() as u32) } }
+    fn blit(&mut self, pixels: &[u8], sw: u32, sh: u32, (x, y, w, h): (f32, f32, f32, f32)) {
+        if pixels.len() as u64 == sw as u64 * sh as u64 * 4 { unsafe { dp_blit(pixels.as_ptr(), sw, sh, x, y, w, h) } }
+    }
+    fn open_file(&mut self) { unsafe { dp_open_file() } }
 }
 
 /// Panics become a message in the DevPortal Console (then the module traps and the page stops the loop).
