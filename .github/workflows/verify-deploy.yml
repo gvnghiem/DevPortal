@@ -18,17 +18,20 @@ jobs:
           echo "::error::GitHub Pages build ${{ github.event.workflow_run.conclusion }}: ${{ github.event.workflow_run.html_url }}"
           exit 1
       - name: Wait for the live site and check every file
-        if: github.event_name != 'push'
+        # runs on every push to main too: the workflow_run trigger above never fires for GitHub's built-in
+        # "pages build and deployment", so without this the live site was never actually checked
         run: |
           base="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}"
           sleep 20
           for f in "" terraform-sim.js terraform-ui.js langs-extra.js examples-gen.js shell-sim.js shell-ui.js ansible-sim.js ansible-ui.js sql-ui.js pglite.bundle.js jscpp.bundle.js apps/hello_canvas.wasm examples/ansible/web-server.yml; do
             ok=0
-            for i in 1 2 3 4 5 6; do
+            for i in $(seq 1 20); do                       # up to ~5 minutes for the first file while Pages deploys
               code=$(curl -s -o /dev/null -w '%{http_code}' "$base/$f?v=$GITHUB_SHA")
               [ "$code" = 200 ] && ok=1 && break; sleep 15
             done
-            [ $ok = 1 ] || { echo "::error::$base/$f returned $code"; exit 1; }
+            [ $ok = 1 ] || { echo "::error::$base/$f returned $code. If only apps/*.wasm (and branch previews) are missing, GitHub Pages is still serving main: set Settings > Pages > Source to the gh-pages branch."; exit 1; }
             echo "OK $f"
           done
           curl -s "$base/" | grep -q 'id="langSel"' || { echo "::error::index.html is not the DevPortal page"; exit 1; }
+          curl -s "$base/apps/hello_canvas.wasm?v=$GITHUB_SHA" | head -c 4 | od -An -tx1 | grep -q "00 61 73 6d" || { echo "::error::apps/hello_canvas.wasm is not a WebAssembly file"; exit 1; }
+          echo "live site verified"
