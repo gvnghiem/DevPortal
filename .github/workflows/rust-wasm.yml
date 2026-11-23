@@ -1,0 +1,24 @@
+name: Rust apps
+# Tests the Rust apps natively, then proves they still compile to WebAssembly.
+on:
+  pull_request:
+    paths: ["rust-apps/**", "tools/build-wasm.sh", ".github/workflows/rust-wasm.yml"]
+  push:
+    branches: [main]
+    paths: ["rust-apps/**", "tools/build-wasm.sh"]
+permissions:
+  contents: read
+jobs:
+  rust:
+    runs-on: ubuntu-latest
+    env:
+      CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+    steps:
+      - uses: actions/checkout@v4
+      - name: cargo test (native)
+        run: cargo test --locked --workspace
+        working-directory: rust-apps
+      - name: Build .wasm
+        run: bash tools/build-wasm.sh "$RUNNER_TEMP/out"
+      - name: Every wasm must start with the wasm magic bytes
+        run: for f in "$RUNNER_TEMP"/out/apps/*.wasm; do head -c4 "$f" | xxd -p | grep -qx 0061736d || { echo "::error::$f is not wasm"; exit 1; }; done
