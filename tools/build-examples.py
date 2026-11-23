@@ -12,7 +12,7 @@ SPEC = {
  "c": ("c", {"Basics": {"hello-c": "Hello, C", "primes-and-arrays": "Primes & arrays", "matrix-and-strings": "Matrix & strings"}, "Projects": {"sorting-race": "Sorting race"}}),
  "cpp": ("cpp", {"Basics": {"hello-cpp": "Hello, C++", "shapes-and-overloads": "Overloads & shapes"}, "Projects": {"bank-account": "Bank account", "tic-tac-toe": "Tic-tac-toe bots"}}),
  "ansible": ("yml", {"Start here": {"ping-and-facts": "Ping & facts", "web-server": "Web server (nginx)"}, "Core concepts": {"variables-loops-when": "Variables, loops & when", "errors-block-rescue": "Errors: block / rescue", "forgot-become": "Mistake: forgot become"}, "Real-world": {"users-ssh-firewall": "Harden: users, ssh, firewall", "database-server": "Database server", "unreachable-host": "Unreachable host (own inventory)"}}),
- "sql": ("sql", {"SQLite": {"sqlite-hello": "SQLite: hello, temp table", "sqlite-temp-tables": "SQLite: joins with temp tables"}}),
+ "sql": ("sql", {"SQLite": {"sqlite-hello": "SQLite: hello, temp table", "sqlite-temp-tables": "SQLite: joins with temp tables"}, "PostgreSQL": {"postgres-hello": "PostgreSQL: hello, temp table"}}),
  "shell": ("sh", {"Start here": {"hello-navigation": "Hello & navigation", "scripting-basics": "Scripting basics"}, "Text tools": {"pipes-and-text": "Pipes & text processing", "log-analysis": "Log analysis"}, "Files": {"file-management": "File management"}}),
 }
 out = {}
