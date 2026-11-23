@@ -431,7 +431,7 @@ impl Planner {
                 self.sel = self.plan.hit_test(wp, self.tol());
                 self.drag_start = Some(self.plan.clone());
                 self.drag = match self.sel {
-                    Sel::Furn(id) => { let f = self.plan.furn.iter().find(|f| f.id == id).unwrap(); Drag::Furn { id, off: (f.x - wp.0, f.y - wp.1) } }
+                    Sel::Furn(id) => match self.plan.furn.iter().find(|f| f.id == id) { Some(f) => Drag::Furn { id, off: (f.x - wp.0, f.y - wp.1) }, None => Drag::None },
                     Sel::Wall(id) => Drag::Wall { id, last: sp },
                     Sel::Opening(id) => Drag::Opening { id },
                     _ => Drag::None,

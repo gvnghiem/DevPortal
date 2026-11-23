@@ -25,6 +25,9 @@ pub struct Room { pub id: u32, pub name: String, pub x: f32, pub y: f32, pub w: 
 pub enum Sel { None, Wall(u32), Opening(u32), Furn(u32), Room(u32) }
 
 /// name, width (ft), depth (ft), colour
+/// Escape text for an SVG/XML text node (room names are the only free text in a plan).
+fn xml_escape(s: &str) -> String { s.replace('&', "&amp;").replace('<', "&lt;").replace('>', "&gt;") }
+
 pub type Item = (&'static str, f32, f32, (u8, u8, u8));
 pub const CATALOG: [Item; 12] = [
     ("Bed", 5.0, 6.7, (110, 130, 200)),
@@ -105,7 +108,7 @@ impl Plan {
         self.walls.iter()
             .map(|w| { let (d, t) = dist_to_segment(p, w.a, w.b); (w.id, t, d) })
             .filter(|&(_, _, d)| d <= max_d)
-            .min_by(|a, b| a.2.partial_cmp(&b.2).unwrap())
+            .min_by(|a, b| a.2.total_cmp(&b.2))
     }
 
     /// Put a door/window on the wall nearest to `p` (within 0.8 ft). The opening is kept fully inside the wall.
@@ -253,7 +256,7 @@ impl Plan {
         o.push_str("<rect width=\"100%\" height=\"100%\" fill=\"#fff\"/>\n");
         for r in &self.rooms {
             o.push_str(&format!("<rect x=\"{:.1}\" y=\"{:.1}\" width=\"{:.1}\" height=\"{:.1}\" fill=\"#eef3fb\"/>\n", tx(r.x), ty(r.y), r.w * s, r.h * s));
-            o.push_str(&format!("<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\" fill=\"#456\">{} · {:.0} sq ft</text>\n", tx(r.x + r.w / 2.0), ty(r.y + r.h / 2.0), r.name, r.w * r.h));
+            o.push_str(&format!("<text x=\"{:.1}\" y=\"{:.1}\" text-anchor=\"middle\" fill=\"#456\">{} · {:.0} sq ft</text>\n", tx(r.x + r.w / 2.0), ty(r.y + r.h / 2.0), xml_escape(&r.name), r.w * r.h));
         }
         for f in &self.furn {
             let (w, h) = furn_size(f);
@@ -384,6 +387,15 @@ mod tests {
         let f = p.add_furn(3, 1.0, 1.0, 0);
         p.nudge(Sel::Furn(f), 0.5, -0.5);
         assert_eq!((p.furn[0].x, p.furn[0].y), (1.5, 0.5));
+    }
+
+    #[test]
+    fn svg_escapes_room_names() {
+        let mut p = Plan::new();
+        p.add_room((0.0, 0.0), (5.0, 5.0));
+        p.rooms[0].name = "<b>&".into();
+        let svg = p.export_svg();
+        assert!(svg.contains("&lt;b&gt;&amp;") && !svg.contains("<b>"));
     }
 
     #[test]
