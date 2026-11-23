@@ -5,7 +5,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC = {
  "react": ("jsx", {"Components": {"counter-todo": "React: counter + todo", "shopping-cart": "React: shopping cart (useReducer)", "tic-tac-toe": "React: tic-tac-toe", "data-explorer": "React: data explorer"}}),
  "playcanvas": ("js", {"3D": {"spinning-cube": "PlayCanvas: spinning cube", "solar-system": "PlayCanvas: solar system", "keyboard-and-mouse": "PlayCanvas: keyboard + mouse"}}),
- "rustwasm": ("rs", {"Apps (built by CI)": {"hello_canvas": "Hello, canvas", "floorplan": "Home design planner"}}),
+ "rustwasm": ("rs", {"Apps (built by CI)": {"hello_canvas": "Hello, canvas", "floorplan": "Home design planner", "nes": "NES emulator"}}),
  "ts": ("ts", {"Pages": {"tech-landing": "Page: tech landing (Nimbus)", "social-feed": "Page: social media feed", "stock-market": "Page: stock market dashboard"}, "Basics": {"async-union": "Async + discriminated unions"}}),
  "rust": ("rs", {"Emulation": {"nes-cpu-6502": "NES: 6502 CPU emulator", "nes-tiles": "NES: tile / PPU renderer"}, "Projects": {"game-of-life": "Game of Life", "tic-tac-toe-ai": "Tic-tac-toe AI", "brainfuck": "Brainfuck interpreter", "calculator": "Expression calculator", "maze-bfs": "Maze solver (BFS)"}}),
  "java": ("java", {"Basics": {"hello-java": "Hello, Java"}, "Projects": {"bank-oop": "Bank accounts (OOP)", "sorting-visualizer": "Sorting algorithms", "threads-executor": "Threads & executors", "lru-cache": "LRU cache"}}),

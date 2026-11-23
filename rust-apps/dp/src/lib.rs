@@ -14,7 +14,8 @@ pub mod recorder;
 pub mod host;
 
 /// Bump when an import/export signature changes; the page refuses an app built for another version.
-pub const ABI_VERSION: u32 = 1;
+/// v2 (additive): `blit` + `open_file` imports, `dp_alloc` + `dp_file` exports. The page accepts v1 and v2 apps.
+pub const ABI_VERSION: u32 = 2;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rgba(pub u32);
@@ -63,6 +64,11 @@ pub trait Gfx {
     fn cursor(&mut self, k: Cursor);
     /// Print a line in the DevPortal Console tab.
     fn log(&mut self, s: &str);
+    /// Draw `sw`×`sh` RGBA pixels (`pixels.len() == sw*sh*4`), scaled without smoothing into `dest` = (x, y, w, h).
+    fn blit(&mut self, pixels: &[u8], sw: u32, sh: u32, dest: (f32, f32, f32, f32));
+    /// Ask the page to show a file picker. Only works from inside a click/key handler (browser rule);
+    /// the chosen file (or one dropped on the canvas) arrives in [`App::file`].
+    fn open_file(&mut self);
 }
 
 pub trait App: Send {
@@ -71,9 +77,11 @@ pub trait App: Send {
     fn frame(&mut self, g: &mut dyn Gfx, t_ms: f64);
     fn pointer(&mut self, _p: Pointer) {}
     fn key(&mut self, _code: u32, _down: bool, _mods: Mods) {}
+    /// A file the user picked or dropped.
+    fn file(&mut self, _name: &str, _data: Vec<u8>) {}
 }
 
-/// Export the entry points the page calls: `dp_init`, `dp_resize`, `dp_frame`, `dp_pointer`, `dp_key`.
+/// Export the entry points the page calls: `dp_init`, `dp_resize`, `dp_frame`, `dp_pointer`, `dp_key`, `dp_alloc`, `dp_file`.
 /// `dp_app!(MyApp::new())` — the expression is evaluated once, on `dp_init`. Does nothing off-wasm (tests).
 #[macro_export]
 macro_rules! dp_app {
@@ -118,6 +126,24 @@ macro_rules! dp_app {
         #[no_mangle]
         pub extern "C" fn dp_key(code: u32, down: u32, mods: u32) {
             if let Some(a) = DP_APP.lock().unwrap().as_mut() { a.key(code, down != 0, $crate::Mods(mods)); }
+        }
+
+        /// The page asks for `len` bytes to copy a file into; ownership comes back through `dp_file`.
+        #[cfg(target_arch = "wasm32")]
+        #[no_mangle]
+        pub extern "C" fn dp_alloc(len: u32) -> *mut u8 {
+            let mut v = ::std::vec![0u8; len as usize];
+            let p = v.as_mut_ptr();
+            ::std::mem::forget(v);
+            p
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        #[no_mangle]
+        pub extern "C" fn dp_file(ptr: *mut u8, len: u32, name_ptr: *mut u8, name_len: u32) {
+            // SAFETY: both pointers came from `dp_alloc` with exactly these lengths and the page uses each once.
+            let (data, name) = unsafe { (Vec::from_raw_parts(ptr, len as usize, len as usize), Vec::from_raw_parts(name_ptr, name_len as usize, name_len as usize)) };
+            if let Some(a) = DP_APP.lock().unwrap().as_mut() { a.file(&String::from_utf8_lossy(&name), data); }
         }
     };
 }
