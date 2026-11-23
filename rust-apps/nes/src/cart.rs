@@ -1,7 +1,7 @@
 //! iNES (.nes) cartridge files. Only the parts the emulator needs: PRG/CHR data, mapper number, mirroring.
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub enum Mirroring { Horizontal, Vertical, FourScreen }
+pub enum Mirroring { Horizontal, Vertical, FourScreen, SingleLo, SingleHi }
 
 #[derive(Clone, Debug)]
 pub struct Cart {
@@ -11,6 +11,8 @@ pub struct Cart {
     pub mapper: u8,
     pub mirroring: Mirroring,
     pub battery: bool,
+    /// Currently selected bank: PRG for mappers 2 and 7, CHR for mapper 3.
+    bank: usize,
 }
 
 impl Cart {
@@ -28,11 +30,48 @@ impl Cart {
         let prg = data[start..start + prg_len].to_vec();
         let (chr, chr_is_ram) = if chr_banks == 0 { (vec![0; 8 * 1024], true) } else { (data[start + prg_len..start + prg_len + chr_len].to_vec(), false) };
         let mirroring = if f6 & 8 != 0 { Mirroring::FourScreen } else if f6 & 1 != 0 { Mirroring::Vertical } else { Mirroring::Horizontal };
-        Ok(Cart { prg, chr, chr_is_ram, mapper, mirroring, battery: f6 & 2 != 0 })
+        Ok(Cart { prg, chr, chr_is_ram, mapper, mirroring, battery: f6 & 2 != 0, bank: 0 })
     }
 
+    pub const SUPPORTED_MAPPERS: &'static str = "0 (NROM), 2 (UxROM), 3 (CNROM), 7 (AxROM)";
+
     pub fn supported(&self) -> Result<(), String> {
-        if self.mapper == 0 { Ok(()) } else { Err(format!("mapper {} is not supported yet (only mapper 0 / NROM so far)", self.mapper)) }
+        if matches!(self.mapper, 0 | 2 | 3 | 7) { Ok(()) }
+        else { Err(format!("mapper {} is not supported yet (supported: {})", self.mapper, Self::SUPPORTED_MAPPERS)) }
+    }
+
+    /// CPU read from $8000-$FFFF.
+    pub fn cpu_read(&self, a: u16) -> u8 {
+        let off = a as usize & 0x7FFF;
+        let i = match self.mapper {
+            2 => {
+                let banks = self.prg.len() / 0x4000;
+                if off < 0x4000 { (self.bank % banks) * 0x4000 + off } else { (banks - 1) * 0x4000 + (off - 0x4000) }
+            }
+            7 => (self.bank % (self.prg.len() / 0x8000).max(1)) * 0x8000 + off,
+            _ => off,                                                   // 0 and 3: 16 KB images mirror into both halves
+        };
+        self.prg[i % self.prg.len()]
+    }
+
+    /// CPU write to $8000-$FFFF: mapper registers (bus conflicts are not modelled).
+    pub fn cpu_write(&mut self, _a: u16, v: u8) {
+        match self.mapper {
+            2 => self.bank = (v & 0x0F) as usize,
+            3 => self.bank = (v & 0x03) as usize,
+            7 => { self.bank = (v & 0x07) as usize; self.mirroring = if v & 0x10 != 0 { Mirroring::SingleHi } else { Mirroring::SingleLo }; }
+            _ => {}
+        }
+    }
+
+    /// PPU pattern-table read ($0000-$1FFF).
+    pub fn chr_read(&self, a: u16) -> u8 {
+        let base = if self.mapper == 3 { (self.bank % (self.chr.len() / 0x2000).max(1)) * 0x2000 } else { 0 };
+        self.chr[(base + (a as usize & 0x1FFF)) % self.chr.len()]
+    }
+
+    pub fn chr_write(&mut self, a: u16, v: u8) {
+        if self.chr_is_ram { let n = self.chr.len(); self.chr[(a as usize & 0x1FFF) % n] = v; }
     }
 }
 
@@ -75,9 +114,54 @@ mod tests {
     }
 
     #[test]
-    fn unsupported_mappers_are_reported() {
+    fn unsupported_mappers_are_reported_and_supported_ones_pass() {
         let c = Cart::parse(&image(1, 1, 0x10, 0)).unwrap();
-        assert!(c.supported().unwrap_err().contains("mapper 1"));
-        assert!(Cart::parse(&image(1, 1, 0, 0)).unwrap().supported().is_ok());
+        let e = c.supported().unwrap_err();
+        assert!(e.contains("mapper 1") && e.contains("UxROM"), "{e}");
+        for m in [0u8, 2, 3, 7] { assert!(Cart::parse(&image(2, 1, m << 4, 0)).unwrap().supported().is_ok(), "mapper {m}"); }
+    }
+
+    /// 8 banks of 16 KB where every byte of bank n is n.
+    fn banked(mapper: u8, banks: u8) -> Cart {
+        let mut c = Cart::parse(&image(banks, 1, mapper << 4, 0)).unwrap();
+        for (i, b) in c.prg.iter_mut().enumerate() { *b = (i / 0x4000) as u8; }
+        c
+    }
+
+    #[test]
+    fn uxrom_switches_the_low_half_and_fixes_the_last_bank_high() {
+        let mut c = banked(2, 8);
+        assert_eq!((c.cpu_read(0x8000), c.cpu_read(0xC000), c.cpu_read(0xFFFF)), (0, 7, 7));
+        c.cpu_write(0x8000, 3);
+        assert_eq!((c.cpu_read(0x8000), c.cpu_read(0xBFFF), c.cpu_read(0xC000)), (3, 3, 7));
+        c.cpu_write(0x8000, 0x0F);                                       // out-of-range bank wraps instead of panicking
+        assert_eq!(c.cpu_read(0x8000), 7);
+    }
+
+    #[test]
+    fn cnrom_switches_chr_banks() {
+        let mut c = Cart::parse(&image(2, 4, 0x30, 0)).unwrap();
+        for (i, b) in c.chr.iter_mut().enumerate() { *b = (i / 0x2000) as u8; }
+        assert_eq!(c.chr_read(0x0000), 0);
+        c.cpu_write(0x8000, 2); assert_eq!((c.chr_read(0), c.chr_read(0x1FFF)), (2, 2));
+        c.cpu_write(0x8000, 7); assert_eq!(c.chr_read(0), 3, "bank number wraps to the 4 banks present");
+    }
+
+    #[test]
+    fn axrom_switches_32k_and_selects_the_single_screen() {
+        let mut c = Cart::parse(&image(8, 0, 0x70, 0)).unwrap();
+        for (i, b) in c.prg.iter_mut().enumerate() { *b = (i / 0x8000) as u8; }
+        assert_eq!((c.cpu_read(0x8000), c.cpu_read(0xFFFF)), (0, 0));
+        c.cpu_write(0x8000, 0x12);
+        assert_eq!((c.cpu_read(0x8000), c.cpu_read(0xFFFF), c.mirroring), (2, 2, Mirroring::SingleHi));
+        c.cpu_write(0x8000, 0x01); assert_eq!(c.mirroring, Mirroring::SingleLo);
+    }
+
+    #[test]
+    fn chr_ram_is_writable_and_chr_rom_is_not() {
+        let mut ram = Cart::parse(&image(1, 0, 0, 0)).unwrap();
+        ram.chr_write(0x0123, 9); assert_eq!(ram.chr_read(0x0123), 9);
+        let mut rom = Cart::parse(&image(1, 1, 0, 0)).unwrap();
+        let before = rom.chr_read(0x0123); rom.chr_write(0x0123, before.wrapping_add(1)); assert_eq!(rom.chr_read(0x0123), before);
     }
 }

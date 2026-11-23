@@ -1510,6 +1510,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       }; }
       window.addEventListener("keydown", key(true)); window.addEventListener("keyup", key(false));
       window.addEventListener("resize", function(){ fit(); call("dp_resize", W, H); });
+      if (window.ResizeObserver) new ResizeObserver(function(){ var r = canvas.getBoundingClientRect(); if (Math.round(r.width) !== W || Math.round(r.height) !== H) { fit(); call("dp_resize", W, H); } }).observe(canvas);
       (function loop(t){ call("dp_frame", t); if (!dead) requestAnimationFrame(loop); })(performance.now());
     }).catch(function(e){ console.error("Rust app failed to start: " + (e && e.message || e)); });
   }
