@@ -19,6 +19,7 @@ pub const ABI_VERSION: u32 = 1;
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rgba(pub u32);
 impl Rgba {
+    #[allow(clippy::self_named_constructors)]
     pub const fn rgba(r: u8, g: u8, b: u8, a: u8) -> Self {
         Rgba(((r as u32) << 24) | ((g as u32) << 16) | ((b as u32) << 8) | a as u32)
     }
