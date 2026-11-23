@@ -1,6 +1,0 @@
-[package]
-name = "dp"
-version = "0.1.0"
-edition = "2021"
-description = "Tiny immediate-mode canvas ABI between a Rust WebAssembly app and the DevPortal host page"
-publish = false
