@@ -14,4 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - run: python3 tools/build-examples.py
       - name: examples-gen.js must match examples/
-        run: git diff --exit-code -- examples-gen.js || { echo "::error::examples-gen.js is stale — run: python3 tools/build-examples.py and commit"; exit 1; }
+        run: |
+          if ! git diff --exit-code -- examples-gen.js; then
+            echo "::error::examples-gen.js is stale. Run python3 tools/build-examples.py and commit the result."
+            exit 1
+          fi
