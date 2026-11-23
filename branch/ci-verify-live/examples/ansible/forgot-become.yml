@@ -1,0 +1,21 @@
+---
+# A classic beginner mistake: system changes need root, and this play never asks for it.
+# Read the errors, then add `become: true` under `hosts:` and run it again.
+- name: Install and configure nginx
+  hosts: webservers
+  # become: true        # <-- uncomment me!
+  tasks:
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+
+    - name: Write a config snippet
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/devportal.conf
+        content: "server_tokens off;\n"
+
+    - name: A file in our own home directory works without root
+      ansible.builtin.copy:
+        dest: /home/deploy/notes.txt
+        content: "no sudo needed here\n"
