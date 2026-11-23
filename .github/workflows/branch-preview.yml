@@ -1,0 +1,54 @@
+name: Branch previews
+# Every push publishes the branch to the gh-pages branch:
+#   main            -> https://<owner>.github.io/<repo>/
+#   any other branch -> https://<owner>.github.io/<repo>/branch/<name>/   (open with  /?branch=<name>)
+# Deleting a branch removes its preview. Requires Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
+on:
+  push:
+    branches-ignore: [gh-pages]
+  delete:
+permissions:
+  contents: write
+concurrency:
+  group: branch-preview            # serialise: every run commits to the same gh-pages branch
+  cancel-in-progress: false
+jobs:
+  publish:
+    # a deleted ref is only a branch when ref_type says so; the delete event always runs from the default branch
+    if: github.event_name == 'push' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    env:
+      # branch names are attacker-controlled text: pass via env, never interpolate into the script
+      BRANCH: ${{ github.event.ref || github.ref_name }}
+      EVENT: ${{ github.event_name }}
+    steps:
+      - name: Check out the pushed branch
+        if: env.EVENT == 'push'
+        uses: actions/checkout@v4
+        with: { path: src }
+      - name: Check out gh-pages (or start it)
+        run: |
+          git clone --quiet --depth 1 --branch gh-pages "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" site 2>/dev/null \
+            || { git init --quiet site; git -C site checkout --quiet -b gh-pages; git -C site remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"; }
+      - name: Publish or remove
+        run: |
+          if [ "$EVENT" = push ]; then bash src/tools/publish-preview.sh "$BRANCH" src site
+          else
+            # the script lives on the default branch checkout we do not have in a delete run: inline the same sanitising
+            s=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g'); case "$s" in ""|.|..) exit 1;; esac
+            rm -rf "site/branch/$s"
+          fi
+      - name: Commit and push
+        run: |
+          cd site
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet && { echo "nothing to publish"; exit 0; }
+          git commit --quiet -m "preview: $EVENT $BRANCH @ ${GITHUB_SHA::7}"
+          git push --quiet origin gh-pages
+      - name: Summary
+        if: env.EVENT == 'push'
+        run: |
+          s=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g')
+          [ "$BRANCH" = main ] && u="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" || u="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/?branch=$s"
+          echo "Preview: $u (live in about a minute)" >> "$GITHUB_STEP_SUMMARY"
