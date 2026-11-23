@@ -1,0 +1,1867 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="black">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>/* branch previews: ?branch=<name> opens the copy published by .github/workflows/branch-preview.yml */(function(){try{var b=new URLSearchParams(location.search).get("branch");if(!b||/\/branch\//.test(location.pathname))return;var s=b.replace(/[^A-Za-z0-9._-]/g,"-");if(!s||s==="."||s===".."||s==="main")return;location.replace(location.pathname.replace(/[^\/]*$/,"")+"branch/"+encodeURIComponent(s)+"/"+location.hash)}catch(e){}})()</script>
+<title>DevPortal · JavaScript Playground</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAIAAAAlC+aJAAAn1UlEQVR42k26Z7Rd13WePVfZfZ9eb6/ARSM6AbABFCmZIkWrUJYlS1HoT4oiazixrXjYw2kuseLEsjUSfcpn54ukJG4qVCVpFrGIJEASANF7uRe3l3NPP/vsvlfJD9JJfsw15lr/3nf9mu98kF7dBYAQJlIKQAgBAkQQgAQAhAAQYAwAAAgRCogIzhHGmCqIEClAJAlSNEQUpVThbiA5p5bJ+j0JElEV6TqiCuIchECcy4RhJpCQFIhmpDXVMIhlabaFLNMoImxy4QZBvdeuf3bvJ1+af+XM+nGKIAx7XCRScimFAAkSpJQguQSBEEZadRcAIExASgD0rhgAAAAJgBAGjEFKRBUhJDFTSNVFEBHDEpxRTeVhJAUgTNRSUYRMCABCZRTSwTK2TMkYAoqogggmhGCMCSKEceL6ll00A1WNqGUUi1Z5Ymxoy9bU/Jxz/uqN0Ft2g67j18PETRIvihwumeAJF7GQQohE8BhASgAAoAgwIECA4B8sRwjJ9zxHwAUABkrjbo+aKWynEEK874GqEZpGIBFSRJAgSpkbYYUiDFJwpGq83ZcdH6s6ztoQMQwYIUSpomkpPV3AA2kmibNOx0aqDx6qPHJ3atckBgwvLGdSr5Zev1IjvRXSWfP9ThR2Vb/DWBhGXZb4QkachwJRIRIJkuhpCgj9b5sB/YOMd3spabkKWInWV8pPfjZeb7gnTwMlWNWxqvKA04lR4QepsXKy0WD1DmgaEgJTghVNSeWIlcK5PBkoYJEoqiIlkl4SLDbbF27lDW3vrsn3/8qeYw+MTWRIO4hnN5JKUT99yTuCwWfo+YXrTrDCeBAlbhx2WRKqxIhiJ+IugJSCASCs6FGnRQUTSHJMqBRCgkSUIk0BIRAmzPOtnTsx1cOlVXPrDO/7wLlSKCVBjKslJVdMOn0ZJNRICTvmvYDaJiDKXV/fsrX8S7+IKcaGAoyH7X77+kr/wnVzs7Zvqvy+3zj2wL07hgezbt87e3Huv17tzMf26Fjuy+/LNy7UTmx4Qcv74NiW/3H2ooQwYUES9+M4+Nz+339j6cfnO69qxMKKIhHlSTjwgfvo0Cd+qXvlqgCMBEcYJa0Wa3exocdJWMmM7rih/7z1ipbPLv/RV0kmbUxv5xLS92yNmz2sYMXSwjpzLs8Bl5gaEqtKIaNtn1K3TLgQRw3HXeok9b7F4uHR7Oih6c/ufmjPnqmVpbVnXjl/7tLKjRt1gW3bSld2DVeqSjdJba6vblcqa6LXc7mUfNQer7nLHewgjJ5d+X7Lm6dCIWZ6cM++tasXEMHW/Q9TFkaSC8mZBCFZYu/YEa5vBvPz1DAiydfZpqpqwAXNplQrLTVbnxiLFzYo40nSFglHVKO2rQyWjJlxfWxQUCXuut5yI7z8uqbSwS2Dlce36VPldsQP32ns3zv1d//jR//lL5+x85XpLeOf+uR9x+7f/vrPr718ccMtK1xWwqAbhEUrVtrMZSwp6IV6f8MPI0sz1ruXABPVyEvJls+dEF6fcz73x79PN59+BmGECAXBpYR4vZY/+oDkIlpe97Nw07maKY3EfYcxZherbs9z3jxrTk+X7tu3fuZaIpLUkbvMe3aRdNa7s9F89Qpa2dCTKLVvcvijB6wdI8I0/JavX2/c64X3b6ncvjF7+fT1f/bPP7P9rul0xnZazZ9+51kaBRNDQ+12N+Tc99tcBZYwK2sbZvqtpTcnR8d27Xj85dMvagpRjGwQuFImEEcASDFTQkpKTENEsZQIMEGEgJS90xezD9yLiMp8poaRkilFXkB1tVNrpQ/clcrmnBW/1vDMBw9ljswwLho/OxudPp8O3F3VvDNYkL/+abBt1A7Ki85OI6hwjij4RJw5e3tjce3RTz3u+8HfP/X8tXeubi7WQt+/5+jO3P68G3HBIQrdZtQxpYz8OFOd1LIlv9upkybBGCFVMiYYA1UFGQCmIkmomaI8CHPH3m+OjrdefFZgImMmw7j50s9z9x7EjQ4jIx/89OPvvHpy/uJNw8yYu3YoO2d408tOZFlts/E3z5Ibq1NZc2hmKFUuYUNlFDZevjSSSk8U05pK+mvsYsfrO67fajuNVrfVfu4HL9VX26Cm8mOj4x++t3nxJiLCdbphJCTHvaDxdvuNR0ffH/MoWOsN7ZtpaIuXLp400zbn3HM6I1tnJEGL165qVkYCCMEoADbvOqBNbEmvrQVOXxsoOefOTxy6u3N7ThmoQJet1tv9UFI9hdJ5TyrprTl54q3u99dMj81kdWt6mAHfiJLFKzeLuUx2uDhqmGGjfXalLpjAQoZhUqv31tbbTi8kipqf2rPj8fH89gmczhXHcvM/eIedeV2nEPWDlh9LSDihiYSMYnEW09utrTMz0SHRvHyWaiQQZHjbNkTI6lobyZD7Dpcx1TLFxlPf0wZH/OVFEIl76Xzu2H3dzU13eQ3Wmrkj+97+/oumnRvat6+24WUObet//0X67OmZo3d3Nza6BtpQuA8JAY47Tdn3E6k0kYORdF2v1vQ6esnPD6i50sTewpHpvDqY5YSGTtBdbYuT1wpiWxx7pkaF2/daPSElFyzmSRAkakpNF6sbnnvz7ZOp7dXS/oPLb76dHp069/Ylv7lupkzFTAMBGTjUypZ79XVqG/bOnUjFMnA7r7+dfeiYOjoh6v3u2dnK4f3BZjdSyNSvPqpUM+1z8xMHd687reZQikiu9tySx9OAjaHJvtev37nVdTwnUEhqJLvn7vs+tG/r3rJqI66Russ353vujUVRa8Yr6x86tGUlrdZnb6RZ71/8+ie+8f890/cjwRMvZB3WpbJoTg52FpYhhNaNFWtqZOfHPrJ8/gZ327ppqQlYPnejwMiN0l67RnTdu3qNhz6PAnvX9uyDx3onzhc/8P5EaxGEBn7h4ebVOTDVBKRzp67kc95q15vOGh0nvdoyTJ3xuOk6rest32WGNjAxeHBs1x5910RzLDM1TrYMoqfXkuB2J15qyrnlVOQnzRbudcdnjs11GQLuuv279m19+NFDzVorMz3TvYucfemtR7QP9zfr9s5hX8aq5xuS7nzgYHfDiVstSljMWT8ICNKTXofmj30UFEUSgnRdREnvlZ+CYqbfd9S7cLNw771hsz37zZ8oU2PFD93Tu3Abdo2wJIwDDxK7nMpw2r5x6TwPRUEb25o7NrFj1+DQSCcStxrt9VdutzLZzmODciwv+nwKcVDiLvKdzYV8JofS1SRJJFKAUIRJx48dP9Y4kyqBQiYMXa2SyZSGckfHmK00z8+167Uf/P5fpiaH9eowCn2O+neVyxvtjXq3TsNGEygFjLFt6jPbcr/0Jeelp6kV2vce2Hz1ePkDR2MBWiWz/N9+YI8OaUe288DnLBEJJ7ri9ftVMn50x8eYKDQj51ajcdVt9QlPDZjhuqsaMYsywrWUG4sbN+dqN+Y6m73a7euPPfFgemCEcy4w5VghhNY2u/V6tzycQUFi9IGl8wpV9dFqZvuosDXR51otP5IfwQQ1ikl3/jbRrI0w8LlMDU5SNJzHBCOFItOMVheM4e3FT36Ovfos6vazD+xvv3Em/9gxwZL01LBRqejFjKOYHHOQEAZhlESTmW22UTkZ3HDT7ur6nAixkTK8upGbmOxgVVJy++2VM391EjbviKCrG6qRyqZtkxKSCJAESVUlmlavdTutfnWIq+m8OjzQUufA58mt1jXPHf/o7l0fuPt9/UHZxyD4t17/npNKJZvLncCcOnwkCvqYb/ZYOwZko8TQhwbZ5m0KXuaRx8O6LwKRfuge79oySpTEY1QSlSqSUBaFUjCWcMYl57TutTaDTj8MC2MjWk7DtpkgaHfqDHk4q3mBpCDtct7MmdyrCxYgJCkhQoJEiFhmIsnAUKE6WOBRTDVNZow48qJEsKYXXFiae+5qZkuR4liTXFeVTKJpwqYypfto8eevrl88Q82JSiw1SKk0bcNSg2Sz4GwkdqXyxEf56lIUo+rnj3CMskmUMjVWVLOPPWzOdIRNM5yo5njGKc1kRjvAz165NT5UZm1qDxRiP2wGiVU0YkMSn6imJfwuLVSVlB3cuEkpwQplXEgVQTqFVA2BlBJwEsXMbzeX3fqCesDM0pIz32KXV+enB1ITk+LFpTgMau0NGLVzH/uQ39rAS2v9t87Rzk+fRZgiwB7B2QfvR52UMlxkQY/mbDI23T9/s/7KVVrIxJrsaapSzLhnL4U36+qeSUtNh11HxSkGiimze6enz95esaazDT9JuCwc2uYHiqoRrWDibAYTN6otpcaH6PKGpmuKpvhhIm1AaYPoerPRcRqbh+6567s/m8fqpBZ6Dbd5+LEdKHbm1hZX35qt5dOty6+HKysyiXSoCiJJLi82/aq9hRamxgCBlCgJw+4bb5U/+CgPqDkwyDmyRuzyhw9FQZQIbto6VgmUbTo4ZKGKMZwzJGUVmafl0lZzvWcbgTY+aCcF1fe8fhjaI3nko2LFwB7mJlbAIkFeCokUQ1FUhWIvYFjD2FJAUy+evT42NsCAuLXalLHr2I5HXr3yow+Nf/rxu7d8c6XmzC4oz2impgkFg26xqyvR+UWkaWFvVS3mKecSE4pVXbcKxshWHBJrMiMNXR/MQUblYUIMw7Q0qhLTVM20Or9zHJVCPa8aUum7OIj0Thb7goAhda1Qm2+lRzJZs5jOayKjGhYRQCBnI5xYGUt2GyA5lwCMR16MNUIMNRHC96NMNpNEYVrPzjoLtbULv/nI75261YhQfuaTu9/87y8rxQaoKTWtV2fGBOecgtCV0JlmnFEpMVItbKUEF9bIODVzUSPWKhoqp4VGkM51g6Z0aiokpaG8DcnuicQTRJFUYJKpphOS0rhCMsCEG8fZSYIsJZXXFENJg5xKo4AgK6MTaXK/jxAmlDDGk5D1mS8wIiARYClQ5IcirfFOPdhcUwysoeIjdxf7Ue+qohfy5fZ6rXLXDntgR2/doSqO/cg0FSxsAKBhs6XaTFd1Z27OnVuxioM8ieKXQjwwKnRDoxinSoyoXKV0rJJ9bEv7G8/jBU+p6jY1wvXgjml0BvKdzdVMTpcqUjVFtWg8J6K8lc7oUimxINGbtajRYIFPI66qWpJIv+f1QqBcIBCAEUbEc4OOo3HfUcx0dsv2zlo/N5LdbPqsz0ZmJmFjcbBi1O/0M1lr5crKlJmKOi1MIOz1aGZilEyM6DPD+oN7ARtUt/16XVOJmstJwASBWS4RnTAsIW0qBZocHrN3w0jFbC+6odZ84+XvsbOeYMl8IgAjAABMkaJiXVcM6y3D4nEcO20IfY0QuzoIXDhO4CZBmCh2zBEXSZg4ThAncT5lamZay1a4JFaa8AIOFSuPZCWT0zeMZj+gKbW1sLFvZuLKysL86tthdznpd6mQUrgB7vgikYhEDPUTx1dSKckIi0TCpUQemIQYKtU4ikXc7YCvJohD4MnQNTXakcnW3/nigaFiEMYKQQRhhAkQJAAJACE5Etxx/Mtvnt948XUNoF4bI7qlKXa75fs9B1qtet3y+w5ikjPGnBYzS4aJ8wypurqx6OoR6dWjlKIQvRRtT19fXwqIrwhfKtb7PvEkbc1dE1cC9veRYlgIEFE1wIpWGeaaxSOGuESEIEOl1aq9d082Y3vHT2l1Y8niTmsx6fQwRaqfNF558/1f+7fbq3YkABOQ4r1EDwNQACyAMdn99CN/8j93vfZ7f9qpb+rpLIrq9edkVFuD+tqduM/joLW21HcaYGXB8dtqOH9xA+XJ8upa/06v1pxjQhBC6/1OyP0k7Hm9BSM98bkv/jL1OnXQVbAgkX3AGEQAMcCNVUIAm2oSRYApUNXayCPKtYk0whEoSpi4zfqdMAgAJALwXnnlq1+f+vKXfpkFPksSpKkYY0oIAcBCaISUbS3bFb//q7947eW3105e1DPpTq2enDkJRALnjdoKCAZJBBKg1sKd+EQ02BNuHzrr61earU1JJCAGUmCMEVBVgSRBMlab9U30yAsn0sWsJFiCRAhhABEnmzdmT/3J1/V9O9//u7+eEdID/Mxvf0V1RfEzn+ofP27UEqe3Glr0ia//gUVxD+FX/sM3nFOXtW27w37fHC4n65tYUQAQYISFkKr+z//FP33ywZ3SUL/4tb958yt/TovV3R//yAMP3q0ZOkiKAUkuFCFRksxeXXrx299BvU6+OFqvz2ZGdzz+6Y+PjJQ4oIgDi5OUaT7/1BsDg/kHH9yTzwI19u0mKUNVKUEAgJgEN062H9ozvG/79z7x65luOPjQ3QCw/R995OK//DP76jUIEtet9dbu7P+Tf/XAfbtNgDd//Eb35DnqOP6Jlx/6L/+x0ehcffZZvZgDkBghBMhrds8cu/fzH9yPALK6Ab732O99+d984VGlzxAljIOQEgAwID9I3nfPngP7Dv6HX/vy+trZ/NiBP/6Lr40PojiKdAVLLrjghXzuxE/PDg9UHnygcuXKHBULawunz4t2G1MsJcSElI4e6Q4NTG3dmp8e/ekffO3TO7/ZyRj3fvIjN7/zbP/UKaSpYX1N37nzFz7zkbVIKButn3z9m9B19K3bP/un//qjjx78vd/6MymCgOWQplFVlUEIgDJj5YAJheCw3k0duP83fuXRcKO77LLXfn497HmEEMESFkWH79lZHM4f2jfw4Ec+9uNv/MvHPv5L28fp0lqjNt++em5eUwlCUteM2spC4LS+5fW276vQ3vLK6a//Vwg9kAKIAhE7OFwtVgbWaj0zn1l54Yezzx6f+uyjZtrc/blPvvNrv2sWC0mvc/Q3/91IzvI4vPKDF1rn3wEhHvjSPzl2cP+Na80DH3xocGxYM21EMUYYx7Gdz3zgngN3VjqKYd06fXFyeiKvAM5Yf/2jE9/6nd8FkgDCIAUE/vVHP/+1//YbArNKtQRAquW8aqBqNvMfv/HtC2/9NSgmSAlSKgZO4ujsiR1/8e2vUl2z3/+fvqpQigAwwlwyrNC1MzeKW4aBaiDl2b/9cWX/XUtpferBY9f27Y7eOW3ff3Trw8curnTNRufUd59WiJrQOHT9k+/Mh91+MWWVth8GLjBCCIAQbBJ069xKuWSvLy6vnD419PFPHb/pUJ4s3ZzDsmfaac4YYBwB7zdqZy87MY0EB0CG5/JX31xQIt1zalgTRkqTIIUQQiAQoW2zeofR7q1FLkDVdSkESCER4lwoCMA2khgjxeyce+vid/6e2yW7kN315D86/fbp/V/8/NmnzyeBL26dd25etXLlJG5zJuZvLXvdfr6c5hwDgJASSQlCSi50iq5d7J567mfgdSix/v6VOWCMx7EkClEshBKJEEAfA3rt1fk7a+t3jxhAzF4nfOrrx/dvnaYEC44yk3uQUMPGesLcJHEJgmtXalTL2G9+5U+F3wUEIBEgDAgjRABjApymLBZ4yy+9uPvJfzL/8vHpRw+P/+EfKD7cOXlx64HxU88/aylmyqx47RZOZLe+hnRt4erNjbeOK6mUFBxJhCQIzmPP620uEhmASsJeP82SxPfKg+MyBqfdkhIhEDKKx8a22ETYErFuANzjsSxpdkGz54RERNVzFdaL9VQJHCmBYKSkNES920sH/5/PBo06IgohVCIqpUBIekEw/9TfEdXQ8xVn9mZzds7OGosvvL77c5+49K2fDO3btXbmQrC8NjS8XwEbWAhhEvX6ROCwVWtdfZVmB5GiKSkbSclcD4G0TIXo+X5jxdnYHMVo9tZKdvfkE7/z1cTpKFiJg8Qg1sDg0Jsn72ydGvQ2roOMuMtTiW5yhQLGVJVBAomkmbJsN6miR1GMJaNrpy5buYxVLMRuCAIkCCEEwWjg4SOLzz9HsK6mc8ztLj7/k12/+qXgQv/cf/qOXS1RlSy88JyWzmXsCUIxACRBAowoSDFTaWSWstv2ofGp4R0jdpjcubAKTpvHkVQUk/O1W+fG5+8Z2zI0v9jIpfOFyrjiYtXxwl73/O2FalofNdXvnnsDUSOnKS5k1IQAS7CiSidIFUaVTBH14pj3Ot2VucvXaXHPNkAEVJ3YieQCIQSEYCR7nb6UQFRFzVe533fXFjbOXxg+dDj2+lomd+vZH0C/qeRH0taQQgkglScgOclmMm5tCSmGMrFfHD6YOVjWmx5ay6QKrttqcPA1v9NrXzz142/tffDjk+NjICPSa1AP8pogmpgo5Hpu90c//OZa/YKm5sFlO7fYKgbmC0IVEbBUechvdzEiCtKYit4+8zS99rffpqYJGCOE/2FVBgAgJIbAk4pJiiXVi7R+f/215xrn36IaZTGwTj1VnUTUUsHEiQCBFarP7B65ffLsrdd/oKYyyC4iPZudHIpZkzPpOX2FMA5EqNni1gO9tfkTz/2laRZUhEEwjBBGCCHgXDr9DlC/lB72E//7T/9nRCTFup+0Vc0M415j86a3OI8ELY/s6qyrgVunWjYnWSKFBBlLKSQgeHfpRwmtDJLSOAyUtGwRZdPq5lLSbcTtFnCup7NaeYIlkkQSgIFwE0fcmj9z+bn/rmRtJbdFwTTq+Agr4POw3QXmOY0lc2SMIW18atBM51vrS5DRw34n2ehiACSlFBwRoo+UtT6fKR652b4Qsi7jnLOY6AbRdae/UH/zHGCayVVF1w+THhBM1VRGCA5CIIwBEEghOQesYs3GZlotDClgk8k88yIjk8lMVtovv4Sbnp4rK7k8b3RUSYiqgmrdfOWpzvp1rThmDhxAuQoxs6gfri6H0dwGCh0gAiEFmGBul0JOyw0WrDH16J72nTPRC+9YhHhBc0ib6mhRsnsLfe2dscxOzR7ohJuxFbXcNj0w4l651l+59o+/8KTT83/63e/0IAW6hhBQ0Q8FiwVLqGZTI6fmBrBCk36gpQqAAHViOpMiupYeqIbdvnLkAJ2dU8KOnhsUMRNuV9GIhk3AWq9+y86NWqOHlZFxwTXRCsyJdNKLI8fj3WZMImKY/sYaxkgyRnBGK4zYe3Z6fBPM+byaiQwCoYZUaYwMEVTYmt/utTcH9owthp1oTIVi7B6/KDnesWf3+MQwIZDK5994+TUpONWqw0Q3JNVQZQhnsvbAsDkyHPdcAQgbJGp28VQVZUxrfEQLZZxWRB9orhr1WqCZQE3pdzHVMEGVzH3IyguuDO6Z8mv93vKmU+uZQ1UCwCMfUJ93XLUyErkcJCAAJqSqKIqVAqtgk0zOkLluuYfmbNsOuDmSzsxb7uCMObuZLv3j6Y3//DymFiC5vN6oTowVqplMofiHX//Tb/75/0v9lTs0nUJUQ6FPUxm3vuGcOa4NjnmrLS2fxURjZ66XP/U+rZjGQ0rzqZ9D24NMGmNF8ERCTCDGjJS1e6r53b3YMSy7+fodhhM1p8ZBGLb7vOsCCLDSDAFpLe2Ymsjkh+/cXiGVMsQcAClIs0vl5kC28Cpeq2bT6VLeGEUSDx8dunBrM/dr+wPPxYseEy7IJBTo7/76hy9/52sA6r//22faPZcO/tEfu0+/DC4n6SJgwJiGhLI4pJz7lxe0ckXErPfiOfwrD0knyhzZRd1OdG6Jqh5IRQqkEzKemVlWWJamTZZvi6amqb11T+fEa/S0nT3Jw8Q0sAx2T1WGph6q19nC/Hx6Kh+BInuejBOcMJUoVKIUKmQyUSaXAzWjZuTsbDdCEB+/2XlnMeyt8SgGYt24dOXBJ55IZ1NWthQmUF+v0Wj2Dvc9CGPGA0SpRFI1jXi5ldu3d719++AD26f3TT7zN+eSM7Pi0BSP46TXASkR0kA3lUTe2ljYXUWPjN776rWrsUliX+iaUqgMOJ22lcpatt2thVM5tPPQvTEpzc2tYJ3ZW7cF3Cg9NJM/WJw72bYjVyYMc2koFg/DcK6m68yXLPRY2Ggm8x0e1sJenaiqmkmfevmlzfVatlQGufLCd7/XrNVJdHVJeN3Y2Uzaa7y7ETZWbFtLem7Ucws7phpz9Waia9PlqNdFCkUWiW4voj5BLAZC9MpIY+3ShaUTyBelwg46mo048/uh57ZYEhmFUnrb0J5HJzI7Dy32lLX1TVKwWWEUz0wMfHgXB37xL59vvPHqhJbNG9WWzaY2ylfjyyOyepcspirZq712t9XwombQb6QmxgRLIqeJVKu5vr5x69rGnTt+EGBFoTSb5UlE9BTN5oXv0Cj2BUl4CO2eslfhIVm7eBNwoA8WacM2ygPUzCBdE26L1ZcDt6fP7OH95muLP863L08VP1zYvsu5dEcFRBXpduJBDYcHp26eaOvDMSlmRNZKb8uhfvf2372y+sJrqaDzcPXAcDg9i9f08gAPAy2ryKH0zeuzZXfI6bbzQ9rshVZ2ehAZuJtIpI+lM3bQvs0TA6QUPOEsIcbIXkCIed2BT3zCvXUTE6V4+KC3sooQdC5f07OmMZgL1mrcjY2xQW0wH9xakl5EOYYkgMRhoaPkxvLbdzHUnD31sttr5R7YZe2fARexLuQOD8D2XDvAWjVT3VO2U3z9qdev/dlfBWeP7ysM3T/0wSRRlg9z/9FJ9a3uHn/kanCh1lzttjaPbTv0Vu1Kd221uHs8Xc4unjpbINrnvvK7i+16f2kZUUIUFVEVECK5ez8U19eJboWLC0mzm5qeaZ5+J3F6eiEnvQ42TMEFMjNCgF5Ms6wOGS1p9WVKIyhFkEUVwoMOT+LSviP5rZXuypW1c2dRwah+5u70RInqCtqXtotKJfZqPzx+/t//VevEG9uL2XvGj6bp0KmbL/aOGapVnngqPupP31IvnVw7p7jJZ7b+QiCUC9EsTSt2zt68dLPfaSgYZbdNLV6/ihKiZfIsciOnp2YrJKp7iGphqzlw7CgLwmh9AxFWOrK/c+miPjgUbDZFIoxqOXF8rCsqQmK0aG4fjBs+B4EUDVAWxUyKfhT72C5P3rsvk5PLb7y9eX5FPzCy9QNjEzpe/9GFU3/0t6vPPD1kynu231u1JriBlqNb9drcXf09289nqRb/xHn63Ob5J6Ye/rX7fnWBoe9eezFtK9WZ4ZVz1yI/zA+UApFcfOVnLAhCZwMTSlRz4O4D9uAY0YpTxFAxJbHjxL2e4JFqpaJWP+64U1/+YlRvdy9dQCouHdkTbvS1QtkIWSSwdf8WrKrdnx/nfksZnYZIh8ADhbc324Wxyd0P7grXbt3+4RvNhd7tn1299u0flWjv6H2Hh0rTntsDDQIvMOrmI9UnFKmfTJ17ffNnM/r4PzvwheHpu36wePPM+iVDk4jEIky4iJ36hpFNM8b93h1QsQTut9eEVHd+8hOEEKSW9miFUtioMc9XUmkeJXp5tPylJ1uvvBmdO4d1BSt26Rc/qE1v6b70jjYwKk3bHMqHYYC3lTCRvW89G8+tGJNThBnI6ahZJQ7Dwtjo9M7RpL3+5jOvRUH06OPHtkxvn7u56LU7FXu6sbwql8jwwMxFcW6+GpYd62GxM1ecPF2/0y5GQb0ZNjfTA4bf67bXm6WpIZyijVtzCetFYRMUVbEzPOxrmVzQ6ce9JtGKk8HaUv7AEXtsjLuOXijHMd/ytd/mi+udE29ldu7kgedev9V783Tc7SEZSbfnzC6rhTztYwhk6QuPCALuiXdAB7UyEK/csUvF2HPbDVe1M3vvuevTv/zo+PTWudlFZ2NtS2XfACmtL19spdA76YtxQZ+5Wd2feWBg/9AdbePW0mUlreWGCwbIoOd7HUfTid9rlw/u7dbm3PaSJCC4zG+7K3HaQXsTY85jhwAyENGs4VEEUjKuZtP+8uLm//xJMnsnPTrem53lfh9YTCmRcahmLaxR0eu51+9gJshal9/pFv/dp9Sj+7yfn4lW5xMWZgcqmqlxr9Pvuapu/cIDewPHISo3YnvYHjp34eVTSj8csMZrA6PN6bYBl8IrC+s3lufnMvnSyOREb3Nh7vIZ16tHvB1ETYni2pVzxKBSIhaHRr4iWexuLmmZAosCwRlRUkPUtPp3bvlrq0nfcZeXqWUAiyOvL0I/Vakmvg8IIYKTfj+3b6dgvHvlsprR4s0NKGSlIL3vnZTpnEbLcslJvObGlTc006xObknigIrkyQ8f3rNj1O97b/zs5NOvfe+dG2+Opw7OtLcEgG/Iy268kkak3/c0ZCVBr9VeDsLE620w3mWhQ1VdEgijetDZzAxMKqbhbswhIQAk0fSoW0OSEyU9KPweUSgmWDH08v67vfV1BFLRNLNU9Wprdnkgcnpxr5feutW5vRAuL0pIjEpRRAFnfpT4KAqj4xdZraakLEMvaEquPnvVqa1WR0Ymp4affOzuV54/8cdf+f/fPnncxuW7Bz6GmHZbXq351zHHM4W9U4XtNbfh+csdZ77XWjczWRBcs1M4ZWFV9bvrPAnVVA4kQ4xFbhNTqphpwSLm9zBBSElPIIQlQgBAqGoNDvVXVgAAU9UsVftrKyhhQ5//LWV8ZvnP/xBhThSNJ0wkEVI0wdHYRx7rLXXjegNjxINQMTKakiOMdtev9juL+x84nFboay+8ZmfH9ow/ohmFVbYsUZcmlkSG4KEf1P2oBTwkWFc10+/XsKlhJIN+xyoNSwKJ19UyeR66/fU5gqmRKYVeV88P+J0VHvQAY0K1HIBEEhBIKUTQrGOKEcIijoLGpmKZLPLV4WklW3bOnZIskCyRLEZISMmxqogg8VdXuNsWcQSCSZ7EfpMx10oPp1Mj8zeuzy9sbBs7Ojl6NBzObYrVftB5Yvf97fb67NpZz1uMkx7BoCrmxOSu+uYcRvFwZcpJgiRyEq/rtxYUw0z6jdjr6ZkKUjXBo8z4Fi2f6S7cwASkFEhNjwMAQhhThScJEAyAgEu1UFJSKXfhDlY1GTEpQC9XY89BCEnBiW4KxiQQNZ23hsc6V89jTQeJMVaIomNqCJaYetnAeQMZEet0/QUuYySplILxGEC8N3pLpFl5QlQkuec1KUoqpdFNr5v0O5z7ipWKnDqPQ6LZRDUVKys42vqLjxZ3TfzsN35LS2mS8/8jgFCFJ5FEGGGSBEHx0D3prdvm/+avVdsEQICwFIAwfnfwR0AkRlhRECFEt7nbB4RUO6tYGb++QTQLCYmwQgQghBn3MKJSSgmIYC2OHIQIIBAsJlhJZSph0PScdUVPC5C+08wNTRZn9rRmb8V+FxBgqoDkIAVnCY8jTChR1MhtSsEBBFJT4+9lKVICwu+FKhgLziWXRNdBCITweyA4QiAktjLpHXt7l9+RgkkJCFMEUnKp2jlipOJ+DyMMPCaqJZIIYYrezQoQEIklEMZCCVKCNBRbSsFkkEQOEhwQxooWB1F1z8F7fvO3n//t3xKRI0UiWCB4BFJKAIQxAvQeVyw4gERqagwAAL1X70LTgBBCCBB6z+53XwABxjwKU9N37f7qX1z48hfCjSVMMCKqYAlCBBBBREEIY4R57BHV5kn07veClEAoSA6CSwFUtQARDSEAFPC+5IlkMSCQnOv5IUy1qLfJEl9KDiJB+B9slVJKiUACIAkAkoMEpNgj72Le8H/x3+9e5HsHfo+pfo8Ll4AQsfIyiWXoYCMt4gCwggAQ0QAhAAkSgCVINYlAhlXxnBUpBagmCIYEF0mAFBURhQUdhDBSLeAMCS6BGPkBKRKvtYIwkjzCigkIpOQIMACAFCBBIgnvcvZSAMD/ArGNcI6IWNVOAAAAAElFTkSuQmCC">
+<style>
+  /* ───────── Themes: every colour comes from these variables ───────── */
+  :root, [data-theme="black"]{
+    color-scheme:dark;
+    --page:#0f1115; --panel:#161a21; --panel2:#1b2029; --line:#262c38;
+    --text:#e6e9ef; --muted:#8a93a6; --accent:#6ea8fe; --accent2:#4f8cf0; --accent-text:#ffffff;
+    --ok:#5fd38d; --warn:#f2c14e; --err:#ff6b6b;
+    --editor:#0f1115; --gutter:#161a21; --pbg:#0f1115; --blur:0px; --glow:none;
+    --font:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  [data-theme="dark"]{
+    --page:#232834; --panel:#2a303d; --panel2:#323a49; --line:#404858;
+    --text:#dfe3ec; --muted:#98a1b3; --accent:#8ab4f8; --accent2:#5b8def;
+    --editor:#232834; --gutter:#2a303d; --pbg:#232834;
+  }
+  [data-theme="light"]{
+    color-scheme:light;
+    --page:#f4f6fa; --panel:#ffffff; --panel2:#eef1f6; --line:#d9dee8;
+    --text:#1b2230; --muted:#667085; --accent:#2563eb; --accent2:#2563eb;
+    --ok:#16a34a; --warn:#b7791f; --err:#dc2626;
+    --editor:#ffffff; --gutter:#f4f6fa; --pbg:#ffffff;
+  }
+  [data-theme="matrix"]{
+    --page:#000000; --panel:rgba(0,14,2,.74); --panel2:rgba(0,36,6,.82); --line:#0c4a18;
+    --text:#39ff6a; --muted:#1fa23f; --accent:#00ff41; --accent2:#00cc33; --accent-text:#001a05;
+    --ok:#00ff41; --warn:#d6ff3a; --err:#ff3b3b;
+    --editor:rgba(0,10,2,.80); --gutter:rgba(0,20,4,.88); --pbg:#000a02; --blur:2px;
+    --glow:0 0 14px rgba(0,255,65,.22);
+    --font:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  [data-theme="jarvis"]{
+    --page:radial-gradient(ellipse at 50% 40%,#04263d 0%,#020f1c 60%,#01070f 100%);
+    --panel:rgba(4,30,52,.62); --panel2:rgba(8,48,78,.72); --line:rgba(0,229,255,.28);
+    --text:#d4f6ff; --muted:#6fb6c9; --accent:#00e5ff; --accent2:#00b8d4; --accent-text:#00131a;
+    --ok:#3dffb0; --warn:#ffd24a; --err:#ff5c7a;
+    --editor:rgba(2,18,32,.70); --gutter:rgba(3,26,46,.82); --pbg:#020f1c; --blur:6px;
+    --glow:0 0 16px rgba(0,229,255,.25);
+  }
+  [data-theme="heaven"]{
+    color-scheme:light;
+    --page:linear-gradient(165deg,#ffffff 0%,#fff8dc 55%,#ffeaa0 100%);
+    --gold:linear-gradient(180deg,#fff2a6 0%,#ffd700 38%,#f0bd00 72%,#d4a000 100%);   /* 24k gold */
+    --panel:var(--gold); --panel2:#ffffff; --line:#e0b000;
+    --text:#2f2200; --muted:#7a5c00; --accent:#b8860b; --accent2:#d4a000; --accent-text:#ffd700;
+    --ok:#2e8b57; --warn:#b87400; --err:#c0392b;
+    --editor:rgba(255,255,255,.93); --gutter:#fff8dc; --pbg:#ffffff; --blur:8px;
+    --glow:0 2px 16px rgba(255,200,0,.55);
+    --font:Georgia,"Times New Roman",serif;
+  }
+  /* Heaven: gold chrome (menu bar, tab bars, borders, buttons), white work areas */
+  [data-theme="heaven"] header{box-shadow:0 2px 16px rgba(255,200,0,.55),inset 0 1px 0 rgba(255,255,255,.7);border-bottom-color:#b8860b}
+  [data-theme="heaven"] .bar{color:#5a4200;border-bottom-color:#b8860b;box-shadow:inset 0 1px 0 rgba(255,255,255,.6)}
+  [data-theme="heaven"] .brand .sub,[data-theme="heaven"] label.chk,[data-theme="heaven"] .hint,[data-theme="heaven"] .tab{color:#5a4200}
+  [data-theme="heaven"] .tab.active{color:#2f2200;border-bottom-color:#2f2200}
+  [data-theme="heaven"] .sep{background:rgba(90,66,0,.35)}
+  [data-theme="heaven"] select,[data-theme="heaven"] button:not(.primary):not(.tab),[data-theme="heaven"] input.name{
+    background:#fffdf0;border-color:#b8860b;color:#2f2200}
+  [data-theme="heaven"] select:hover,[data-theme="heaven"] button:hover{border-color:#2f2200}
+  [data-theme="heaven"] button.primary,[data-theme="heaven"] .seg button.on{background:linear-gradient(180deg,#4a3500,#241a00);border-color:#241a00;color:#ffd700;box-shadow:0 1px 6px rgba(80,55,0,.4)}
+  [data-theme="heaven"] .seg{border-color:#b8860b;background:#fffdf0}
+  [data-theme="heaven"] .seg button{color:#5a4200}
+  [data-theme="heaven"] .brand .logo{border-color:#b8860b}
+  [data-theme="heaven"] .pane + .pane{border-left-color:#b8860b}
+  [data-theme="heaven"] #gutter{border-right-color:#e0b000;color:#a07c00}
+  [data-theme="heaven"] .ln{border-bottom-color:#f3e2a0}
+  [data-theme="heaven"] kbd{background:#fffdf0;border-color:#b8860b;color:#2f2200}
+  [data-theme="heaven"] #toast{background:#fffdf0;border-color:#d4a000}
+
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0}
+  body{background:var(--page);background-attachment:fixed;color:var(--text);font:14px/1.45 var(--font);display:flex;flex-direction:column}
+  #bg{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;display:none}
+  [data-theme="matrix"] #bg{opacity:.65}
+  [data-theme="jarvis"] #bg{opacity:.9}
+  header,main{position:relative;z-index:1}
+  header{display:flex;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);background:var(--panel);flex-wrap:wrap;backdrop-filter:blur(var(--blur));box-shadow:var(--glow)}
+  .brand{font-weight:700;letter-spacing:.2px;margin-right:4px}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand .logo{height:54px;width:auto;display:block;border-radius:8px;border:1px solid var(--line);box-shadow:var(--glow)}
+  .brand .sub{color:var(--muted);font-weight:400}
+  [data-theme="jarvis"] .brand .sub{text-transform:uppercase;letter-spacing:2px}
+  .seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .seg button{border:0;border-radius:0;background:transparent;color:var(--muted);padding:6px 12px}
+  .seg button.on{background:var(--accent2);color:var(--accent-text);font-weight:600}
+  .tag{font-size:11px;color:var(--muted);border:1px solid var(--line);padding:2px 8px;border-radius:99px}
+  .spacer{flex:1}
+  .group{display:flex;gap:6px;align-items:center}
+  select,button,input.name{font:inherit;color:var(--text);background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:6px 10px;cursor:pointer}
+  select option{background:var(--pbg);color:var(--text)}
+  button:hover,select:hover{border-color:var(--accent)}
+  button svg{width:14px;height:14px;vertical-align:-2px;margin-right:4px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  button.primary{background:var(--accent2);border-color:var(--accent2);color:var(--accent-text);font-weight:600;box-shadow:var(--glow)}
+  button.primary:hover{filter:brightness(1.12)}
+  label.chk{display:flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;cursor:pointer}
+  .sep{width:1px;height:22px;background:var(--line);margin:0 4px}
+  main{flex:1;display:grid;grid-template-columns:1fr 1fr;min-height:0}
+  @media (max-width:820px){main{grid-template-columns:1fr;grid-template-rows:1fr 1fr}}
+  .pane{display:flex;flex-direction:column;min-height:0;min-width:0}
+  .pane + .pane{border-left:1px solid var(--line)}
+  @media (max-width:820px){.pane + .pane{border-left:0;border-top:1px solid var(--line)}}
+  .bar{display:flex;align-items:center;gap:6px;padding:6px 10px;background:var(--panel);border-bottom:1px solid var(--line);color:var(--muted);font-size:12px;min-height:38px;backdrop-filter:blur(var(--blur))}
+  input.name{padding:3px 8px;font-size:12px;width:230px;max-width:60%;cursor:text;font-family:ui-monospace,Menlo,Consolas,monospace}
+  .tab{background:none;border:0;border-bottom:2px solid transparent;border-radius:0;padding:6px 10px;color:var(--muted)}
+  .tab.active{color:var(--text);border-bottom-color:var(--accent)}
+  .badge{background:var(--err);color:#fff;border-radius:99px;font-size:10px;padding:0 6px;margin-left:4px;display:none}
+  .editor{flex:1;display:flex;min-height:0;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;font-size:13px;line-height:20px;position:relative}
+  .editor.drop::after{content:"Drop a .js or .py file to import";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--panel2);color:var(--accent);font:600 16px var(--font);border:2px dashed var(--accent);opacity:.94}
+  #gutter{width:44px;padding:10px 8px 10px 0;text-align:right;color:var(--muted);opacity:.8;background:var(--gutter);overflow:hidden;user-select:none;white-space:pre;border-right:1px solid var(--line)}
+  #code{flex:1;resize:none;border:0;outline:0;background:transparent;color:var(--text);font:inherit;padding:10px 12px;white-space:pre;overflow:auto;tab-size:2;caret-color:var(--accent)}
+  .view{flex:1;min-height:0;position:relative}
+  .view > *{position:absolute;inset:0}
+  #frameWrap{background:var(--pbg)}
+  #tfView,#anView,#shView{position:absolute;inset:0}
+  #langSel{font-weight:600;border-color:var(--accent2);max-width:190px}#engine{max-width:170px}
+  #frameWrap iframe{width:100%;height:100%;border:0;background:var(--pbg)}
+  #empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px}
+  #console{overflow:auto;background:var(--editor);backdrop-filter:blur(var(--blur));font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;padding:6px 0}
+  .ln{padding:3px 14px;border-bottom:1px solid var(--line);white-space:pre-wrap;word-break:break-word}
+  .ln.warn{color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,transparent)}
+  .ln.error{color:var(--err);background:color-mix(in srgb,var(--err) 12%,transparent)}
+  .ln.info{color:var(--accent)}
+  .ln.sys{color:var(--muted);font-style:italic}
+  .hint{margin-left:auto;font-size:11px;color:var(--muted)}
+  kbd{background:var(--panel2);border:1px solid var(--line);border-radius:4px;padding:0 5px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11px}
+  #toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(20px);background:var(--panel2);color:var(--text);border:1px solid var(--accent);padding:8px 16px;border-radius:10px;opacity:0;transition:.25s;z-index:10;pointer-events:none;box-shadow:var(--glow);max-width:90vw}
+  #toast.show{opacity:1;transform:translateX(-50%)}
+  @media (max-width:1560px){.lbl{display:none}}
+  @media (max-width:1760px){.seg button{padding:6px 8px}header{gap:6px;padding:10px 10px}#examples{max-width:170px}#theme{max-width:120px}label.chk{font-size:12px}}
+  @media (max-width:1500px){label.chk{display:none}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<header>
+  <div class="brand"><img class="logo" alt="DevPortal by Gau" src="data:image/jpeg;base64,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"><span class="sub">/ Playground</span></div>
+  <div class="group"><select id="langSel" aria-label="Language" title="Language">
+    <optgroup label="Web"><option value="javascript">JavaScript (+ React, PlayCanvas)</option><option value="typescript">TypeScript</option></optgroup>
+    <optgroup label="Scripting"><option value="python">Python</option><option value="shell">Shell (Bash)</option></optgroup>
+    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option><option value="csharp">C#</option><option value="rustwasm">Rust → WASM apps</option></optgroup>
+    <optgroup label="Databases"><option value="sql">SQL</option></optgroup>
+    <optgroup label="Infrastructure"><option value="terraform">Terraform</option><option value="ansible">Ansible</option></optgroup>
+  </select><select id="engine" aria-label="C/C++ engine" title="C/C++ engine: the offline simulator is isolated in your browser; the real compiler sends your code to a public online sandbox (Judge0)" style="display:none"><option value="sim">Simulator (offline)</option><option value="real">Real compiler (online)</option></select></div>
+  <div class="spacer"></div>
+  <div class="group">
+    <select id="examples" aria-label="Load an example"></select>
+    <select id="theme" aria-label="Theme" title="Theme">
+      <option value="black">Black</option>
+      <option value="dark">Dark</option>
+      <option value="light">Light</option>
+      <option value="matrix">Neon · Matrix</option>
+      <option value="jarvis">Neon · Jarvis</option>
+      <option value="heaven">Heaven</option>
+    </select>
+  </div>
+  <span class="sep"></span>
+  <div class="group">
+    <button id="import" title="Import a source file (.js .ts .py .rs .c .cpp .java .cs .tf .yml .sh …) into the editor"><svg viewBox="0 0 24 24"><path d="M12 15V3M7 8l5-5 5 5M4 21h16"/></svg><span class="lbl">Import</span></button>
+    <button id="save" title="Save the editor contents to a file"><svg viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M4 21h16"/></svg><span class="lbl">Save</span></button>
+    <button id="copy" title="Copy code to the clipboard"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg><span class="lbl">Copy</span></button>
+    <input type="file" id="file" accept=".js,.mjs,.cjs,.jsx,.ts,.tsx,.py,.rs,.tf,.hcl,.java,.cs,.c,.h,.cpp,.cc,.hpp,.yml,.yaml,.sh,.bash,.sql,.txt,.json,text/*" hidden>
+  </div>
+  <span class="sep"></span>
+  <div class="group">
+    <label class="chk"><input type="checkbox" id="auto"> Auto-run</label>
+    <button id="blank" title="Clear the editor, console and preview for a blank slate">Clear</button>
+    <button id="reset" title="Reset to the selected example">Reset</button>
+    <button id="stop">Stop</button>
+    <button id="run" class="primary">▶ Run</button>
+  </div>
+</header>
+<main>
+  <section class="pane">
+    <div class="bar"><input class="name" id="fname" value="script.js" spellcheck="false" aria-label="File name"><span class="hint"><kbd>Ctrl</kbd>/<kbd>⌘</kbd> + <kbd>Enter</kbd> to run</span></div>
+    <div class="editor" id="editor">
+      <div id="gutter">1</div>
+      <textarea id="code" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" aria-label="Code editor"></textarea>
+    </div>
+  </section>
+  <section class="pane">
+    <div class="bar">
+      <button class="tab active" data-tab="preview">Preview</button>
+      <button class="tab" data-tab="console">Console<span class="badge" id="errBadge">0</span></button>
+      <button class="tab" data-tab="registry" id="docsTab">Docs</button>
+      <button class="tab" id="clear" style="margin-left:auto;font-size:12px">Clear console</button>
+    </div>
+    <div class="view">
+      <div id="frameWrap"><div id="empty">Press Run to see your output here</div></div>
+      <div id="console" style="display:none"></div>
+      <div id="registry">
+        <div class="rgbar" id="rgBar"></div>
+        <iframe id="rgFrame" title="Reference documentation" referrerpolicy="no-referrer" sandbox="allow-scripts allow-same-origin allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
+        <div class="rgnote" id="rgNote"></div>
+      </div>
+    </div>
+  </section>
+</main>
+<div id="toast" role="status"></div>
+
+<script src="terraform-sim.js"></script>
+<script src="terraform-ui.js"></script>
+<script src="langs-extra.js"></script>
+<script src="examples-gen.js"></script>
+<script src="shell-sim.js"></script>
+<script src="shell-ui.js"></script>
+<script src="ansible-sim.js"></script>
+<script src="ansible-ui.js"></script>
+<script src="sql-ui.js"></script>
+<script>
+(function(){
+  /* ───────── Examples ─────────
+     Inside every example you get: a full-size <canvas id="canvas">, a <div id="app"> overlay,
+     and a THEME object { bg, fg, muted, accent, accent2, ok, warn, err, fade(alpha) }
+     that follows the selected portal theme. */
+  const EXAMPLES = {
+
+"Hello, console": String.raw`// console.log output appears in the Console tab.
+const greet = name => "Hello, " + name + "!";
+console.log(greet("DevPortal"));
+
+const nums = [5, 3, 8, 1, 9, 2];
+console.log("sorted:", [...nums].sort((a, b) => a - b));
+console.log("sum:", nums.reduce((a, b) => a + b, 0));
+console.log({ nested: { ok: true, list: [1, 2, 3] } });
+console.warn("This is a warning");
+
+// Output can also go into the page. THEME follows the portal theme.
+document.body.innerHTML =
+  "<h2 style='font-family:system-ui;padding:20px;color:" + THEME.accent + "'>Hello from the DOM 👋</h2>";
+`,
+
+"Async & errors": String.raw`// Promises, timers, and error reporting (with line numbers).
+const wait = ms => new Promise(r => setTimeout(r, ms));
+async function main() {
+  console.log("start");
+  for (let n = 1; n <= 3; n++) { await wait(400); console.log("tick", n); }
+  console.info("about to fail...");
+  await wait(300);
+  null.boom();   // <- this throws
+}
+main();
+`,
+
+"Canvas: bouncing balls": String.raw`const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const balls = Array.from({ length: 25 }, () => ({
+  x: Math.random() * canvas.width, y: Math.random() * canvas.height,
+  vx: (Math.random() - .5) * 5, vy: (Math.random() - .5) * 5,
+  r: 8 + Math.random() * 16, h: Math.random() * 360
+}));
+
+function frame() {
+  ctx.fillStyle = THEME.fade(.25);              // translucent fill = motion trails
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (const b of balls) {
+    b.x += b.vx; b.y += b.vy;
+    if (b.x < b.r || b.x > canvas.width - b.r) b.vx *= -1;
+    if (b.y < b.r || b.y > canvas.height - b.r) b.vy *= -1;
+    ctx.beginPath();
+    ctx.fillStyle = "hsl(" + b.h + ",80%,60%)";
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fill();
+  }
+  requestAnimationFrame(frame);
+}
+frame();
+`,
+
+"Canvas: sine waves": String.raw`const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+let t = 0;
+function draw() {
+  const w = canvas.width, h = canvas.height;
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, w, h);
+  for (let k = 0; k < 6; k++) {
+    ctx.beginPath();
+    ctx.strokeStyle = "hsl(" + (200 + k * 25) + ",85%," + (55 + k * 3) + "%)";
+    ctx.lineWidth = 2;
+    for (let x = 0; x <= w; x += 3) {
+      const y = h / 2 + Math.sin(x * 0.012 + t + k * 0.6) * (30 + k * 18) * Math.sin(t * 0.5 + k);
+      x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  t += 0.03;
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Canvas: particle trail": String.raw`const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const parts = [];
+canvas.addEventListener("mousemove", e => {
+  const r = canvas.getBoundingClientRect();
+  for (let k = 0; k < 4; k++) parts.push({
+    x: e.clientX - r.left, y: e.clientY - r.top,
+    vx: (Math.random() - .5) * 3, vy: (Math.random() - .5) * 3 - 1,
+    life: 1, h: (performance.now() / 8) % 360
+  });
+});
+(function loop() {
+  ctx.fillStyle = THEME.fade(.2); ctx.fillRect(0, 0, canvas.width, canvas.height);
+  for (let k = parts.length - 1; k >= 0; k--) {
+    const p = parts[k];
+    p.x += p.vx; p.y += p.vy; p.life -= 0.015;
+    if (p.life <= 0) { parts.splice(k, 1); continue; }
+    ctx.fillStyle = "hsla(" + p.h + ",90%,60%," + p.life + ")";
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4 * p.life + 1, 0, 6.283); ctx.fill();
+  }
+  requestAnimationFrame(loop);
+})();
+console.log("Move your mouse over the preview");
+`,
+
+"Visualize: bubble sort": String.raw`// Animated bar chart of a sorting algorithm.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const N = 40;
+const arr = Array.from({ length: N }, () => 10 + Math.random() * (canvas.height - 30));
+let i = 0, j = 0, swaps = 0, done = false;
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const bw = canvas.width / N;
+  arr.forEach((v, k) => {
+    ctx.fillStyle = done ? THEME.ok : (k === j || k === j + 1) ? THEME.err : THEME.accent;
+    ctx.fillRect(k * bw + 1, canvas.height - v, bw - 2, v);
+  });
+}
+function step() {
+  if (i < N - 1) {
+    if (j < N - i - 1) {
+      if (arr[j] > arr[j + 1]) { [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]; swaps++; }
+      j++;
+    } else { j = 0; i++; }
+  } else if (!done) { done = true; console.log("Sorted in", swaps, "swaps"); }
+  draw();
+  if (!done) requestAnimationFrame(step);
+}
+step();
+`,
+
+"DOM: interactive counter": String.raw`// Build UI with plain DOM code inside <div id="app">.
+const app = document.getElementById("app");
+app.style.cssText = "font-family:system-ui;padding:24px;text-align:center;color:" + THEME.fg;
+let count = 0;
+
+const label = document.createElement("div");
+label.style.cssText = "font-size:64px;font-weight:700;margin:16px;color:" + THEME.accent;
+const mk = (txt, fn) => {
+  const b = document.createElement("button");
+  b.textContent = txt;
+  b.style.cssText = "font-size:20px;padding:8px 20px;margin:4px;border-radius:8px;cursor:pointer;" +
+    "border:1px solid " + THEME.accent + ";background:transparent;color:" + THEME.fg;
+  b.onclick = fn;
+  return b;
+};
+const render = () => { label.textContent = count; console.log("count =", count); };
+app.append(label, mk("−", () => { count--; render(); }), mk("Reset", () => { count = 0; render(); }), mk("+", () => { count++; render(); }));
+render();
+`,
+
+"Traffic flow: nodes & roads": String.raw`// Cars flow between intersections. Roads turn green → red as they congest.
+// Click an intersection to close it and watch traffic reroute.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+const nodes = [
+  [.08,.18],[.34,.10],[.62,.20],[.92,.12],
+  [.18,.52],[.45,.48],[.72,.55],[.92,.50],
+  [.10,.88],[.38,.86],[.66,.90],[.92,.86]
+].map((p, i) => ({ id: i, x: p[0] * W, y: p[1] * H, blocked: false }));
+
+const roads = [[0,1],[1,2],[2,3],[0,4],[1,5],[2,6],[3,7],[4,5],[5,6],[6,7],[4,8],[5,9],[6,10],[7,11],[8,9],[9,10],[10,11]]
+  .map(r => ({ a: nodes[r[0]], b: nodes[r[1]], load: 0 }));
+roads.forEach(r => r.len = Math.hypot(r.a.x - r.b.x, r.a.y - r.b.y));
+const adj = nodes.map(n => roads.filter(r => r.a === n || r.b === n));
+const other = (road, node) => road.a === node ? road.b : road.a;
+
+const cars = Array.from({ length: 120 }, () => {
+  const road = roads[Math.random() * roads.length | 0];
+  return { road, from: Math.random() < .5 ? road.a : road.b, t: Math.random() };
+});
+let passed = 0, perSec = 0;
+setInterval(() => { perSec = passed; passed = 0; }, 1000);
+
+function update() {
+  roads.forEach(r => r.load = 0);
+  cars.forEach(c => c.road.load++);
+  for (const c of cars) {
+    c.t += (2.4 / (1 + c.road.load * 0.35)) / c.road.len;   // busier road = slower
+    if (c.t >= 1) {
+      const node = other(c.road, c.from);
+      let options = adj[node.id].filter(r => r !== c.road && !other(r, node).blocked);
+      if (!options.length) options = [c.road];                // dead end: turn around
+      c.road = options[Math.random() * options.length | 0];
+      c.from = node; c.t = 0; passed++;
+    }
+  }
+}
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  for (const r of roads) {
+    const jam = Math.min(1, r.load / 8);
+    ctx.strokeStyle = "hsl(" + (130 - jam * 130) + ",80%,50%)";
+    ctx.lineWidth = 3 + jam * 6; ctx.globalAlpha = .55;
+    ctx.beginPath(); ctx.moveTo(r.a.x, r.a.y); ctx.lineTo(r.b.x, r.b.y); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  for (const c of cars) {
+    const to = other(c.road, c.from);
+    ctx.fillStyle = THEME.fg;
+    ctx.beginPath();
+    ctx.arc(c.from.x + (to.x - c.from.x) * c.t, c.from.y + (to.y - c.from.y) * c.t, 2.6, 0, 6.283);
+    ctx.fill();
+  }
+  ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.font = "bold 11px system-ui";
+  for (const n of nodes) {
+    ctx.fillStyle = THEME.bg; ctx.strokeStyle = n.blocked ? THEME.err : THEME.accent; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(n.x, n.y, 12, 0, 6.283); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = n.blocked ? THEME.err : THEME.fg;
+    ctx.fillText(n.blocked ? "✕" : String.fromCharCode(65 + n.id), n.x, n.y + 1);
+  }
+  ctx.textAlign = "left"; ctx.textBaseline = "alphabetic"; ctx.font = "13px system-ui"; ctx.fillStyle = THEME.fg;
+  ctx.fillText("Throughput: " + perSec + " intersections/s  ·  click a node to close it", 14, H - 12);
+}
+
+canvas.addEventListener("click", e => {
+  const rc = canvas.getBoundingClientRect();
+  const x = e.clientX - rc.left, y = e.clientY - rc.top;
+  const n = nodes.find(n => Math.hypot(n.x - x, n.y - y) < 20);
+  if (n) { n.blocked = !n.blocked; console.log("Intersection", String.fromCharCode(65 + n.id), n.blocked ? "closed" : "open"); }
+});
+(function loop() { update(); draw(); requestAnimationFrame(loop); })();
+`,
+
+"World map: live connections": String.raw`// Stylised world map (rough hand-drawn continents, equirectangular projection)
+// with animated connections between cities.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const s = Math.min(W / 360, H / 180), ox = (W - 360 * s) / 2, oy = (H - 180 * s) / 2;
+const P = (lon, lat) => [ox + (lon + 180) * s, oy + (90 - lat) * s];
+
+const land = [
+  // North America
+  [[-168,66],[-156,71],[-125,70],[-95,72],[-82,69],[-64,60],[-56,52],[-66,44],[-76,36],[-81,25],[-90,29],[-97,26],[-97,20],[-88,16],[-83,9],[-78,8],[-86,14],[-95,16],[-105,20],[-110,24],[-115,31],[-118,34],[-124,40],[-124,48],[-135,57],[-150,60],[-165,60]],
+  // Greenland
+  [[-55,60],[-45,60],[-20,70],[-20,82],[-60,82],[-72,76],[-55,68]],
+  // South America
+  [[-78,8],[-72,12],[-62,10],[-50,0],[-35,-5],[-39,-15],[-48,-26],[-58,-38],[-65,-42],[-68,-52],[-74,-50],[-73,-37],[-71,-18],[-81,-5],[-80,0]],
+  // Europe + Asia
+  [[-10,36],[-9,43],[-2,48],[2,51],[8,55],[10,59],[5,62],[15,69],[30,71],[60,69],[80,73],[105,77],[140,72],[170,70],[180,66],[160,60],[155,52],[142,46],[135,35],[128,38],[122,40],[122,30],[110,20],[105,10],[100,4],[104,1],[98,8],[93,20],[80,15],[77,8],[72,20],[67,25],[57,25],[50,30],[44,36],[36,35],[28,37],[24,38],[16,40],[12,44],[8,44],[3,43],[-5,36]],
+  // Africa
+  [[-17,21],[-6,36],[10,37],[32,31],[34,28],[43,12],[51,12],[40,-3],[40,-15],[33,-26],[20,-35],[15,-26],[12,-6],[9,4],[-8,4],[-17,14]],
+  // Australia
+  [[114,-22],[122,-18],[131,-12],[142,-11],[146,-19],[153,-27],[150,-37],[140,-38],[131,-31],[115,-34]],
+  // Japan
+  [[130,31],[135,34],[141,38],[142,45],[138,37]]
+];
+const cities = [["New York",-74,40.7],["San Francisco",-122.4,37.8],["São Paulo",-46.6,-23.5],["London",-0.1,51.5],
+  ["Cape Town",18.4,-33.9],["Mumbai",72.9,19.1],["Singapore",103.8,1.35],["Tokyo",139.7,35.7],["Sydney",151.2,-33.9],["Dubai",55.3,25.2]];
+
+const arcs = [], ripples = [];
+setInterval(() => {
+  const a = cities[Math.random() * cities.length | 0];
+  let b; do { b = cities[Math.random() * cities.length | 0]; } while (b === a);
+  arcs.push({ a: P(a[1], a[2]), b: P(b[1], b[2]), t: 0 });
+}, 450);
+
+function pt(arc, t) {   // point on a quadratic curve that bows upward
+  const mx = (arc.a[0] + arc.b[0]) / 2, my = (arc.a[1] + arc.b[1]) / 2 - Math.hypot(arc.b[0] - arc.a[0], arc.b[1] - arc.a[1]) * .25;
+  const u = 1 - t;
+  return [u * u * arc.a[0] + 2 * u * t * mx + t * t * arc.b[0], u * u * arc.a[1] + 2 * u * t * my + t * t * arc.b[1]];
+}
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  // graticule
+  ctx.strokeStyle = THEME.muted; ctx.globalAlpha = .18; ctx.lineWidth = 1;
+  for (let lon = -180; lon <= 180; lon += 30) { const [x] = P(lon, 0); ctx.beginPath(); ctx.moveTo(x, oy); ctx.lineTo(x, oy + 180 * s); ctx.stroke(); }
+  for (let lat = -90; lat <= 90; lat += 30) { const [, y] = P(0, lat); ctx.beginPath(); ctx.moveTo(ox, y); ctx.lineTo(ox + 360 * s, y); ctx.stroke(); }
+  // land
+  for (const poly of land) {
+    ctx.beginPath();
+    poly.forEach((p, i) => { const [x, y] = P(p[0], p[1]); i ? ctx.lineTo(x, y) : ctx.moveTo(x, y); });
+    ctx.closePath();
+    ctx.globalAlpha = .2; ctx.fillStyle = THEME.accent; ctx.fill();
+    ctx.globalAlpha = .8; ctx.strokeStyle = THEME.accent; ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // arcs
+  for (let i = arcs.length - 1; i >= 0; i--) {
+    const arc = arcs[i]; arc.t += .014;
+    ctx.beginPath(); ctx.strokeStyle = THEME.accent2; ctx.lineWidth = 1.5; ctx.globalAlpha = .7;
+    for (let k = 0; k <= 30; k++) { const p = pt(arc, Math.min(arc.t, 1) * k / 30); k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]); }
+    ctx.stroke(); ctx.globalAlpha = 1;
+    const h = pt(arc, Math.min(arc.t, 1));
+    ctx.fillStyle = THEME.fg; ctx.beginPath(); ctx.arc(h[0], h[1], 2.5, 0, 6.283); ctx.fill();
+    if (arc.t >= 1) { ripples.push({ x: arc.b[0], y: arc.b[1], r: 0 }); arcs.splice(i, 1); }
+  }
+  for (let i = ripples.length - 1; i >= 0; i--) {
+    const r = ripples[i]; r.r += .6;
+    if (r.r > 18) { ripples.splice(i, 1); continue; }
+    ctx.strokeStyle = THEME.ok; ctx.globalAlpha = 1 - r.r / 18; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, 6.283); ctx.stroke(); ctx.globalAlpha = 1;
+  }
+  // cities
+  ctx.font = "11px system-ui"; ctx.textAlign = "left";
+  for (const c of cities) {
+    const [x, y] = P(c[1], c[2]);
+    ctx.fillStyle = THEME.warn; ctx.beginPath(); ctx.arc(x, y, 3.5, 0, 6.283); ctx.fill();
+    ctx.fillStyle = THEME.fg; ctx.fillText(c[0], x + 7, y + 4);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Charts: live trend": String.raw`// Streaming price chart: line + area, 10-point moving average, volume bars, hover crosshair.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const N = 90;
+let price = 100;
+const next = () => {
+  const open = price;
+  price = Math.max(5, price + (Math.random() - .48) * 2.2);
+  return { p: price, v: 20 + Math.random() * 80, up: price >= open };
+};
+const data = Array.from({ length: N }, next);
+setInterval(() => { data.push(next()); data.shift(); }, 300);
+
+const pad = { l: 56, r: 16, t: 52, b: 26 };
+let mouse = null;
+canvas.addEventListener("mousemove", e => { const r = canvas.getBoundingClientRect(); mouse = { x: e.clientX - r.left }; });
+canvas.addEventListener("mouseleave", () => mouse = null);
+
+function sma(k) {
+  return data.map((_, i) => i < k - 1 ? null : data.slice(i - k + 1, i + 1).reduce((a, d) => a + d.p, 0) / k);
+}
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  const cw = W - pad.l - pad.r;
+  const priceH = (H - pad.t - pad.b) * .68;
+  const volTop = pad.t + priceH + 12, volH = H - pad.b - volTop;
+  const ps = data.map(d => d.p);
+  const lo = Math.min(...ps) - 1, hi = Math.max(...ps) + 1;
+  const X = i => pad.l + i / (N - 1) * cw;
+  const Y = p => pad.t + (1 - (p - lo) / (hi - lo)) * priceH;
+
+  // grid + y labels
+  ctx.font = "11px system-ui"; ctx.textAlign = "right"; ctx.lineWidth = 1;
+  for (let k = 0; k <= 4; k++) {
+    const p = lo + (hi - lo) * k / 4, y = Y(p);
+    ctx.strokeStyle = THEME.muted; ctx.globalAlpha = .25;
+    ctx.beginPath(); ctx.moveTo(pad.l, y); ctx.lineTo(W - pad.r, y); ctx.stroke();
+    ctx.globalAlpha = 1; ctx.fillStyle = THEME.muted; ctx.fillText(p.toFixed(1), pad.l - 8, y + 4);
+  }
+
+  // area under the line
+  const g = ctx.createLinearGradient(0, pad.t, 0, pad.t + priceH);
+  g.addColorStop(0, THEME.accent + "66"); g.addColorStop(1, THEME.accent + "00");
+  ctx.beginPath(); ctx.moveTo(X(0), pad.t + priceH);
+  data.forEach((d, i) => ctx.lineTo(X(i), Y(d.p)));
+  ctx.lineTo(X(N - 1), pad.t + priceH); ctx.closePath(); ctx.fillStyle = g; ctx.fill();
+
+  // price line
+  ctx.beginPath(); ctx.strokeStyle = THEME.accent; ctx.lineWidth = 2;
+  data.forEach((d, i) => i ? ctx.lineTo(X(i), Y(d.p)) : ctx.moveTo(X(i), Y(d.p)));
+  ctx.stroke();
+
+  // moving average
+  ctx.beginPath(); ctx.strokeStyle = THEME.warn; ctx.lineWidth = 1.5; ctx.setLineDash([5, 4]);
+  let started = false;
+  sma(10).forEach((v, i) => { if (v == null) return; started ? ctx.lineTo(X(i), Y(v)) : ctx.moveTo(X(i), Y(v)); started = true; });
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // volume
+  const bw = cw / N;
+  data.forEach((d, i) => {
+    ctx.fillStyle = d.up ? THEME.ok : THEME.err; ctx.globalAlpha = .75;
+    const h = d.v / 100 * volH; ctx.fillRect(X(i) - bw / 2 + 1, volTop + volH - h, bw - 2, h);
+  });
+  ctx.globalAlpha = 1;
+
+  // title + delta
+  const last = ps[N - 1], first = ps[0], pct = (last - first) / first * 100;
+  ctx.textAlign = "left"; ctx.fillStyle = THEME.fg; ctx.font = "bold 20px system-ui";
+  ctx.fillText("ACME  " + last.toFixed(2), pad.l, 30);
+  ctx.fillStyle = pct >= 0 ? THEME.ok : THEME.err; ctx.font = "bold 14px system-ui";
+  ctx.fillText((pct >= 0 ? "▲ +" : "▼ ") + pct.toFixed(2) + "%", pad.l + 140, 30);
+  ctx.fillStyle = THEME.muted; ctx.font = "11px system-ui";
+  ctx.fillText("— price    - - 10-pt moving average", W - 250, 30);
+
+  // crosshair
+  if (mouse && mouse.x > pad.l && mouse.x < W - pad.r) {
+    const i = Math.max(0, Math.min(N - 1, Math.round((mouse.x - pad.l) / cw * (N - 1))));
+    ctx.strokeStyle = THEME.fg; ctx.globalAlpha = .5; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(X(i), pad.t); ctx.lineTo(X(i), H - pad.b); ctx.stroke(); ctx.globalAlpha = 1;
+    ctx.fillStyle = THEME.accent; ctx.beginPath(); ctx.arc(X(i), Y(data[i].p), 4, 0, 6.283); ctx.fill();
+    const label = data[i].p.toFixed(2);
+    const bx = Math.min(X(i) + 8, W - 70);
+    ctx.fillStyle = THEME.fg; ctx.fillRect(bx, Y(data[i].p) - 22, 60, 20);
+    ctx.fillStyle = THEME.bg; ctx.font = "bold 12px system-ui"; ctx.fillText(label, bx + 8, Y(data[i].p) - 8);
+  }
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Charts: bar race": String.raw`// Animated horizontal bar chart that re-ranks as values change.
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+const items = ["Python","JavaScript","TypeScript","Go","Rust","Java","C#","Kotlin"].map((name, i) => ({
+  name, value: 30 + Math.random() * 60, shown: 0, y: i * 40, hue: i * 43
+}));
+setInterval(() => items.forEach(it => it.value = Math.max(5, it.value + (Math.random() - .45) * 14)), 700);
+
+function draw() {
+  ctx.fillStyle = THEME.bg; ctx.fillRect(0, 0, W, H);
+  const sorted = [...items].sort((a, b) => b.value - a.value);
+  const max = Math.max(...items.map(i => i.value));
+  const rowH = Math.min(46, (H - 50) / items.length);
+  ctx.font = "bold 16px system-ui"; ctx.fillStyle = THEME.fg; ctx.textAlign = "left";
+  ctx.fillText("Popularity index (simulated)", 20, 28);
+  sorted.forEach((it, rank) => {
+    it.y += (50 + rank * rowH - it.y) * .12;          // glide to new rank
+    it.shown += (it.value - it.shown) * .12;           // ease the bar length
+    const w = (W - 190) * it.shown / max;
+    ctx.fillStyle = "hsl(" + it.hue + ",75%,55%)";
+    ctx.fillRect(110, it.y, w, rowH - 8);
+    ctx.fillStyle = THEME.fg; ctx.font = "13px system-ui"; ctx.textAlign = "right";
+    ctx.fillText(it.name, 100, it.y + rowH / 2 + 1);
+    ctx.textAlign = "left"; ctx.fillText(it.shown.toFixed(0), 116 + w, it.y + rowH / 2 + 1);
+  });
+  requestAnimationFrame(draw);
+}
+draw();
+`,
+
+"Media: video embedder": String.raw`// Paste a YouTube, Vimeo or direct .mp4 link and press Load.
+// Note: embedding needs internet access, and it works when this page runs from your own
+// computer / GitHub Pages (hosting sandboxes such as claude.ai block embedded sites).
+const app = document.getElementById("app");
+app.style.cssText = "padding:16px;font-family:system-ui;overflow:auto;color:" + THEME.fg;
+const field = "flex:1;padding:9px 12px;border-radius:8px;border:1px solid " + THEME.muted +
+  ";background:transparent;color:" + THEME.fg + ";font:inherit";
+app.innerHTML =
+  '<div style="display:flex;gap:8px;max-width:900px;margin:0 auto 12px">' +
+    '<input id="u" style="' + field + '" value="https://www.youtube.com/watch?v=aqz-KE-bpKQ">' +
+    '<button id="go" style="padding:9px 18px;border-radius:8px;border:0;cursor:pointer;font-weight:600;background:' +
+      THEME.accent2 + ';color:#fff">Load</button>' +
+  '</div>' +
+  '<div id="stage" style="max-width:900px;margin:auto;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden"></div>' +
+  '<p id="msg" style="max-width:900px;margin:10px auto;font-size:13px;color:' + THEME.muted + '"></p>';
+
+const $ = id => document.getElementById(id);
+
+function build(url) {
+  url = url.trim();
+  let m = url.match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([\w-]{11})/) || url.match(/^([\w-]{11})$/);
+  if (m) return { kind: "YouTube", id: m[1], open: "https://www.youtube.com/watch?v=" + m[1],
+    html: '<iframe src="https://www.youtube-nocookie.com/embed/' + m[1] + '?rel=0" title="YouTube video" ' +
+      'style="width:100%;height:100%;border:0" allowfullscreen ' +
+      'allow="accelerometer; autoplay; encrypted-media; picture-in-picture; fullscreen" ' +
+      'referrerpolicy="strict-origin-when-cross-origin"></iframe>' };
+  m = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
+  if (m) return { kind: "Vimeo", id: m[1], open: "https://vimeo.com/" + m[1],
+    html: '<iframe src="https://player.vimeo.com/video/' + m[1] + '" title="Vimeo video" ' +
+      'style="width:100%;height:100%;border:0" allowfullscreen allow="autoplay; fullscreen; picture-in-picture"></iframe>' };
+  if (/^https?:\/\/.+\.(mp4|webm|ogg)(\?.*)?$/i.test(url))
+    return { kind: "Video file", id: url, open: url,
+      html: '<video src="' + url + '" controls style="width:100%;height:100%"></video>' };
+  return null;
+}
+
+function load() {
+  const v = build($("u").value);
+  if (!v) { console.error("Couldn't recognise that link. Try a YouTube, Vimeo, or .mp4 URL."); return; }
+  $("stage").innerHTML = v.html;
+  $("msg").innerHTML = v.kind + " loaded. If the player stays blank, " +
+    '<a style="color:' + THEME.accent + '" href="' + v.open + '" target="_blank" rel="noopener">open it in a new tab</a>.';
+  console.log("Loaded", v.kind, v.id);
+}
+$("go").onclick = load;
+$("u").addEventListener("keydown", e => { if (e.key === "Enter") load(); });
+load();
+`
+  };
+
+  const GROUPS = {
+    "Basics": ["Hello, console", "Async & errors"],
+    "Canvas & animation": ["Canvas: bouncing balls", "Canvas: sine waves", "Canvas: particle trail", "Visualize: bubble sort"],
+    "Data, maps & flow": ["Traffic flow: nodes & roads", "World map: live connections", "Charts: live trend", "Charts: bar race"],
+    "UI & media": ["DOM: interactive counter", "Media: video embedder"]
+  };
+
+  /* ───────── Python examples ───────── */
+  const PY_EXAMPLES = {
+
+"Hello, Python": String.raw`# print() goes to the Console tab. The first run downloads the Python runtime (~10 MB, then cached).
+# Other packages (numpy, matplotlib, pandas...) load automatically when you import them.
+import sys
+print("Python", sys.version.split()[0], "running in your browser (WebAssembly)")
+
+def greet(name: str) -> str:
+    return f"Hello, {name}!"
+print(greet("DevPortal"))
+
+nums = [5, 3, 8, 1, 9, 2]
+print("sorted:", sorted(nums), "| sum:", sum(nums))
+print({n: n * n for n in nums if n % 2})
+
+from dataclasses import dataclass
+
+@dataclass
+class Point:
+    x: float
+    y: float
+    def dist(self):
+        return (self.x ** 2 + self.y ** 2) ** 0.5
+
+p = Point(3, 4)
+print(p, "distance:", p.dist())
+
+# show_html() puts HTML on the page. THEME follows the portal theme.
+show_html(f"<h2 style='font-family:system-ui;padding:20px;color:{THEME.accent}'>Hello from Python 🐍</h2>")
+`,
+
+"Algorithms & timing": String.raw`# Pure-Python algorithms with timing. Output goes to the Console tab.
+import time
+from functools import lru_cache
+
+def sieve(n):
+    flags = [True] * (n + 1)
+    flags[0] = flags[1] = False
+    for i in range(2, int(n ** 0.5) + 1):
+        if flags[i]:
+            for j in range(i * i, n + 1, i):
+                flags[j] = False
+    return [i for i, f in enumerate(flags) if f]
+
+def is_prime(n):
+    if n < 2:
+        return False
+    i = 2
+    while i * i <= n:
+        if n % i == 0:
+            return False
+        i += 1
+    return True
+
+def timed(label, fn, *args):
+    t0 = time.perf_counter()
+    out = fn(*args)
+    print(f"{label:<26}{(time.perf_counter() - t0) * 1000:9.2f} ms")
+    return out
+
+N = 100_000
+a = timed("sieve of Eratosthenes", sieve, N)
+b = timed("trial division", lambda n: [i for i in range(n + 1) if is_prime(i)], N)
+print("primes found:", len(a), "| same result:", a == b)
+
+@lru_cache(maxsize=None)
+def fib(n):
+    return n if n < 2 else fib(n - 1) + fib(n - 2)
+
+print("fib(90) =", fib(90))
+`,
+
+"Errors & tracebacks": String.raw`# Exceptions show a clean traceback in the Console tab.
+try:
+    int("not a number")
+except ValueError as e:
+    print("caught:", e)
+
+def risky(n):
+    return 10 / n
+
+for n in (2, 1, 0):
+    print(n, "->", risky(n))   # the last one raises ZeroDivisionError
+`,
+
+"Canvas: particles": String.raw`# Draw on the canvas from Python through the JS bridge. Move the mouse to push the particles.
+import math, random
+from pyodide.ffi import create_proxy
+from js import requestAnimationFrame
+
+ctx = canvas.getContext("2d")
+W, H = canvas.width, canvas.height
+parts = [dict(x=random.uniform(0, W), y=random.uniform(0, H),
+              vx=random.uniform(-1, 1), vy=random.uniform(-1, 1)) for _ in range(70)]
+mouse = dict(x=-999, y=-999)
+
+def on_move(e):
+    r = canvas.getBoundingClientRect()
+    mouse["x"], mouse["y"] = e.clientX - r.left, e.clientY - r.top
+canvas.addEventListener("mousemove", create_proxy(on_move))
+
+def frame(_t=None):
+    ctx.fillStyle = THEME.fade(0.2)
+    ctx.fillRect(0, 0, W, H)
+    for p in parts:
+        dx, dy = p["x"] - mouse["x"], p["y"] - mouse["y"]
+        d = math.hypot(dx, dy)
+        if d < 90:
+            p["vx"] += dx / (d + 1) * 0.35
+            p["vy"] += dy / (d + 1) * 0.35
+        p["vx"] *= 0.99
+        p["vy"] *= 0.99
+        p["x"] = (p["x"] + p["vx"]) % W
+        p["y"] = (p["y"] + p["vy"]) % H
+    ctx.lineWidth = 1
+    ctx.strokeStyle = THEME.accent2
+    for i, a in enumerate(parts):
+        for b in parts[i + 1:]:
+            d = math.hypot(a["x"] - b["x"], a["y"] - b["y"])
+            if d < 80:
+                ctx.globalAlpha = 1 - d / 80
+                ctx.beginPath()
+                ctx.moveTo(a["x"], a["y"])
+                ctx.lineTo(b["x"], b["y"])
+                ctx.stroke()
+    ctx.globalAlpha = 1
+    ctx.fillStyle = THEME.accent
+    for p in parts:
+        ctx.beginPath()
+        ctx.arc(p["x"], p["y"], 2.5, 0, 6.283)
+        ctx.fill()
+    requestAnimationFrame(proxy)
+
+proxy = create_proxy(frame)
+frame()
+print("Move your mouse over the preview")
+`,
+
+"Matplotlib: trend chart": String.raw`# Charts render into the preview. Colours follow the portal theme.
+import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(7)
+days = np.arange(120)
+price = 100 + np.cumsum(rng.normal(0.2, 1.6, days.size))
+avg = np.convolve(price, np.ones(10) / 10, mode="valid")
+
+fig, (ax, vol) = plt.subplots(2, 1, figsize=(8, 5.2), sharex=True,
+                              gridspec_kw={"height_ratios": [3, 1]})
+ax.plot(days, price, lw=2, label="price")
+ax.plot(days[9:], avg, "--", lw=1.6, label="10-day average")
+ax.fill_between(days, price, price.min(), alpha=0.15)
+ax.set_title(f"ACME  {price[-1]:.2f}  ({(price[-1] / price[0] - 1) * 100:+.1f}%)")
+ax.legend()
+ax.grid(alpha=0.25)
+
+colors = [THEME.ok if d >= 0 else THEME.err for d in np.diff(price, prepend=price[0])]
+vol.bar(days, rng.integers(20, 100, days.size), color=colors)
+vol.set_ylabel("volume")
+plt.tight_layout()
+plt.show()
+`,
+
+"Matplotlib: scatter & histogram": String.raw`import numpy as np
+import matplotlib.pyplot as plt
+
+rng = np.random.default_rng(1)
+clusters = [rng.normal(centre, 0.8, (80, 2)) for centre in ((0, 0), (3, 2), (-2, 3))]
+
+fig, (a, b) = plt.subplots(1, 2, figsize=(9, 4))
+for i, pts in enumerate(clusters):
+    a.scatter(pts[:, 0], pts[:, 1], s=22, alpha=0.8, label=f"cluster {i + 1}")
+a.set_title("Scatter")
+a.legend()
+a.grid(alpha=0.25)
+
+b.hist(np.concatenate([c[:, 0] for c in clusters]), bins=24, alpha=0.9)
+b.set_title("Histogram of x")
+b.grid(alpha=0.25)
+plt.tight_layout()
+plt.show()
+`,
+
+"Mandelbrot set": String.raw`# numpy + matplotlib: vectorised Mandelbrot.
+import numpy as np
+import matplotlib.pyplot as plt
+
+w, h, max_iter = 520, 340, 70
+x = np.linspace(-2.2, 0.9, w)
+y = np.linspace(-1.2, 1.2, h)
+c = x[None, :] + 1j * y[:, None]
+z = np.zeros_like(c)
+counts = np.zeros(c.shape, dtype=int)
+for _ in range(max_iter):
+    mask = np.abs(z) <= 2
+    z[mask] = z[mask] ** 2 + c[mask]
+    counts[mask] += 1
+
+fig, ax = plt.subplots(figsize=(8, 5.2))
+ax.imshow(counts, extent=(-2.2, 0.9, -1.2, 1.2), cmap="magma", origin="lower")
+ax.set_title("Mandelbrot set")
+ax.set_xlabel("Re")
+ax.set_ylabel("Im")
+plt.tight_layout()
+plt.show()
+`,
+
+"Pandas: sales summary": String.raw`# pandas DataFrame -> HTML table on the page, plus a text summary in the Console.
+import numpy as np
+import pandas as pd
+
+rng = np.random.default_rng(3)
+df = pd.DataFrame({
+    "region": rng.choice(["North", "South", "East", "West"], 200),
+    "product": rng.choice(["Widget", "Gadget", "Gizmo"], 200),
+    "units": rng.integers(1, 40, 200),
+    "price": rng.uniform(5, 50, 200).round(2),
+})
+df["revenue"] = df.units * df.price
+summary = df.pivot_table(index="region", columns="product", values="revenue", aggfunc="sum").round(0)
+print(summary)
+print("\nTop region:", summary.sum(axis=1).idxmax())
+
+css = ("<style>.t{font-family:system-ui;padding:20px;color:" + THEME.fg + "}"
+       ".t table{border-collapse:collapse;min-width:360px}"
+       ".t th,.t td{padding:8px 14px;border:1px solid " + THEME.muted + ";text-align:right}"
+       ".t th{color:" + THEME.accent + "}</style>")
+show_html(css + "<div class='t'><h3>Revenue by region and product</h3>" + summary.to_html(border=0) + "</div>")
+`
+  };
+
+  const PY_GROUPS = {
+    "Basics": ["Hello, Python", "Algorithms & timing", "Errors & tracebacks"],
+    "Canvas": ["Canvas: particles"],
+    "Charts (matplotlib)": ["Matplotlib: trend chart", "Matplotlib: scatter & histogram", "Mandelbrot set"],
+    "Data": ["Pandas: sales summary"]
+  };
+
+  /* Python-side helpers, run once after the runtime loads */
+  const PY_PRELUDE = String.raw`
+import os, io, json, base64, types, builtins
+os.environ["MPLBACKEND"] = "AGG"
+import js
+
+class _Theme(types.SimpleNamespace):
+    def fade(self, a):
+        h = self.bg.lstrip("#")
+        r, g, b = (int(h[i:i + 2], 16) for i in (0, 2, 4))
+        return f"rgba({r},{g},{b},{a})"
+
+def show_html(html, append=False):
+    app = js.document.getElementById("app")
+    app.innerHTML = (app.innerHTML + html) if append else html
+
+def _emit_image(b64):
+    img = js.document.createElement("img")
+    img.src = "data:image/png;base64," + b64
+    img.style.cssText = "max-width:100%;display:block;margin:12px auto;border-radius:8px"
+    js.document.getElementById("app").appendChild(img)
+
+def _setup_matplotlib(t):
+    import matplotlib
+    matplotlib.use("AGG")
+    import matplotlib.pyplot as plt
+    from cycler import cycler
+    plt.close("all")
+    matplotlib.rcParams.update({
+        "figure.facecolor": t["bg"], "axes.facecolor": t["bg"], "savefig.facecolor": t["bg"],
+        "axes.edgecolor": t["muted"], "axes.labelcolor": t["fg"], "text.color": t["fg"],
+        "xtick.color": t["muted"], "ytick.color": t["muted"], "grid.color": t["muted"],
+        "legend.facecolor": t["bg"], "legend.edgecolor": t["muted"],
+        "axes.prop_cycle": cycler(color=[t["accent"], t["warn"], t["ok"], t["err"], t["accent2"], t["muted"]]),
+    })
+    def show(*args, **kwargs):
+        for n in plt.get_fignums():
+            buf = io.BytesIO()
+            plt.figure(n).savefig(buf, format="png", dpi=110)
+            _emit_image(base64.b64encode(buf.getvalue()).decode())
+        plt.close("all")
+    plt.show = show
+
+def _no_input(prompt=""):
+    raise RuntimeError("input() isn't available in the playground. Use variables instead.")
+builtins.input = _no_input
+`;
+
+  /* Runs inside the sandboxed Python iframe (no backticks / dollar-braces in here) */
+  const PY_RUNTIME = String.raw`
+(function(){
+  var VERS = __VERS__, PRELUDE = __PRELUDE__, cur = 0, py = null, pending = null, used = false, booting = false;
+  function send(o){ o.devportal = true; parent.postMessage(o, "*"); }
+  function log(level, text, id){ send({ id: id == null ? cur : id, level: level, text: text }); }
+  function status(t){
+    var s = document.getElementById("status");
+    s.textContent = t || ""; s.style.display = t ? "block" : "none";
+    if (t) send({ kind: "status", text: t });
+  }
+  // track timers so a re-run can cancel everything the previous run started
+  var tr = { raf: {}, to: {}, iv: {} };
+  var _raf = window.requestAnimationFrame.bind(window), _to = window.setTimeout.bind(window), _iv = window.setInterval.bind(window);
+  window.requestAnimationFrame = function(cb){ var id = _raf(function(t){ delete tr.raf[id]; cb(t); }); tr.raf[id] = 1; return id; };
+  window.setTimeout = function(cb, ms){ var a = [].slice.call(arguments, 2); var id = _to(function(){ delete tr.to[id]; if (typeof cb === "function") cb.apply(null, a); }, ms); tr.to[id] = 1; return id; };
+  window.setInterval = function(cb, ms){ var a = [].slice.call(arguments, 2); var id = _iv(function(){ cb.apply(null, a); }, ms); tr.iv[id] = 1; return id; };
+  function cancelAll(){
+    for (var k in tr.raf) cancelAnimationFrame(+k);
+    for (var k2 in tr.to) clearTimeout(+k2);
+    for (var k3 in tr.iv) clearInterval(+k3);
+    tr = { raf: {}, to: {}, iv: {} };
+  }
+  function loadScript(src){
+    return new Promise(function(res, rej){
+      var s = document.createElement("script"); s.src = src; s.onload = res;
+      s.onerror = function(){ rej(new Error("failed to load " + src)); };
+      document.head.appendChild(s);
+    });
+  }
+  async function boot(){
+    booting = true;
+    status("Loading Python runtime… (first time downloads ~10 MB)");
+    var base = null;
+    for (var i = 0; i < VERS.length; i++) {
+      var b = "https://cdn.jsdelivr.net/pyodide/v" + VERS[i] + "/full/";
+      try { await loadScript(b + "pyodide.js"); base = b; break; } catch (e) {}
+    }
+    if (!base) {
+      status("");
+      log("error", "Couldn't load the Python runtime from cdn.jsdelivr.net. Check your internet connection and that the site isn't blocked.", pending && pending.id);
+      send({ kind: "done", id: pending && pending.id, visual: false });
+      pending = null; booting = false;
+      return;
+    }
+    try {
+      py = await loadPyodide({ indexURL: base });
+      py.setStdout({ batched: function(s){ log("log", s); } });
+      py.setStderr({ batched: function(s){ log("warn", s); } });
+      await py.runPythonAsync(PRELUDE);
+    } catch (e) {
+      status(""); log("error", "Python runtime failed to start: " + (e && e.message || e), pending && pending.id);
+      send({ kind: "done", id: pending && pending.id, visual: false });
+      pending = null; booting = false; py = null;
+      return;
+    }
+    booting = false;
+    status("");
+    if (pending) { var m = pending; pending = null; run(m); }
+  }
+  async function run(m){
+    if (!py) { pending = m; if (!booting) boot(); return; }
+    cur = m.id;
+    var T = m.theme;
+    document.documentElement.style.background = T.bg; document.body.style.background = T.bg; document.body.style.color = T.fg;
+    cancelAll();
+    document.getElementById("app").innerHTML = "";
+    var old = document.getElementById("canvas"), c = old.cloneNode(false);
+    old.parentNode.replaceChild(c, old);
+    c.width = c.clientWidth || innerWidth || 640; c.height = c.clientHeight || innerHeight || 400;
+    used = false;
+    var gc = c.getContext.bind(c);
+    c.getContext = function(){ used = true; return gc.apply(null, arguments); };
+    window.THEME = T;
+    try {
+      await py.loadPackagesFromImports(m.code, {
+        messageCallback: function(t){ status(t); },
+        errorCallback: function(t){ log("warn", t); }
+      });
+      status("");
+      py.globals.set("_theme_json", JSON.stringify(T));
+      py.runPython("THEME_OBJ = _Theme(**json.loads(_theme_json))");
+      if (/^\s*(?:import|from)\s+matplotlib/m.test(m.code)) py.runPython("_setup_matplotlib(json.loads(_theme_json))");
+      var ns = py.runPython("{'__name__': '__main__'}");
+      ns.set("THEME", py.globals.get("THEME_OBJ"));
+      ns.set("show_html", py.globals.get("show_html"));
+      ns.set("canvas", c);
+      await py.runPythonAsync(m.code, { globals: ns });
+    } catch (e) {
+      var msg = String((e && e.message) || e), i = msg.indexOf('  File "<exec>"');
+      if (i > -1) msg = "Traceback (most recent call last):\n" + msg.slice(i);
+      log("error", msg.replace(/\s+$/, ""));
+    } finally {
+      status("");
+      send({ kind: "done", id: m.id, visual: used || document.getElementById("app").childNodes.length > 0 });
+    }
+  }
+  addEventListener("message", function(e){
+    var m = e.data;
+    if (e.source !== parent || !m) return;
+    if (m.devportalRun) run(m); else if (m.devportalHalt) cancelAll();
+  });
+  send({ kind: "boot" });
+  boot();
+})();
+`;
+
+  const $ = id => document.getElementById(id);
+  const code = $("code"), gutter = $("gutter"), consoleEl = $("console"), wrap = $("frameWrap"),
+        badge = $("errBadge"), sel = $("examples"), themeSel = $("theme"), fname = $("fname"), toastEl = $("toast");
+  let errCount = 0, autoTimer = null, runId = 0, jsFrame = null, pyFrame = null, pyBooted = false, pyPending = null,
+      toastTimer = null, running = false, lang = "javascript";
+
+  const NEW = "✦ New (blank)";
+  function withNew(ex, gr){ return { examples: Object.assign({ [NEW]: "" }, ex), groups: Object.assign({ New: [NEW] }, gr) }; }
+  const GEN = window.GEN || {};
+  const gx = k => (GEN[k] && GEN[k].examples) || {}, gg = k => (GEN[k] && GEN[k].groups) || {};
+  const LANGS = {
+    javascript: { ...withNew({ ...EXAMPLES, ...gx("react"), ...gx("playcanvas") }, { ...GROUPS, "React": (gg("react").Components || []), "PlayCanvas (3D)": (gg("playcanvas")["3D"] || []) }), ext: ".js", mime: "text/javascript", indent: "  ", def: "Canvas: bouncing balls", key: "js" },
+    typescript: { ...withNew({ ...window.TS_EXAMPLES, ...gx("ts") }, { ...window.TS_GROUPS, "Pages": (gg("ts").Pages || []) }), ext: ".ts", mime: "text/typescript", indent: "  ", def: "Hello, TypeScript", key: "ts" },
+    python:     { ...withNew(PY_EXAMPLES, PY_GROUPS), ext: ".py", mime: "text/x-python", indent: "    ", def: "Hello, Python", key: "py" },
+    shell:      { ...withNew(gx("shell"), gg("shell")), ext: ".sh", mime: "text/x-shellscript", indent: "  ", def: "Hello & navigation", key: "sh" },
+    rust:       { ...withNew({ ...window.RUST_EXAMPLES, ...gx("rust") }, { ...window.RUST_GROUPS, ...gg("rust") }), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, Rust", key: "rs" },
+    c:          { ...withNew(gx("c"), gg("c")), ext: ".c", mime: "text/x-csrc", indent: "    ", def: "Hello, C", key: "c" },
+    cpp:        { ...withNew(gx("cpp"), gg("cpp")), ext: ".cpp", mime: "text/x-c++src", indent: "    ", def: "Hello, C++", key: "cpp" },
+    java:       { ...withNew(gx("java"), gg("java")), ext: ".java", mime: "text/x-java", indent: "    ", def: "Hello, Java", key: "java" },
+    rustwasm:   { ...withNew(gx("rustwasm"), gg("rustwasm")), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, canvas", key: "rsw" },
+    csharp:     { ...withNew(gx("csharp"), gg("csharp")), ext: ".cs", mime: "text/x-csharp", indent: "    ", def: "Hello, C#", key: "cs" },
+    terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" },
+    sql:        { ...withNew(gx("sql"), gg("sql")), ext: ".sql", mime: "application/sql", indent: "  ", def: "SQLite: hello, temp table", key: "sql" },
+    ansible:    { ...withNew(gx("ansible"), gg("ansible")), ext: ".yml", mime: "text/yaml", indent: "  ", def: "Web server (nginx)", key: "an" }
+  };
+  /* simulator languages: a view inside the preview pane instead of an iframe (Terraform, Ansible, Shell) */
+  const SIMS = { terraform: window.TFUI, ansible: window.ANUI, shell: window.SHUI, sql: window.SQLUI };
+  const sim = () => SIMS[lang];
+  const L = () => LANGS[lang];
+
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+  const lkey = n => "devportal." + L().key + "." + n;
+  const slug = s => s === NEW ? "untitled" + L().ext : s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") + L().ext;
+  function buildExamples(){
+    sel.innerHTML = "";
+    Object.keys(L().groups).forEach(g => {
+      const og = document.createElement("optgroup"); og.label = g;
+      L().groups[g].forEach(k => { const o = document.createElement("option"); o.textContent = k; og.appendChild(o); });
+      sel.appendChild(og);
+    });
+  }
+  function toast(msg){
+    toastEl.textContent = msg; toastEl.classList.add("show");
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => toastEl.classList.remove("show"), 3200);
+  }
+
+  /* ───────── Editor ───────── */
+  function updateGutter(){
+    const n = code.value.split("\n").length;
+    let s = ""; for (let i = 1; i <= n; i++) s += i + "\n";
+    gutter.textContent = s;
+    gutter.scrollTop = code.scrollTop;
+  }
+  function setCode(text, name){
+    code.value = text; updateGutter();
+    store.set(lkey("code"), text);
+    if (name) { fname.value = name; store.set(lkey("fname"), name); }
+  }
+  function insertText(t){
+    code.focus();
+    if (!document.execCommand("insertText", false, t)) {      // keeps undo history where supported
+      code.setRangeText(t, code.selectionStart, code.selectionEnd, "end");
+      code.dispatchEvent(new Event("input"));
+    }
+  }
+  code.addEventListener("scroll", () => { gutter.scrollTop = code.scrollTop; });
+  code.addEventListener("input", () => {
+    updateGutter();
+    store.set(lkey("code"), code.value);
+    if (sim()) { sim().onEdit(); return; }
+    if ($("auto").checked) { clearTimeout(autoTimer); autoTimer = setTimeout(run, 700); }
+  });
+  fname.addEventListener("change", () => store.set(lkey("fname"), fname.value));
+  code.addEventListener("keydown", e => {
+    if (e.key === "Tab") {
+      e.preventDefault(); insertText(L().indent);
+    } else if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+      e.preventDefault(); run();
+    } else if (e.key === "Enter" && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey && code.selectionStart === code.selectionEnd) {
+      const before = code.value.slice(0, code.selectionStart), line = before.slice(before.lastIndexOf("\n") + 1);
+      let ind = (line.match(/^[ \t]*/) || [""])[0];
+      if (lang === "python" ? /:\s*(#.*)?$/.test(line) : /[{(\[]\s*$/.test(line)) ind += L().indent;
+      if (ind) { e.preventDefault(); insertText("\n" + ind); }
+    }
+  });
+
+  /* ───────── Import / Save / Copy ───────── */
+  function importFile(file){
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) { toast("That file is too large (limit 2 MB)."); return; }
+    const r = new FileReader();
+    r.onload = () => {
+      const ext = (file.name.match(/\.[^.]+$/) || [""])[0].toLowerCase();
+      const MAP = { ".py": "python", ".rs": "rust", ".ts": "typescript", ".tsx": "typescript", ".mts": "typescript", ".tf": "terraform", ".hcl": "terraform", ".js": "javascript", ".mjs": "javascript", ".cjs": "javascript", ".jsx": "javascript",
+        ".java": "java", ".cs": "csharp", ".c": "c", ".h": "c", ".cpp": "cpp", ".cc": "cpp", ".cxx": "cpp", ".hpp": "cpp", ".yml": "ansible", ".yaml": "ansible", ".sql": "sql", ".sh": "shell", ".bash": "shell" };
+      const target = MAP[ext] || lang;
+      if (target !== lang) setLang(target, true);
+      setCode(String(r.result), file.name); toast("Imported " + file.name); afterLoad();
+    };
+    r.onerror = () => toast("Couldn't read that file.");
+    r.readAsText(file);
+  }
+  $("import").onclick = () => $("file").click();
+  $("file").onchange = e => { importFile(e.target.files[0]); e.target.value = ""; };
+
+  const ed = $("editor");
+  ["dragenter","dragover"].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); ed.classList.add("drop"); }));
+  ["dragleave","drop"].forEach(ev => ed.addEventListener(ev, e => { e.preventDefault(); ed.classList.remove("drop"); }));
+  ed.addEventListener("drop", e => importFile(e.dataTransfer.files[0]));
+
+  $("save").onclick = () => {
+    let name = (fname.value.trim() || "script").replace(/[\\/:*?"<>|]+/g, "-");
+    if (!/\.[A-Za-z0-9]+$/.test(name)) name += L().ext;
+    fname.value = name;
+    const url = URL.createObjectURL(new Blob([code.value], { type: L().mime }));
+    const a = document.createElement("a");
+    a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+    toast("Saving " + name + "… (if nothing downloads here, use Copy)");
+  };
+  $("copy").onclick = async () => {
+    try { await navigator.clipboard.writeText(code.value); toast("Code copied to clipboard"); }
+    catch(e){
+      code.select();
+      try { document.execCommand("copy"); toast("Code copied to clipboard"); }
+      catch(e2){ toast("Copy blocked by the browser. Select the code and copy manually."); }
+    }
+  };
+
+
+  /* ───────── Reference docs tab (one per language) ───────── */
+  const DOCS = {
+    javascript: { tab: "MDN", title: "MDN · JavaScript", home: "https://developer.mozilla.org/en-US/docs/Web/JavaScript", links: [
+      ["Guide", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide"], ["Reference", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference"],
+      ["Canvas API", "https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API"], ["Fetch", "https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API"],
+      ["Promise", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"], ["Array", "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array"]] },
+    python: { tab: "Python Docs", title: "Python docs", home: "https://docs.python.org/3/", links: [
+      ["Tutorial", "https://docs.python.org/3/tutorial/index.html"], ["Library", "https://docs.python.org/3/library/index.html"],
+      ["NumPy", "https://numpy.org/doc/stable/"], ["pandas", "https://pandas.pydata.org/docs/"], ["matplotlib", "https://matplotlib.org/stable/index.html"], ["Pyodide", "https://pyodide.org/en/stable/"]] },
+    typescript: { tab: "TS Docs", title: "TypeScript docs", home: "https://www.typescriptlang.org/docs/", links: [
+      ["Handbook", "https://www.typescriptlang.org/docs/handbook/intro.html"], ["TS for JS devs", "https://www.typescriptlang.org/docs/handbook/typescript-in-5-minutes.html"],
+      ["Everyday types", "https://www.typescriptlang.org/docs/handbook/2/everyday-types.html"], ["Generics", "https://www.typescriptlang.org/docs/handbook/2/generics.html"],
+      ["Utility types", "https://www.typescriptlang.org/docs/handbook/utility-types.html"], ["MDN JS", "https://developer.mozilla.org/en-US/docs/Web/JavaScript"]] },
+    rust: { tab: "Rust Docs", title: "Rust docs", home: "https://doc.rust-lang.org/book/", links: [
+      ["The Book", "https://doc.rust-lang.org/book/"], ["Rust by Example", "https://doc.rust-lang.org/rust-by-example/"],
+      ["std", "https://doc.rust-lang.org/std/"], ["Cargo", "https://doc.rust-lang.org/cargo/"], ["Error index", "https://doc.rust-lang.org/error_codes/"], ["Playground", "https://play.rust-lang.org/"]] },
+    java: { tab: "Java Docs", title: "Java docs", home: "https://docs.oracle.com/en/java/javase/21/docs/api/", links: [
+      ["API (Java 21)", "https://docs.oracle.com/en/java/javase/21/docs/api/"], ["Learn Java", "https://dev.java/learn/"], ["Tutorials", "https://docs.oracle.com/javase/tutorial/"], ["Language spec", "https://docs.oracle.com/javase/specs/jls/se21/html/index.html"]] },
+    rustwasm: { tab: "Wasm Docs", title: "Rust + WebAssembly", home: "https://rustwasm.github.io/docs/book/", links: [
+      ["Rust and WebAssembly book", "https://rustwasm.github.io/docs/book/"], ["MDN: WebAssembly", "https://developer.mozilla.org/en-US/docs/WebAssembly"], ["Canvas 2D API", "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D"],
+      ["wasm32-unknown-unknown", "https://doc.rust-lang.org/nightly/rustc/platform-support/wasm32-unknown-unknown.html"], ["std::fmt (format!)", "https://doc.rust-lang.org/std/fmt/"]] },
+    csharp: { tab: "C# Docs", title: "C# docs", home: "https://learn.microsoft.com/en-us/dotnet/csharp/", links: [
+      ["C# guide", "https://learn.microsoft.com/en-us/dotnet/csharp/"], ["Tour of C#", "https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/"], ["LINQ", "https://learn.microsoft.com/en-us/dotnet/csharp/linq/"], ["Async / await", "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/"], [".NET API browser", "https://learn.microsoft.com/en-us/dotnet/api/"], ["Language spec", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/introduction"]] },
+    c: { tab: "C Docs", title: "C reference", home: "https://en.cppreference.com/w/c", links: [
+      ["C reference", "https://en.cppreference.com/w/c"], ["stdio.h", "https://en.cppreference.com/w/c/io"], ["string.h", "https://en.cppreference.com/w/c/string/byte"], ["stdlib.h", "https://en.cppreference.com/w/c/memory"], ["GNU C manual", "https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html"]] },
+    cpp: { tab: "C++ Docs", title: "C++ reference", home: "https://en.cppreference.com/w/cpp", links: [
+      ["C++ reference", "https://en.cppreference.com/w/cpp"], ["Containers", "https://en.cppreference.com/w/cpp/container"], ["Algorithms", "https://en.cppreference.com/w/cpp/algorithm"], ["Strings", "https://en.cppreference.com/w/cpp/string"], ["learncpp.com", "https://www.learncpp.com/"]] },
+    sql: { tab: "SQL Docs", title: "SQL docs", home: "https://www.sqlite.org/lang.html", links: [
+      ["SQLite SQL", "https://www.sqlite.org/lang.html"], ["SQLite functions", "https://www.sqlite.org/lang_corefunc.html"], ["Window functions", "https://www.sqlite.org/windowfunctions.html"],
+      ["PostgreSQL SQL", "https://www.postgresql.org/docs/current/sql.html"], ["Mode SQL tutorial", "https://mode.com/sql-tutorial/"]] },
+    ansible: { tab: "Ansible Docs", title: "Ansible docs", home: "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html", links: [
+      ["Built-in modules", "https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html"], ["Playbooks guide", "https://docs.ansible.com/ansible/latest/playbook_guide/index.html"], ["Inventory", "https://docs.ansible.com/ansible/latest/inventory_guide/index.html"],
+      ["Conditionals", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_conditionals.html"], ["Loops", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_loops.html"], ["Filters", "https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_filters.html"]] },
+    shell: { tab: "Bash Docs", title: "Bash / shell docs", home: "https://www.gnu.org/software/bash/manual/bash.html", links: [
+      ["Bash manual", "https://www.gnu.org/software/bash/manual/bash.html"], ["Coreutils", "https://www.gnu.org/software/coreutils/manual/coreutils.html"], ["grep", "https://www.gnu.org/software/grep/manual/grep.html"], ["sed", "https://www.gnu.org/software/sed/manual/sed.html"], ["awk", "https://www.gnu.org/software/gawk/manual/gawk.html"], ["explainshell", "https://explainshell.com/"]] },
+    terraform: { tab: "Registry", title: "Terraform Registry", home: "https://registry.terraform.io/providers/hashicorp/aws/latest/docs", links: [
+      ["AWS", "https://registry.terraform.io/providers/hashicorp/aws/latest/docs"], ["Azure", "https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs"],
+      ["GCP", "https://registry.terraform.io/providers/hashicorp/google/latest/docs"], ["Providers", "https://registry.terraform.io/browse/providers"],
+      ["Modules", "https://registry.terraform.io/browse/modules"], ["Registry home", "https://registry.terraform.io/"]] }
+  };
+  function docsHome(){
+    if (lang !== "terraform") return DOCS[lang].home;
+    const m = code.value.match(/\b(azurerm|google|aws)\b/);
+    const hit = m && DOCS.terraform.links.find(l => l[1].includes("/hashicorp/" + m[1] + "/"));
+    return hit ? hit[1] : DOCS.terraform.home;
+  }
+  function openDoc(url){ $("rgFrame").src = url; $("rgOpen").href = url; }
+  function loadDocs(force){ if (force || !$("rgFrame").getAttribute("src")) openDoc(docsHome()); }
+  function applyDocs(){
+    const d = DOCS[lang];
+    $("docsTab").textContent = d.tab;
+    const bar = $("rgBar"); bar.innerHTML = "";
+    const b = document.createElement("b"); b.textContent = d.title; bar.appendChild(b);
+    d.links.forEach(l => { const x = document.createElement("button"); x.textContent = l[0]; x.onclick = () => openDoc(l[1]); bar.appendChild(x); });
+    const a = document.createElement("a"); a.id = "rgOpen"; a.href = docsHome(); a.target = "_blank"; a.rel = "noopener"; a.textContent = "Open in new tab ↗"; bar.appendChild(a);
+    $("rgNote").textContent = "Live site, embedded. If this stays blank, the site (or the page hosting DevPortal) refuses to be framed — use “Open in new tab”.";
+    $("rgFrame").removeAttribute("src");
+    if ($("registry").classList.contains("on")) loadDocs(true);
+  }
+  /* ───────── Tabs & console ───────── */
+  function showTab(name){
+    document.querySelectorAll(".tab[data-tab]").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+    wrap.style.display = name === "preview" ? "" : "none";
+    consoleEl.style.display = name === "console" ? "" : "none";
+    $("registry").classList.toggle("on", name === "registry");
+    if (name === "registry") loadDocs(false);
+  }
+  document.querySelectorAll(".tab[data-tab]").forEach(t => t.onclick = () => showTab(t.dataset.tab));
+  function addLine(level, text){
+    const d = document.createElement("div");
+    d.className = "ln " + level; d.textContent = text;
+    consoleEl.appendChild(d); consoleEl.scrollTop = consoleEl.scrollHeight;
+    if (level.split(" ")[0] === "error") { errCount++; badge.textContent = errCount; badge.style.display = "inline"; }
+  }
+  function clearConsole(){ consoleEl.innerHTML = ""; errCount = 0; badge.style.display = "none"; }
+  $("clear").onclick = clearConsole;
+
+  /* ───────── Runner (sandboxed iframes) ───────── */
+  function readTheme(){
+    const cs = getComputedStyle(document.documentElement), g = n => cs.getPropertyValue(n).trim();
+    return { name: document.documentElement.dataset.theme, bg: g("--pbg"), fg: g("--text"), muted: g("--muted"),
+             accent: g("--accent"), accent2: g("--accent2"), ok: g("--ok"), warn: g("--warn"), err: g("--err") };
+  }
+  const REACT_RE = /^\s*\/\/\s*@react\b|\bReactDOM\.(createRoot|render)\b/;
+  const PC_RE = /^\s*\/\/\s*@playcanvas\b|\bnew\s+pc\.Application\b/;
+  /* PlayCanvas engine: pinned version + SRI so a tampered CDN file is refused by the browser (global `pc`) */
+  const PC_URL = "https://cdn.jsdelivr.net/npm/playcanvas@2.24.2/build/playcanvas.min.js", PC_SRI = "sha384-p+pAwWzL2KJUbdPftly6e480/zk1y5tLrX4OK4GwHE+/obqfRxNSvUMk13y4P/FU";
+  function buildDoc(userCode, theme){
+    const react = REACT_RE.test(userCode), pcMode = !react && PC_RE.test(userCode);
+    const head = `<!DOCTYPE html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-family:system-ui,sans-serif}
+#canvas{display:block;width:100%;height:100%}
+#app{position:absolute;inset:0;overflow:auto;pointer-events:none}#app>*{pointer-events:auto}
+</style></head><body><canvas id="canvas"></canvas><div id="app">${react ? '<div id="root"></div>' : ""}</div>
+<script>
+(function(){
+  var id=${runId};
+  var T=window.THEME=${JSON.stringify(theme)};
+  (function(){var h=T.bg.replace("#","");T.rgb=[parseInt(h.substr(0,2),16),parseInt(h.substr(2,2),16),parseInt(h.substr(4,2),16)];
+    T.fade=function(a){return "rgba("+T.rgb.join(",")+","+a+")"}})();
+  function ser(v,seen){
+    seen=seen||[];
+    if(typeof v==="string")return v;
+    if(typeof v==="function")return "ƒ "+(v.name||"anonymous")+"()";
+    if(typeof v==="undefined")return "undefined";
+    if(typeof v==="symbol"||typeof v==="bigint")return String(v);
+    if(v instanceof Error)return v.stack||String(v);
+    if(v&&typeof v==="object"){
+      if(seen.indexOf(v)>-1)return "[Circular]";
+      seen.push(v);
+      try{
+        if(Array.isArray(v))return "["+v.map(function(x){return typeof x==="string"?JSON.stringify(x):ser(x,seen)}).join(", ")+"]";
+        var parts=Object.keys(v).map(function(k){var x=v[k];return k+": "+(typeof x==="string"?JSON.stringify(x):ser(x,seen))});
+        return "{ "+parts.join(", ")+" }";
+      }catch(e){return String(v)}
+    }
+    return String(v);
+  }
+  function send(level,args){if(typeof args[0]==="string"&&args[0].indexOf("in-browser Babel transformer")===0)return;parent.postMessage({devportal:true,id:id,level:level,text:args.map(function(a){return ser(a)}).join(" ")},"*")}
+  ["log","info","warn","error","debug"].forEach(function(m){
+    var lvl=m==="debug"?"log":m;
+    console[m]=function(){send(lvl,[].slice.call(arguments))};
+  });
+  window.addEventListener("error",function(e){
+    var line=e.lineno?(e.lineno-OFFSET):"?";
+    send("error",[(e.message||"Error")+(e.lineno?"  (line "+line+")":"")]);
+    return true;
+  });
+  window.addEventListener("unhandledrejection",function(e){send("error",["Unhandled promise rejection: "+ser(e.reason)])});
+  window.canvas=document.getElementById("canvas");
+  canvas.width=canvas.clientWidth||innerWidth||640;canvas.height=canvas.clientHeight||innerHeight||400;
+})();
+<\/script><script>
+`;
+    const offset = head.split("\n").length - 1;
+    const safe = userCode.replace(/<\/script/gi, "<\\/script");
+    if (react) {       // React 18 + Babel (JSX) from a CDN; hooks are in scope
+      const libs = ["https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.development.js", "https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.development.js", "https://cdn.jsdelivr.net/npm/@babel/standalone@7.25.6/babel.min.js"];
+      return head.replace("OFFSET", offset) + "\n<\/script>" + libs.map(u => '<script src="' + u + '"><\/script>').join("") +
+        '<script type="text/babel" data-presets="react">const {useState,useEffect,useRef,useMemo,useReducer,useCallback,useContext,createContext,Fragment}=React;\n' + safe + "\n<\/script></body></html>";
+    }
+    if (pcMode) return head.replace("OFFSET", offset) + "\n<\/script><script src=\"" + PC_URL + "\" integrity=\"" + PC_SRI + "\" crossorigin=\"anonymous\"><\/script><script>if(typeof pc===\"undefined\")throw new Error(\"PlayCanvas did not load (offline, or the CDN file failed its integrity check)\");\n" + safe + "\n<\/script></body></html>";
+    return head.replace("OFFSET", offset) + safe + "\n<\/script></body></html>";
+  }
+  /* ----- Python: one persistent sandboxed iframe running Pyodide ----- */
+  const PYODIDE_VERSIONS = ["0.29.5", "0.27.7"];   // tried in order
+  function buildPyDoc(theme){
+    const js = PY_RUNTIME.replace("__VERS__", () => JSON.stringify(PYODIDE_VERSIONS))
+                         .replace("__PRELUDE__", () => JSON.stringify(PY_PRELUDE));
+    return '<!DOCTYPE html><html><head><meta charset="utf-8"><style>' +
+      'html,body{margin:0;height:100%;background:' + theme.bg + ';color:' + theme.fg + ';font-family:system-ui,sans-serif}' +
+      '#canvas{display:block;width:100%;height:100%}' +
+      '#app{position:absolute;inset:0;overflow:auto;padding:8px}#app:empty{display:none}' +
+      '#status{position:absolute;left:0;right:0;bottom:0;padding:8px 14px;font-size:12px;background:rgba(0,0,0,.55);color:#fff;pointer-events:none}' +
+      '</style></head><body><canvas id="canvas"></canvas><div id="app"></div><div id="status">Starting Python…</div>' +
+      '<script>' + js + '<\/script></body></html>';
+  }
+  function ensurePyFrame(){
+    if (pyFrame) return;
+    pyBooted = false;
+    pyFrame = document.createElement("iframe");
+    pyFrame.setAttribute("sandbox", "allow-scripts allow-popups");
+    wrap.appendChild(pyFrame);
+    void pyFrame.offsetWidth;
+    pyFrame.srcdoc = buildPyDoc(readTheme());
+  }
+  function runPython(){
+    if (jsFrame) { jsFrame.remove(); jsFrame = null; }
+    ensurePyFrame();
+    pyFrame.style.display = "";
+    const msg = { devportalRun: true, id: ++runId, code: code.value, theme: readTheme() };
+    if (pyBooted) pyFrame.contentWindow.postMessage(msg, "*"); else pyPending = msg;
+    running = true;
+    addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
+  }
+  function stopPython(){ if (pyFrame) { pyFrame.remove(); pyFrame = null; } pyBooted = false; pyPending = null; runId++; running = false; }
+
+  /* ----- JavaScript ----- */
+  function stopJs(){ if (jsFrame) { jsFrame.remove(); jsFrame = null; } runId++; running = false; }
+  function runJs(src){
+    stopJs();
+    if (pyFrame) pyFrame.style.display = "none";
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "allow-scripts allow-popups");
+    jsFrame.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture");
+    jsFrame.setAttribute("allowfullscreen", "");
+    wrap.appendChild(jsFrame);
+    void jsFrame.offsetWidth;                      // force layout so the canvas gets a real size
+    jsFrame.srcdoc = buildDoc(typeof src === "string" ? src : code.value, readTheme());
+    running = true;
+    addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
+  }
+
+
+
+  /* ----- Rust -> WebAssembly apps: the .wasm is built by CI (rust-apps/), this page only hosts it ----- */
+  /* The host side of the `dp` ABI (rust-apps/dp). It runs INSIDE the sandboxed iframe as ordinary page code;
+     `canvas` and `console` are provided by buildDoc(). Imports here must match rust-apps/dp/src/host.rs. */
+  function wasmHostMain(b64){
+    var ABI = 1, bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var ctx = canvas.getContext("2d"), dpr = window.devicePixelRatio || 1, W = 1, H = 1, inst = null, mem = null, dead = false, dec = new TextDecoder();
+    var cursors = ["default", "pointer", "crosshair", "move", "grab", "ns-resize", "ew-resize", "text"];
+    function str(p, n){ return dec.decode(new Uint8Array(mem.buffer, p, n)); }
+    function col(c){ c = c >>> 0; return "rgba(" + (c >>> 24) + "," + ((c >>> 16) & 255) + "," + ((c >>> 8) & 255) + "," + ((c & 255) / 255) + ")"; }
+    function fit(){
+      var r = canvas.getBoundingClientRect(); W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+    }
+    function call(name){
+      if (dead) return;
+      try { inst.exports[name].apply(null, [].slice.call(arguments, 1)); }
+      catch (e) { dead = true; console.error("Rust app stopped: " + (e && e.message || e) + " (see the panic message above, if any)"); }
+    }
+    var env = {
+      dp_clear: function(c){ ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = col(c); ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.restore(); },
+      dp_rect: function(x, y, w, h, c, fill){ if (fill) { ctx.fillStyle = col(c); ctx.fillRect(x, y, w, h); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h); } },
+      dp_line: function(x1, y1, x2, y2, w, c){ ctx.strokeStyle = col(c); ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); },
+      dp_circle: function(x, y, r, c, fill){ ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, 6.283185307179586); if (fill) { ctx.fillStyle = col(c); ctx.fill(); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.stroke(); } },
+      dp_poly: function(p, n, c, fill){
+        if (n < 2) return; var a = new Float32Array(mem.buffer, p, n * 2); ctx.beginPath(); ctx.moveTo(a[0], a[1]);
+        for (var k = 1; k < n; k++) ctx.lineTo(a[2 * k], a[2 * k + 1]);
+        if (fill) { ctx.closePath(); ctx.fillStyle = col(c); ctx.fill(); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.stroke(); }
+      },
+      dp_text: function(p, n, x, y, size, c){ ctx.font = size + "px system-ui, sans-serif"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = col(c); ctx.fillText(str(p, n), x, y); },
+      dp_cursor: function(k){ canvas.style.cursor = cursors[k] || "default"; },
+      dp_log: function(p, n){ console.log(str(p, n)); }
+    };
+    WebAssembly.compile(bytes).then(function(m){
+      WebAssembly.Module.imports(m).forEach(function(im){
+        if (im.module !== "env" || typeof env[im.name] !== "function") throw new Error("the app imports " + im.module + "." + im.name + ", which this page does not provide (built against a newer dp ABI?)");
+      });
+      return WebAssembly.instantiate(m, { env: env });
+    }).then(function(inst0){
+      inst = inst0; mem = inst.exports.memory;
+      ["dp_abi_version", "dp_init", "dp_resize", "dp_frame", "dp_pointer", "dp_key"].forEach(function(n){ if (typeof inst.exports[n] !== "function") throw new Error("missing export " + n + " — did you forget dp::dp_app!(...)?"); });
+      if (inst.exports.dp_abi_version() !== ABI) throw new Error("app was built for dp ABI " + inst.exports.dp_abi_version() + ", this page speaks " + ABI);
+      canvas.tabIndex = 0; fit(); call("dp_init", W, H);
+      function ptr(kind, e, delta){ var r = canvas.getBoundingClientRect(); call("dp_pointer", kind, e.clientX - r.left, e.clientY - r.top, e.buttons, delta || 0); }
+      canvas.addEventListener("pointermove", function(e){ ptr(0, e); });
+      canvas.addEventListener("pointerdown", function(e){ canvas.focus(); try { canvas.setPointerCapture(e.pointerId); } catch (x) {} ptr(1, e); e.preventDefault(); });
+      canvas.addEventListener("pointerup", function(e){ ptr(2, e); });
+      canvas.addEventListener("pointercancel", function(e){ ptr(2, e); });
+      canvas.addEventListener("wheel", function(e){ e.preventDefault(); ptr(3, e, e.deltaY); }, { passive: false });
+      canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+      function key(down){ return function(e){
+        if (e.ctrlKey || e.metaKey) { if (e.keyCode === 65 || e.keyCode === 90 || e.keyCode === 89 || e.keyCode === 68) e.preventDefault(); }
+        else if ([8, 9, 32, 37, 38, 39, 40, 46].indexOf(e.keyCode) >= 0) e.preventDefault();
+        call("dp_key", e.keyCode, down ? 1 : 0, (e.shiftKey ? 1 : 0) | (e.ctrlKey ? 2 : 0) | (e.altKey ? 4 : 0) | (e.metaKey ? 8 : 0));
+      }; }
+      window.addEventListener("keydown", key(true)); window.addEventListener("keyup", key(false));
+      window.addEventListener("resize", function(){ fit(); call("dp_resize", W, H); });
+      (function loop(t){ call("dp_frame", t); if (!dead) requestAnimationFrame(loop); })(performance.now());
+    }).catch(function(e){ console.error("Rust app failed to start: " + (e && e.message || e)); });
+  }
+  async function runRustWasm(){
+    const m = /^\s*\/\/\s*devportal-app:\s*([a-z0-9_]+)/m.exec(code.value.slice(0, 400));
+    if (!m) { addLine("error", "Start the file with a line like  // devportal-app: hello_canvas  — it names the compiled apps/<name>.wasm to run."); showTab("console"); return; }
+    const name = m[1], url = "apps/" + name + ".wasm";
+    addLine("sys", "▶ loading " + url + " …");
+    try {
+      const r = await fetch(url, { cache: "no-cache" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const buf = new Uint8Array(await r.arrayBuffer());
+      let s = ""; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+      if (lang !== "rustwasm") return;                      // the user switched language while it downloaded
+      runJs("(" + wasmHostMain.toString() + ")(" + JSON.stringify(btoa(s)) + ");");
+      addLine("sys", name + ".wasm (" + Math.round(buf.length / 1024) + " KB) is running. This source is for reading: the .wasm is compiled by CI, so editing it here changes nothing — change rust-apps/, push a branch and open its preview.");
+    } catch (e) {
+      addLine("error", "Couldn't load " + url + " (" + e.message + "). The .wasm files are built by CI (or locally with tools/build-wasm.sh) and published next to index.html; they are missing when the page is opened from disk or from the claude.ai viewer.");
+      showTab("console");
+    }
+  }
+
+  /* ----- TypeScript (compiled in the browser with the TypeScript compiler) ----- */
+  let tsLoading = null, tsToken = 0;
+  function loadScriptHost(src){ return new Promise((res, rej) => { const el = document.createElement("script"); el.src = src; el.onload = res; el.onerror = () => rej(new Error("load failed")); document.head.appendChild(el); }); }
+  function loadTs(){
+    if (window.ts && window.ts.transpileModule) return Promise.resolve(window.ts);
+    if (tsLoading) return tsLoading;
+    const urls = ["https://cdn.jsdelivr.net/npm/typescript@5.6.3/lib/typescript.js", "https://cdnjs.cloudflare.com/ajax/libs/typescript/5.6.3/typescript.min.js", "https://unpkg.com/typescript@5.6.3/lib/typescript.js"];
+    tsLoading = (async () => {
+      for (const u of urls) { try { await loadScriptHost(u); if (window.ts && window.ts.transpileModule) return window.ts; } catch (e) {} }
+      tsLoading = null; throw new Error("Couldn't load the TypeScript compiler (needs internet access).");
+    })();
+    return tsLoading;
+  }
+  async function runTs(){
+    const my = ++tsToken;
+    stopJs(); if (pyFrame) pyFrame.style.display = "none";
+    addLine("sys", "▶ compiling TypeScript…");
+    let ts;
+    try { ts = await loadTs(); } catch (e) { addLine("error", e.message); showTab("console"); return; }
+    if (my !== tsToken) return;
+    const out = ts.transpileModule(code.value, { reportDiagnostics: true, fileName: "main.ts", compilerOptions: { target: ts.ScriptTarget.ES2020, module: ts.ModuleKind.None } });
+    const diags = out.diagnostics || [];
+    if (diags.length) {
+      diags.forEach(d => {
+        const pos = d.file && d.start != null ? d.file.getLineAndCharacterOfPosition(d.start) : null;
+        addLine("error", "TS" + d.code + (pos ? "  (line " + (pos.line + 1) + ")" : "") + ": " + ts.flattenDiagnosticMessageText(d.messageText, "\n"));
+      });
+      showTab("console"); return;
+    }
+    runJs(out.outputText);
+  }
+
+  /* ----- Rust (compiled & run on the official Rust Playground) ----- */
+  let rustCtl = null;
+  function rustAbort(){ if (rustCtl) { rustCtl.abort(); rustCtl = null; } }
+  function rustFrame(html){
+    stopJs();
+    const t = readTheme();
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "");
+    wrap.appendChild(jsFrame);
+    jsFrame.srcdoc = '<!DOCTYPE html><meta charset="utf-8"><body style="margin:0;background:' + t.bg + ';color:' + t.fg + '"><pre style="margin:0;padding:14px 16px;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap">' + html + '</pre>';
+  }
+  const esc = x => String(x).replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+  async function runRust(){
+    rustAbort(); if (pyFrame) pyFrame.style.display = "none";
+    const ctl = rustCtl = new AbortController(), timer = setTimeout(() => ctl.abort(), 60000);
+    const t = readTheme();
+    rustFrame('<span style="color:' + t.muted + '">Compiling on play.rust-lang.org…</span>');
+    running = true; const my = ++runId;
+    addLine("sys", "▶ compiling on play.rust-lang.org (your code is sent there)…");
+    try {
+      const r = await fetch("https://play.rust-lang.org/execute", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ channel: "stable", mode: "debug", edition: "2021", crateType: "bin", tests: false, code: code.value, backtrace: false }) });
+      const j = await r.json();
+      if (my !== runId) return;
+      const lines = String(j.stderr || "").split("\n");
+      const info = lines.filter(l => /^\s+(Compiling|Finished|Running)\b/.test(l)), rest = lines.filter(l => !/^\s+(Compiling|Finished|Running)\b/.test(l)).join("\n").trim();
+      info.forEach(l => addLine("sys", l.trim()));
+      String(j.stdout || "").replace(/\n$/, "").split("\n").forEach(l => { if (j.stdout) addLine("log", l); });
+      if (rest) addLine(j.success ? "warn" : "error", rest);
+      let html = esc(j.stdout || "");
+      if (!j.success) html += (html ? "\n" : "") + '<span style="color:' + t.err + '">' + esc(rest || j.exitDetail || "Compilation failed") + "</span>";
+      else if (rest) html += '\n\n<span style="color:' + t.warn + '">' + esc(rest) + "</span>";
+      if (!j.stdout && j.success) html = '<span style="color:' + t.muted + '">(program finished with no output)</span>' + (rest ? html : "");
+      rustFrame(html);
+      if (!j.success) showTab("console");
+    } catch (e) {
+      if (my !== runId) return;
+      const msg = e.name === "AbortError" ? "Timed out after 60s." : "Couldn't reach play.rust-lang.org — Rust needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy).";
+      addLine("error", msg); rustFrame('<span style="color:' + t.err + '">' + esc(msg) + "</span>"); showTab("console");
+    } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
+  }
+
+  /* ----- C / C++: JSCPP interpreter, inside a sandboxed iframe, running in a Worker (Stop = kill it) ----- */
+  let cppBundle = null;
+  function cppStop(){ /* the sandbox iframe owns the worker; stopJs() removes it */ }
+  function cppRunnerMain(){          // runs inside the sandboxed iframe
+    var out = document.getElementById("o"), buf = "", gid = 0, worker = null;
+    function send(m){ parent.postMessage(Object.assign({ devportal: true, id: gid }, m), "*"); }
+    function emit(s){
+      out.appendChild(document.createTextNode(s)); out.scrollIntoView(false);
+      buf += s; var i; while ((i = buf.indexOf("\n")) >= 0) { send({ level: "log", text: buf.slice(0, i) }); buf = buf.slice(i + 1); }
+    }
+    function fin(err){ if (buf) { send({ level: "log", text: buf }); buf = ""; } if (err) { var e = document.createElement("span"); e.className = "e"; e.textContent = (out.textContent ? "\n" : "") + err; out.appendChild(e); send({ level: "error", text: err }); } send({ kind: "done", visual: true }); }
+    function workerMain(){
+      onmessage = function(e){
+        try { var rc = self.DevPortalCpp.run(e.data.code, function(s){ postMessage({ o: s }); }, { timeout: 8000 }); postMessage({ done: rc }); }
+        catch (x) { postMessage({ err: String((x && x.message) || x) }); }
+      };
+    }
+    window.addEventListener("message", function(ev){
+      if (!ev.data || !ev.data.cppRun) return;
+      gid = ev.data.id; out.textContent = ""; buf = "";
+      var bundle = document.getElementById("b").textContent;
+      try {
+        var url = URL.createObjectURL(new Blob([bundle + "\n(" + workerMain.toString() + ")();"], { type: "text/javascript" }));
+        worker = new Worker(url);
+        worker.onmessage = function(m){ var d = m.data; if (d.o !== undefined) emit(d.o); else if (d.err !== undefined) fin(d.err); else fin(); };
+        worker.onerror = function(m){ fin("Worker error: " + (m.message || "unknown")); };
+        worker.postMessage({ code: ev.data.code });
+      } catch (x) {        // Workers blocked here: run on the main thread (the 8 s limit still applies)
+        try { (0, eval)(bundle); self.DevPortalCpp.run(ev.data.code, emit, { timeout: 8000 }); fin(); } catch (y) { fin(String((y && y.message) || y)); }
+      }
+    });
+  }
+  async function runCpp(){
+    stopJs(); if (pyFrame) pyFrame.style.display = "none";
+    const t = readTheme(), isC = lang === "c";
+    addLine("sys", "▶ running in the " + (isC ? "C" : "C++") + " simulator (JSCPP — isolated in a sandboxed frame; no compiler, nothing leaves your browser)");
+    try {
+      if (!cppBundle) { const r = await fetch("jscpp.bundle.js"); if (!r.ok) throw new Error("HTTP " + r.status); cppBundle = await r.text(); }
+    } catch (e) {
+      const m = "Couldn't load the C/C++ simulator (jscpp.bundle.js): " + e.message + ". Open DevPortal over http(s) (GitHub Pages or a local server) rather than file://.";
+      addLine("error", m); rustFrame('<span style="color:' + t.err + '">' + esc(m) + "</span>"); showTab("console"); return;
+    }
+    const my = ++runId; running = true;
+    jsFrame = document.createElement("iframe");
+    jsFrame.setAttribute("sandbox", "allow-scripts");
+    wrap.appendChild(jsFrame);
+    const f = jsFrame;
+    f.onload = () => { try { f.contentWindow.postMessage({ cppRun: true, id: my, code: code.value }, "*"); } catch (e) {} };
+    f.srcdoc = '<!DOCTYPE html><meta charset="utf-8"><style>html,body{margin:0;background:' + t.bg + ';color:' + t.fg + '}pre{margin:0;padding:14px 16px;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;white-space:pre-wrap}.e{color:' + t.err + '}</style><pre id="o"></pre>' +
+      '<script type="text/plain" id="b">' + cppBundle.replace(/<\/script/gi, "<\\/script") + '<\/script><script>(' + cppRunnerMain.toString() + ')();<\/script>';
+  }
+
+  /* ----- Java (and optional real C/C++): compiled & run on the public Judge0 CE sandbox ----- */
+  async function runJudge(langId, fileName){
+    rustAbort(); if (pyFrame) pyFrame.style.display = "none";
+    const ctl = rustCtl = new AbortController(), timer = setTimeout(() => ctl.abort(), 45000);
+    const t = readTheme();
+    const label = { 51: "C# (Mono)", 62: "Java (OpenJDK)", 50: "C (GCC)", 54: "C++ (GCC)" }[langId];
+    rustFrame('<span style="color:' + t.muted + '">Compiling ' + label + ' on ce.judge0.com…</span>');
+    running = true; const my = ++runId;
+    addLine("sys", "▶ compiling " + label + " on ce.judge0.com (your code is sent to that public sandbox)…" + (langId === 62 ? " The public class must be named Main." : ""));
+    try {
+      const r = await fetch("https://ce.judge0.com/submissions?base64_encoded=false&wait=true", { method: "POST", signal: ctl.signal, headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ source_code: code.value, language_id: langId, stdin: "", cpu_time_limit: 5, wall_time_limit: 10 }) });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const j = await r.json();
+      if (my !== runId) return;
+      const ok = j.status && j.status.id === 3, so = j.stdout || "", comp = j.compile_output || "", se = j.stderr || "", msg = j.message || "";
+      String(so).replace(/\n$/, "").split("\n").forEach(l => { if (so) addLine("log", l); });
+      const problem = [comp, se, msg].filter(Boolean).join("\n").trim();
+      if (problem) addLine(ok ? "warn" : "error", problem);
+      addLine("sys", (j.status ? j.status.description : "finished") + (j.time ? " · " + j.time + " s" : "") + (j.memory ? " · " + Math.round(j.memory / 1024) + " MB" : ""));
+      let html = esc(so);
+      if (!ok) html += (html ? "\n" : "") + '<span style="color:' + t.err + '">' + esc(problem || (j.status && j.status.description) || "Failed") + "</span>";
+      else if (problem) html += '\n\n<span style="color:' + t.warn + '">' + esc(problem) + "</span>";
+      if (!so && ok) html = '<span style="color:' + t.muted + '">(program finished with no output)</span>' + html;
+      rustFrame(html);
+      if (!ok) showTab("console");
+    } catch (e) {
+      if (my !== runId) return;
+      const m = e.name === "AbortError" ? "Timed out after 45s." : "Couldn't reach ce.judge0.com — " + label + " needs internet access, and it is blocked inside the claude.ai artifact viewer (use the GitHub Pages / local copy). " + (langId === 62 || langId === 51 ? "" : "Switch the engine back to the offline simulator to keep working without a network.");
+      addLine("error", m); rustFrame('<span style="color:' + t.err + '">' + esc(m) + "</span>"); showTab("console");
+    } finally { clearTimeout(timer); if (rustCtl === ctl) rustCtl = null; running = false; }
+  }
+
+  const tfApi = { getCode: () => code.value, addLine, showTab: n => showTab(n), toast: m => toast(m) };
+  function afterLoad(){        // after an example / import: simulators only redraw, they never auto-apply
+    if (sel.value === NEW) { blank(); return; }
+    if (sim()) {
+      if (lang === "ansible" && sim().setInventory) sim().setInventory(((GEN.ansible || {}).inventories || {})[sel.value] || window.AnsibleSim.DEFAULT_INVENTORY);
+      sim().resetState();
+      if (lang === "sql") sim().onExample(code.value);
+      sim().activate();
+    } else run();
+  }
+  function blank(){            // fresh slate: empty editor, cleared console + preview
+    clearTimeout(autoTimer); rustAbort(); tsToken++;
+    if (sim()) { sim().resetState(); sim().activate(); }
+    else { park(); if (pyFrame) pyFrame.style.display = "none"; }
+    sel.value = NEW; setCode("", "untitled" + L().ext);
+    clearConsole(); showTab("preview");
+    const e = $("empty"); if (e) { e.style.display = ""; e.textContent = "Blank slate — write some " + L().ext.slice(1) + " and press Run"; }
+    if (sim()) sim().activate();
+    code.focus();
+  }
+  $("blank").onclick = blank;
+  function run(){
+    clearTimeout(autoTimer);
+    const empty = $("empty"); if (empty) empty.style.display = "none";
+    if (sim()) {
+      if (jsFrame) jsFrame.style.display = "none";
+      if (pyFrame) pyFrame.style.display = "none";
+      showTab("preview"); sim().activate(); sim().runAll(); return;
+    }
+    Object.values(SIMS).forEach(x => x && x.deactivate());
+    clearConsole(); showTab("preview");
+    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "rustwasm") runRustWasm(); else if (lang === "typescript") runTs();
+    else if (lang === "java") runJudge(62, "Main.java"); else if (lang === "csharp") runJudge(51, "Program.cs"); else if (lang === "c" || lang === "cpp") { if ($("engine").value === "real") runJudge(lang === "c" ? 50 : 54, "main." + lang); else runCpp(); }
+    else runJs();
+  }
+  window.addEventListener("message", e => {
+    const d = e.data;
+    if (!d || !d.devportal) return;
+    if (d.kind === "boot") {
+      if (pyFrame && e.source === pyFrame.contentWindow) {
+        pyBooted = true;
+        if (pyPending) { pyFrame.contentWindow.postMessage(pyPending, "*"); pyPending = null; }
+      }
+      return;
+    }
+    if (d.kind === "status") { if (lang === "python") addLine("sys", d.text); return; }
+    if (d.kind === "done") { if (d.id === runId && !d.visual && !errCount) showTab("console"); return; }
+    if (d.id !== runId) return;
+    addLine(d.level, d.text);
+    if (d.level === "error") showTab("console");
+  });
+
+  /* ----- Language switching ----- */
+  function park(){        // stop whatever the current language is running before leaving it
+    cppStop();
+    if (sim()) sim().deactivate();
+    else if (lang === "python") {
+      if (pyFrame) {
+        try { pyFrame.contentWindow.postMessage({ devportalHalt: true }, "*"); } catch(e){}
+        pyFrame.style.display = "none"; pyPending = null; runId++; running = false;
+      }
+    } else { rustAbort(); tsToken++; stopJs(); }
+  }
+  function loadSaved(){
+    const savedCode = store.get(lkey("code")), has = savedCode !== null;
+    sel.value = has && savedCode === "" ? NEW : L().def;
+    setCode(has ? savedCode : L().examples[L().def], has ? (store.get(lkey("fname")) || "script" + L().ext) : slug(L().def));
+  }
+  function setLang(next, keepEditor){
+    if (next === lang) return;
+    park();
+    lang = next;
+    store.set("devportal.lang", lang);
+    $("langSel").value = lang; $("engine").style.display = lang === "c" || lang === "cpp" ? "" : "none";
+    buildExamples();
+    if (!keepEditor) loadSaved();
+    applyDocs();
+  }
+  $("langSel").onchange = () => {
+    const v = $("langSel").value;
+    if (v !== lang) { setLang(v); if (sim()) { clearConsole(); showTab("preview"); sim().activate(); } else run(); }
+  };
+  $("engine").onchange = () => { store.set("devportal.engine", $("engine").value); if (lang === "c" || lang === "cpp") run(); };
+
+  $("run").onclick = run;
+  $("stop").onclick = () => { if (sim()) { sim().stop(); return; } if (lang === "python") stopPython(); else { rustAbort(); cppStop(); tsToken++; stopJs(); } addLine("sys", "■ stopped"); };
+  sel.onchange = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); afterLoad(); };
+  $("reset").onclick = () => { if (sel.value === NEW) { blank(); return; } setCode(L().examples[sel.value], slug(sel.value)); if (sim()) afterLoad(); toast("Reset to “" + sel.value + "”"); };
+
+  /* ───────── Themes + animated backgrounds ───────── */
+  const fxc = $("bg"), fx = fxc.getContext("2d");
+  const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let fxRaf = 0, fxKind = null, fxS = {};
+  const FX_THEMES = { matrix: 1, jarvis: 1, heaven: 1 };
+
+  const draw = {
+    matrix(){
+      const w = fxc.width, h = fxc.height;
+      fx.fillStyle = "rgba(0,0,0,.1)"; fx.fillRect(0, 0, w, h);
+      fx.font = "16px monospace";
+      const chars = "アイウエオカキクケコサシスセソタチツテトナニヌネノ0123456789";
+      fxS.tick = (fxS.tick || 0) + 1;
+      if (fxS.tick % 2) return;
+      fxS.drops.forEach((d, i) => {
+        const ch = chars[Math.random() * chars.length | 0];
+        fx.fillStyle = "#00ff41"; fx.fillText(chars[Math.random() * chars.length | 0], i * 16, (d - 1) * 16);
+        fx.fillStyle = "#d2ffdc"; fx.fillText(ch, i * 16, d * 16);
+        fxS.drops[i] = (d * 16 > h && Math.random() > .975) ? 0 : d + 1;
+      });
+    },
+    jarvis(t){
+      const w = fxc.width, h = fxc.height, cx = w / 2, cy = h / 2;
+      fx.clearRect(0, 0, w, h);
+      fx.strokeStyle = "rgba(0,229,255,.07)"; fx.lineWidth = 1;
+      for (let x = 0; x < w; x += 48) { fx.beginPath(); fx.moveTo(x, 0); fx.lineTo(x, h); fx.stroke(); }
+      for (let y = 0; y < h; y += 48) { fx.beginPath(); fx.moveTo(0, y); fx.lineTo(w, y); fx.stroke(); }
+      const rings = [[110, 1, [70, 24], .5], [160, -1.4, [10, 14], .4], [215, .8, [120, 40], .35], [290, -.5, [30, 60], .25]];
+      for (const [r, sp, dash, a] of rings) {
+        fx.save(); fx.translate(cx, cy); fx.rotate(t * sp * .35);
+        fx.strokeStyle = "rgba(0,229,255," + a + ")"; fx.lineWidth = 2; fx.setLineDash(dash);
+        fx.beginPath(); fx.arc(0, 0, r, 0, 6.283); fx.stroke(); fx.restore();
+      }
+      fx.save(); fx.translate(cx, cy); fx.rotate(-t * .12); fx.strokeStyle = "rgba(0,229,255,.35)"; fx.lineWidth = 1;
+      for (let i = 0; i < 90; i++) { const a = i / 90 * 6.283, l = i % 5 ? 6 : 14; fx.beginPath();
+        fx.moveTo(Math.cos(a) * 340, Math.sin(a) * 340); fx.lineTo(Math.cos(a) * (340 + l), Math.sin(a) * (340 + l)); fx.stroke(); }
+      fx.restore();
+      fx.save(); fx.translate(cx, cy); fx.rotate(t * .9);
+      const g = fx.createLinearGradient(0, 0, 330, 0); g.addColorStop(0, "rgba(0,229,255,.35)"); g.addColorStop(1, "rgba(0,229,255,0)");
+      fx.strokeStyle = g; fx.lineWidth = 2; fx.beginPath(); fx.moveTo(0, 0); fx.lineTo(330, 0); fx.stroke(); fx.restore();
+      fx.fillStyle = "rgba(0,229,255,.05)"; fx.fillRect(0, (t * 90) % h, w, 3);
+    },
+    heaven(t){
+      const w = fxc.width, h = fxc.height;
+      fx.clearRect(0, 0, w, h);
+      for (let i = 0; i < 6; i++) {            // rays of light
+        fx.save(); fx.translate(w * .5, -40); fx.rotate(-.55 + i * .22 + Math.sin(t * .15 + i) * .05);
+        const g = fx.createLinearGradient(0, 0, 0, h * 1.2);
+        g.addColorStop(0, "rgba(255,214,102,.30)"); g.addColorStop(1, "rgba(255,214,102,0)");
+        fx.fillStyle = g; fx.beginPath(); fx.moveTo(0, 0); fx.lineTo(-70, h * 1.2); fx.lineTo(70, h * 1.2); fx.closePath(); fx.fill();
+        fx.restore();
+      }
+      for (const c of fxS.clouds) {            // drifting clouds
+        c.x += c.v; if (c.x - c.r > w) c.x = -c.r;
+        const g = fx.createRadialGradient(c.x, c.y, 0, c.x, c.y, c.r);
+        g.addColorStop(0, "rgba(255,255,255,.55)"); g.addColorStop(1, "rgba(255,255,255,0)");
+        fx.fillStyle = g; fx.beginPath(); fx.arc(c.x, c.y, c.r, 0, 6.283); fx.fill();
+      }
+      for (const s of fxS.stars) {             // golden sparkles
+        s.y -= s.v / 60; if (s.y < -.02) s.y = 1.02;
+        const a = .3 + .7 * Math.abs(Math.sin(t * 1.5 + s.p)), x = s.x * w, y = s.y * h, r = s.r * (.6 + a * .6);
+        fx.strokeStyle = "rgba(212,160,23," + a + ")"; fx.lineWidth = 1.2;
+        fx.beginPath(); fx.moveTo(x - r * 2, y); fx.lineTo(x + r * 2, y); fx.moveTo(x, y - r * 2); fx.lineTo(x, y + r * 2); fx.stroke();
+        fx.fillStyle = "rgba(255,226,130," + a + ")"; fx.beginPath(); fx.arc(x, y, r, 0, 6.283); fx.fill();
+      }
+    }
+  };
+  function startFx(kind){
+    cancelAnimationFrame(fxRaf); fxKind = kind;
+    fxc.width = innerWidth; fxc.height = innerHeight;
+    fx.clearRect(0, 0, fxc.width, fxc.height);
+    if (!FX_THEMES[kind]) { fxc.style.display = "none"; return; }
+    fxc.style.display = "block";
+    if (kind === "matrix") { fxS = { drops: Array.from({ length: Math.ceil(fxc.width / 16) }, () => -Math.random() * 60 | 0) }; fx.fillStyle = "#000"; fx.fillRect(0, 0, fxc.width, fxc.height); }
+    if (kind === "heaven") fxS = {
+      stars: Array.from({ length: 80 }, () => ({ x: Math.random(), y: Math.random(), r: 1 + Math.random() * 3, v: .02 + Math.random() * .06, p: Math.random() * 6.28 })),
+      clouds: Array.from({ length: 7 }, () => ({ x: Math.random() * fxc.width, y: Math.random() * fxc.height, r: 120 + Math.random() * 180, v: .08 + Math.random() * .2 }))
+    };
+    const loop = ms => { draw[kind](ms / 1000); if (!reduceMotion) fxRaf = requestAnimationFrame(loop); };
+    loop(0);
+  }
+  addEventListener("resize", () => { clearTimeout(startFx.t); startFx.t = setTimeout(() => startFx(fxKind), 200); });
+
+  function applyTheme(name, rerun){
+    document.documentElement.dataset.theme = name;
+    themeSel.value = name;
+    store.set("devportal.js.theme", name);
+    startFx(name);
+    if (rerun && running) run();     // so the preview's THEME colours update
+  }
+  themeSel.onchange = () => applyTheme(themeSel.value, true);
+
+  /* ───────── Init ───────── */
+  const savedTheme = store.get("devportal.js.theme");
+  applyTheme(savedTheme && [...themeSel.options].some(o => o.value === savedTheme) ? savedTheme : "black", false);
+  Object.values(SIMS).forEach(x => x && x.mount(tfApi));
+  { const sl = store.get("devportal.lang"); lang = LANGS[sl] ? sl : "javascript"; }
+  $("langSel").value = lang; $("engine").style.display = lang === "c" || lang === "cpp" ? "" : "none";
+  { const en = store.get("devportal.engine"); if (en === "real" || en === "sim") $("engine").value = en; }
+  buildExamples();
+  loadSaved();
+  applyDocs();
+  if (sim()) sim().activate(); else run();
+})();
+</script>
+</body>
+</html>

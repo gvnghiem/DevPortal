@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = ["dp", "hello_canvas", "floorplan"]
+
+[profile.release]
+opt-level = "s"      # small .wasm: it is downloaded by the browser on every Run
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
