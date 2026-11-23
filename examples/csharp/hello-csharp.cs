@@ -17,7 +17,7 @@ class Program
         int sum = Enumerable.Range(1, 100).Where(n => n % 3 == 0 || n % 5 == 0).Sum();
         Console.WriteLine($"sum of multiples of 3 or 5 up to 100 = {sum}");
 
-        (int min, int max) = (langs.Min(s => s.Length), langs.Max(s => s.Length));
+        int min = langs.Min(s => s.Length), max = langs.Max(s => s.Length);   // (tuples need the newer compiler)
         Console.WriteLine($"shortest name: {min} chars, longest: {max} chars");
     }
 }
