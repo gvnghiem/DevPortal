@@ -1,0 +1,14 @@
+---
+# One host in the inventory is offline. Ansible reports UNREACHABLE for it and carries on with the rest.
+# (This example loads its own inventory, with an extra host called "legacy-down".)
+- name: Patch everything we can reach
+  hosts: all
+  become: true
+  tasks:
+    - name: Ping
+      ansible.builtin.ping:
+
+    - name: Install security tooling
+      ansible.builtin.apt:
+        name: fail2ban
+        state: present
