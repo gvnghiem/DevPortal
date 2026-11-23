@@ -79,3 +79,12 @@ to regenerate `examples-gen.js`. The C/C++ simulator needs the page to be served
 ## Notes
 - Code runs in `iframe sandbox="allow-scripts allow-popups"`, isolated from the page.
 - The video embedder and the Python runtime need internet access and a normal browser context (local file or GitHub Pages); Pyodide loads from `cdn.jsdelivr.net`.
+
+## Branch previews
+
+Every push to any branch is published to a `gh-pages` branch by `.github/workflows/branch-preview.yml`:
+
+- `main` → `https://gvnghiem.github.io/DevPortal/`
+- any other branch → `https://gvnghiem.github.io/DevPortal/branch/<name>/` — or just open `https://gvnghiem.github.io/DevPortal/?branch=<name>` (`/` and other odd characters in the name become `-`, so `feat/sql` → `?branch=feat-sql` also works)
+
+Deleting a branch removes its preview. Previews are public (the repo is). One-time setup: **Settings → Pages → Source → Deploy from a branch → `gh-pages` / `(root)`**. The first push to `main` after merging creates `gh-pages`.
