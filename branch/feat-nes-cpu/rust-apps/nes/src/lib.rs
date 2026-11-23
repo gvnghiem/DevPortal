@@ -109,8 +109,9 @@ impl NesApp {
         // RAM map: 2 KB as 64×32 greyscale pixels
         let mut px = Vec::with_capacity(64 * 32 * 4);
         for &b in m.bus.ram.iter() { px.extend_from_slice(&[b, b, b, 255]); }
+        let mw = (self.w - 300.0 - 24.0).clamp(128.0, 512.0);            // keep the map inside narrow panes
         g.text("RAM ($0000–$07FF), one pixel per byte", 300.0, 150.0, 12.0, DIM);
-        g.blit(&px, 64, 32, (300.0, 160.0, 512.0, 256.0));
+        g.blit(&px, 64, 32, (300.0, 160.0, mw, mw / 2.0));
 
         // test-ROM output
         let mut y = 350.0;
