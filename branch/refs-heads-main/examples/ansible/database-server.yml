@@ -1,0 +1,61 @@
+---
+# PostgreSQL server with a nightly backup cron job — then a little verification.
+- name: Set up the database tier
+  hosts: dbservers
+  become: true
+  vars:
+    db_name: devportal
+    backup_dir: /var/backups/postgres
+  tasks:
+    - name: Install PostgreSQL
+      ansible.builtin.apt:
+        name: postgresql
+        state: present
+        update_cache: true
+
+    - name: Ensure PostgreSQL is running at boot
+      ansible.builtin.systemd:
+        name: postgresql
+        state: started
+        enabled: true
+
+    - name: Create the backup directory
+      ansible.builtin.file:
+        path: "{{ backup_dir }}"
+        state: directory
+        mode: "0750"
+        owner: root
+
+    - name: Tune a setting
+      ansible.builtin.lineinfile:
+        path: /etc/postgresql/15/main/postgresql.conf
+        regexp: "^#?max_connections"
+        line: "max_connections = 200"
+      notify: Restart PostgreSQL
+
+    - name: Schedule the nightly backup
+      ansible.builtin.cron:
+        name: "backup {{ db_name }}"
+        minute: "15"
+        hour: "3"
+        job: "pg_dump {{ db_name }} > {{ backup_dir }}/{{ db_name }}.sql"
+
+    - name: Wait until PostgreSQL accepts connections
+      ansible.builtin.wait_for:
+        port: 5432
+        timeout: 30
+
+    - name: Verify the server
+      ansible.builtin.stat:
+        path: /etc/postgresql/15/main/postgresql.conf
+      register: conf
+
+    - name: Report
+      ansible.builtin.debug:
+        msg: "config exists: {{ conf.stat.exists }}, {{ conf.stat.size }} bytes"
+
+  handlers:
+    - name: Restart PostgreSQL
+      ansible.builtin.service:
+        name: postgresql
+        state: restarted
