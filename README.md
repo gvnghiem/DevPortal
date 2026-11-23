@@ -57,7 +57,7 @@ Pick a language from the drop-down in the header (12 in total).
 
 | Language | How it runs | Isolation |
 |---|---|---|
-| JavaScript (+ **React**) | Sandboxed iframe. Start a file with `// @react` (or call `ReactDOM.createRoot`) and JSX just works — React 18 + Babel load from a CDN, hooks are in scope. | sandboxed iframe |
+| JavaScript (+ **React**, **PlayCanvas**) | Sandboxed iframe. Start a file with `// @react` (or call `ReactDOM.createRoot`) and JSX just works — React 18 + Babel load from a CDN, hooks are in scope. Start with `// @playcanvas` (or use `new pc.Application`) for the **PlayCanvas** 3D engine (v2.24.2, global `pc`, loaded from jsDelivr with a pinned SHA-384 integrity hash): 3 WebGL examples — cube, solar system, keyboard + mouse. | sandboxed iframe |
 | TypeScript | Transpiled in the browser, then run like JS. Includes full pages: tech landing, social feed, stock market. | sandboxed iframe |
 | Python | Pyodide (WebAssembly). | sandboxed iframe |
 | **Shell (Bash)** | A simulated bash + coreutils (`ls grep sed awk sort uniq cut find xargs tree …`) over a **virtual filesystem** with an interactive prompt. | pure JS, no real shell |
