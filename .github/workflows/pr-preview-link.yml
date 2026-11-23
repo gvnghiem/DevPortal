@@ -1,0 +1,40 @@
+name: PR preview link
+# Posts (and keeps updated) one comment on every pull request with the live preview URL of its branch,
+# so nobody has to work out the ?branch=... name. The preview itself is published by branch-preview.yml.
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
+permissions:
+  pull-requests: write
+jobs:
+  link:
+    # forks get a read-only token and their branches are not previewed anyway
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      BRANCH: ${{ github.event.pull_request.head.ref }}   # attacker-controlled text: env only, sanitised below
+      PR: ${{ github.event.pull_request.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Comment the preview URL
+        run: |
+          safe=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g')
+          base="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}"
+          body=$(cat <<MSG
+          <!-- devportal-preview -->
+          ### 🔗 Live preview of this branch
+
+          **${base}/?branch=${safe}**
+
+          Direct link: ${base}/branch/${safe}/
+
+          It is published by the "Branch previews" workflow on every push: allow 1–2 minutes after your latest push (Rust apps take a little longer), then hard-refresh. The preview is removed when the branch is deleted.
+          MSG
+          )
+          id=$(gh api "repos/$GITHUB_REPOSITORY/issues/$PR/comments" --paginate \
+                 --jq '[.[] | select(.user.login == "github-actions[bot]" and (.body | startswith("<!-- devportal-preview -->")))][0].id // empty')
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$GITHUB_REPOSITORY/issues/comments/$id" -f body="$body" >/dev/null
+          else
+            gh api -X POST "repos/$GITHUB_REPOSITORY/issues/$PR/comments" -f body="$body" >/dev/null
+          fi
