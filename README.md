@@ -87,7 +87,7 @@ Every push to any branch is published to a `gh-pages` branch by `.github/workflo
 - `main` → `https://gvnghiem.github.io/DevPortal/`
 - any other branch → `https://gvnghiem.github.io/DevPortal/branch/<name>/` — or just open `https://gvnghiem.github.io/DevPortal/?branch=<name>` (`/` and other odd characters in the name become `-`, so `feat/sql` → `?branch=feat-sql` also works)
 
-Deleting a branch removes its preview. Previews are public (the repo is). One-time setup: **Settings → Pages → Source → Deploy from a branch → `gh-pages` / `(root)`**. The first push to `main` after merging creates `gh-pages`.
+Every pull request also gets a bot comment (`pr-preview-link.yml`) with its preview URL, so you never have to work the name out. Deleting a branch removes its preview. Previews are public (the repo is). One-time setup: **Settings → Pages → Source → Deploy from a branch → `gh-pages` / `(root)`**. The first push to `main` after merging creates `gh-pages`.
 
 ## Rust → WebAssembly apps
 
