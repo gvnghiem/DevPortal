@@ -1,12 +1,16 @@
 name: Branch previews
 # Every push publishes the branch to the gh-pages branch:
-#   main            -> https://<owner>.github.io/<repo>/
+#   main             -> https://<owner>.github.io/<repo>/
 #   any other branch -> https://<owner>.github.io/<repo>/branch/<name>/   (open with  /?branch=<name>)
-# Deleting a branch removes its preview. Requires Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
+# A preview lives only while its branch exists: every run (push, branch delete, daily backstop) prunes previews
+# whose branch is gone. Requires Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
 on:
   push:
     branches-ignore: [gh-pages]
   delete:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
 permissions:
   contents: write
 concurrency:
@@ -14,30 +18,36 @@ concurrency:
   cancel-in-progress: false
 jobs:
   publish:
-    # a deleted ref is only a branch when ref_type says so; the delete event always runs from the default branch
-    if: github.event_name == 'push' || github.event.ref_type == 'branch'
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
     runs-on: ubuntu-latest
     env:
-      # branch names are attacker-controlled text: pass via env, never interpolate into the script
-      BRANCH: ${{ github.event.ref || github.ref_name }}
+      # branch names are attacker-controlled text: pass via env, never interpolate into a script.
+      # (github.event.ref is the FULL ref on push events, so use ref_name there; a delete run's ref_name is the default branch.)
+      BRANCH: ${{ github.event_name == 'delete' && github.event.ref || github.ref_name }}
       EVENT: ${{ github.event_name }}
+      GH_TOKEN: ${{ github.token }}
     steps:
+      - name: Tooling from the default branch (older branches may carry an old script)
+        uses: actions/checkout@v4
+        with: { ref: main, path: ctl }
       - name: Check out the pushed branch
         if: env.EVENT == 'push'
         uses: actions/checkout@v4
         with: { path: src }
       - name: Check out gh-pages (or start it)
         run: |
-          git clone --quiet --depth 1 --branch gh-pages "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" site 2>/dev/null \
-            || { git init --quiet site; git -C site checkout --quiet -b gh-pages; git -C site remote add origin "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"; }
-      - name: Publish or remove
+          url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --quiet --depth 1 --branch gh-pages "$url" site 2>/dev/null \
+            || { git init --quiet site; git -C site checkout --quiet -b gh-pages; git -C site remote add origin "$url"; }
+      - name: Publish this branch
+        if: env.EVENT == 'push'
+        run: bash ctl/tools/publish-preview.sh "$BRANCH" src site
+      - name: Prune previews of branches that no longer exist
         run: |
-          if [ "$EVENT" = push ]; then bash src/tools/publish-preview.sh "$BRANCH" src site
-          else
-            # the script lives on the default branch checkout we do not have in a delete run: inline the same sanitising
-            s=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g'); case "$s" in ""|.|..) exit 1;; esac
-            rm -rf "site/branch/$s"
-          fi
+          git -C site ls-remote --heads origin | sed 's#.*refs/heads/##' | grep -vx gh-pages > live.txt || true
+          # safety: a failed/empty branch listing must never wipe every preview
+          grep -qx main live.txt || { echo "branch list looks wrong, skipping prune"; exit 0; }
+          bash ctl/tools/publish-preview.sh --prune site live.txt
       - name: Commit and push
         run: |
           cd site
@@ -50,5 +60,6 @@ jobs:
         if: env.EVENT == 'push'
         run: |
           s=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g')
-          [ "$BRANCH" = main ] && u="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/" || u="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/?branch=$s"
+          base="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+          if [ "$BRANCH" = main ]; then u="$base"; else u="${base}?branch=$s"; fi
           echo "Preview: $u (live in about a minute)" >> "$GITHUB_STEP_SUMMARY"
