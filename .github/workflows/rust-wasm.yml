@@ -11,10 +11,10 @@ permissions:
 jobs:
   rust:
     runs-on: ubuntu-latest
-    env:
-      CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
     steps:
       - uses: actions/checkout@v4
+      - name: Keep build output outside the checkout   # (the runner context is not allowed in job-level env)
+        run: echo "CARGO_TARGET_DIR=$RUNNER_TEMP/cargo-target" >> "$GITHUB_ENV"
       - name: cargo test (native)
         run: cargo test --locked --workspace
         working-directory: rust-apps

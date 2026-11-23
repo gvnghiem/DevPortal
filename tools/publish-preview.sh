@@ -15,7 +15,8 @@ if [ "$1" = "--prune" ]; then
 fi
 branch=$1; src=$2; site=$3
 mkdir -p "$site"; touch "$site/.nojekyll"
-copy() { tar -C "$src" --exclude=./.git --exclude=./.github --exclude=./rust-apps/target -cf - . | tar -C "$1" -xf -; }   # no rsync dependency
+# .gitignore is not published: copied into gh-pages it would hide apps/ (built, gitignored) from `git add`
+copy() { tar -C "$src" --exclude=./.git --exclude=./.github --exclude=./rust-apps/target --exclude=./.gitignore -cf - . | tar -C "$1" -xf -; }   # no rsync dependency
 if [ "$branch" = "main" ]; then
   # replace the site root but keep gh-pages' own .git, the .nojekyll marker and every branch preview
   find "$site" -mindepth 1 -maxdepth 1 ! -name .git ! -name .nojekyll ! -name branch -exec rm -rf {} +
