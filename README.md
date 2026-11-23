@@ -53,17 +53,18 @@ A mock IaC experience — **no real cloud calls, nothing is created anywhere**. 
 
 ## More languages
 
-Pick a language from the drop-down in the header (11 in total).
+Pick a language from the drop-down in the header (13 in total).
 
 | Language | How it runs | Isolation |
 |---|---|---|
-| JavaScript (+ **React**) | Sandboxed iframe. Start a file with `// @react` (or call `ReactDOM.createRoot`) and JSX just works — React 18 + Babel load from a CDN, hooks are in scope. | sandboxed iframe |
+| JavaScript (+ **React**, **PlayCanvas**) | Sandboxed iframe. Start a file with `// @react` (or call `ReactDOM.createRoot`) and JSX just works — React 18 + Babel load from a CDN, hooks are in scope. Start with `// @playcanvas` (or use `new pc.Application`) for the **PlayCanvas** 3D engine (v2.24.2, global `pc`, loaded from jsDelivr with a pinned SHA-384 integrity hash): 3 WebGL examples — cube, solar system, keyboard + mouse. | sandboxed iframe |
 | TypeScript | Transpiled in the browser, then run like JS. Includes full pages: tech landing, social feed, stock market. | sandboxed iframe |
 | Python | Pyodide (WebAssembly). | sandboxed iframe |
 | **Shell (Bash)** | A simulated bash + coreutils (`ls grep sed awk sort uniq cut find xargs tree …`) over a **virtual filesystem** with an interactive prompt. | pure JS, no real shell |
 | **Ansible** | Playbook simulator: YAML + Jinja subset, INI inventory, simulated hosts that keep state between runs (idempotency!), `--check`, handlers, loops, `when`, `block/rescue`, tags, `-e`. | pure JS, no SSH |
 | Terraform | Plan/apply simulator with an animated diagram. | pure JS |
 | **C / C++** | Offline **simulator** ([JSCPP](https://github.com/felixhao28/JSCPP), a C/C++ interpreter) in a sandboxed iframe + Web Worker; Stop kills it. Subset only: no structs, classes, STL, references or `new`. Optional “Real compiler” engine = Judge0 (below). | sandboxed iframe + worker |
+| **SQL** (SQLite · PostgreSQL) | Pick the dialect in the SQL view. **SQLite** = [sql.js](https://github.com/sql-js/sql.js) (SQLite→WASM). **PostgreSQL** = [PGlite](https://github.com/electric-sql/pglite) (real Postgres 16 → WASM, ~13 MB first download, cached after). Per-statement results, schema browser, temp tables, 15 s timeout, 500-row cap. Engine files are fetched by the page and **SHA-384-verified** before the sandbox sees them (PGlite's JS is a local bundle). MySQL / SQL Server / Oracle have no faithful in-browser engine, so they are intentionally not offered. | engine in a `sandbox="allow-scripts"` iframe; Stop deletes it |
 | Rust | Compiled on the official Rust Playground. | **remote** |
 | **Java** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (public class must be `Main`). | **remote** |
 | **C#** | Compiled and run on the public [Judge0 CE](https://ce.judge0.com) sandbox (Mono, so C# 7-era syntax: no records, no top-level statements; use a classic `static void Main`). | **remote** |
@@ -78,3 +79,22 @@ to regenerate `examples-gen.js`. The C/C++ simulator needs the page to be served
 ## Notes
 - Code runs in `iframe sandbox="allow-scripts allow-popups"`, isolated from the page.
 - The video embedder and the Python runtime need internet access and a normal browser context (local file or GitHub Pages); Pyodide loads from `cdn.jsdelivr.net`.
+
+## Branch previews
+
+Every push to any branch is published to a `gh-pages` branch by `.github/workflows/branch-preview.yml`:
+
+- `main` → `https://gvnghiem.github.io/DevPortal/`
+- any other branch → `https://gvnghiem.github.io/DevPortal/branch/<name>/` — or just open `https://gvnghiem.github.io/DevPortal/?branch=<name>` (`/` and other odd characters in the name become `-`, so `feat/sql` → `?branch=feat-sql` also works)
+
+Every pull request also gets a bot comment (`pr-preview-link.yml`) with its preview URL, so you never have to work the name out. Deleting a branch removes its preview. Previews are public (the repo is). One-time setup: **Settings → Pages → Source → Deploy from a branch → `gh-pages` / `(root)`**. The first push to `main` after merging creates `gh-pages`.
+
+## Rust → WebAssembly apps
+
+Pick **Rust → WASM apps**: the editor shows the Rust source of an app, the preview runs it on a `<canvas>`. Apps live in `rust-apps/` (a Cargo workspace); the shared `dp` crate is the whole contract with the page (draw calls out, pointer/keyboard in — no wasm-bindgen).
+
+- **Where it is compiled:** nowhere in the browser. GitHub Actions builds `rust-apps/` to `apps/<name>.wasm` on every push (`branch-preview.yml`), so every branch preview has its own build. Editing the source in the editor changes nothing; change `rust-apps/`, push a branch, open `?branch=<name>`.
+- **Locally:** `cd rust-apps && cargo test` (logic runs natively against a recording canvas), `bash tools/build-wasm.sh` (needs `rustup target add wasm32-unknown-unknown`), then serve the folder.
+- **New app:** copy `rust-apps/hello_canvas`, add it to the workspace `members`, keep the first source line `// devportal-app: <crate_name>`, list it in `tools/build-examples.py`, run it.
+- **ABI:** `dp::ABI_VERSION` (1). Imports `env.dp_{clear,rect,line,circle,poly,text,cursor,log}`; exports `dp_{abi_version,init,resize,frame,pointer,key}` generated by `dp::dp_app!`. The host side is `wasmHostMain` in `index.html`.
+- **Isolation:** the `.wasm` runs in the same sandboxed iframe as JavaScript (opaque origin, no network of its own beyond what any sandboxed page has).

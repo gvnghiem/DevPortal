@@ -1,0 +1,21 @@
+name: Check generated files
+# examples-gen.js is built from examples/ by tools/build-examples.py. It is one huge line, so git merges
+# of it silently drop content (this already happened twice). Fail the PR if it is out of date.
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  examples-gen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 tools/build-examples.py
+      - name: examples-gen.js must match examples/
+        run: |
+          if ! git diff --exit-code -- examples-gen.js; then
+            echo "::error::examples-gen.js is stale. Run python3 tools/build-examples.py and commit the result."
+            exit 1
+          fi

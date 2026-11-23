@@ -1,0 +1,70 @@
+name: Branch previews
+# Every push publishes the branch to the gh-pages branch:
+#   main             -> https://<owner>.github.io/<repo>/
+#   any other branch -> https://<owner>.github.io/<repo>/branch/<name>/   (open with  /?branch=<name>)
+# A preview lives only while its branch exists: every run (push, branch delete, daily backstop) prunes previews
+# whose branch is gone. Requires Settings -> Pages -> Source: "Deploy from a branch" -> gh-pages / (root).
+on:
+  push:
+    branches-ignore: [gh-pages]
+  delete:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: branch-preview            # serialise: every run commits to the same gh-pages branch
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.event_name != 'delete' || github.event.ref_type == 'branch'
+    runs-on: ubuntu-latest
+    env:
+      # branch names are attacker-controlled text: pass via env, never interpolate into a script.
+      # (github.event.ref is the FULL ref on push events, so use ref_name there; a delete run's ref_name is the default branch.)
+      BRANCH: ${{ github.event_name == 'delete' && github.event.ref || github.ref_name }}
+      EVENT: ${{ github.event_name }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Tooling from the default branch (older branches may carry an old script)
+        uses: actions/checkout@v4
+        with: { ref: main, path: ctl }
+      - name: Check out the pushed branch
+        if: env.EVENT == 'push'
+        uses: actions/checkout@v4
+        with: { path: src }
+      - name: Check out gh-pages (or start it)
+        run: |
+          url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+          git clone --quiet --depth 1 --branch gh-pages "$url" site 2>/dev/null \
+            || { git init --quiet site; git -C site checkout --quiet -b gh-pages; git -C site remote add origin "$url"; }
+      - name: Build the Rust WebAssembly apps (branches that have rust-apps/)
+        if: env.EVENT == 'push' && hashFiles('src/rust-apps/Cargo.toml') != ''
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: bash src/tools/build-wasm.sh src
+      - name: Publish this branch
+        if: env.EVENT == 'push'
+        run: bash ctl/tools/publish-preview.sh "$BRANCH" src site
+      - name: Prune previews of branches that no longer exist
+        run: |
+          git -C site ls-remote --heads origin | sed 's#.*refs/heads/##' | grep -vx gh-pages > live.txt || true
+          # safety: a failed/empty branch listing must never wipe every preview
+          grep -qx main live.txt || { echo "branch list looks wrong, skipping prune"; exit 0; }
+          bash ctl/tools/publish-preview.sh --prune site live.txt
+      - name: Commit and push
+        run: |
+          cd site
+          git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A -f    # published trees may carry ignored files (built apps/); never let a stray .gitignore hide them
+          git diff --cached --quiet && { echo "nothing to publish"; exit 0; }
+          git commit --quiet -m "preview: $EVENT $BRANCH @ ${GITHUB_SHA::7}"
+          git push --quiet origin gh-pages
+      - name: Summary
+        if: env.EVENT == 'push'
+        run: |
+          s=$(printf '%s' "$BRANCH" | sed 's/[^A-Za-z0-9._-]/-/g')
+          base="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/"
+          if [ "$BRANCH" = main ]; then u="$base"; else u="${base}?branch=$s"; fi
+          echo "Preview: $u (live in about a minute)" >> "$GITHUB_STEP_SUMMARY"
