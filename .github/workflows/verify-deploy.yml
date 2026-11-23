@@ -23,7 +23,7 @@ jobs:
         run: |
           base="https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}"
           sleep 20
-          for f in "" terraform-sim.js terraform-ui.js langs-extra.js examples-gen.js shell-sim.js shell-ui.js ansible-sim.js ansible-ui.js sql-ui.js pglite.bundle.js jscpp.bundle.js apps/hello_canvas.wasm examples/ansible/web-server.yml; do
+          for f in "" terraform-sim.js terraform-ui.js langs-extra.js examples-gen.js shell-sim.js shell-ui.js ansible-sim.js ansible-ui.js sql-ui.js pglite.bundle.js jscpp.bundle.js apps/hello_canvas.wasm apps/floorplan.wasm examples/ansible/web-server.yml; do
             ok=0
             for i in $(seq 1 20); do                       # up to ~5 minutes for the first file while Pages deploys
               code=$(curl -s -o /dev/null -w '%{http_code}' "$base/$f?v=$GITHUB_SHA")
