@@ -5,6 +5,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SPEC = {
  "react": ("jsx", {"Components": {"counter-todo": "React: counter + todo", "shopping-cart": "React: shopping cart (useReducer)", "tic-tac-toe": "React: tic-tac-toe", "data-explorer": "React: data explorer"}}),
  "playcanvas": ("js", {"3D": {"spinning-cube": "PlayCanvas: spinning cube", "solar-system": "PlayCanvas: solar system", "keyboard-and-mouse": "PlayCanvas: keyboard + mouse"}}),
+ "rustwasm": ("rs", {"Apps (built by CI)": {"hello_canvas": "Hello, canvas"}}),
  "ts": ("ts", {"Pages": {"tech-landing": "Page: tech landing (Nimbus)", "social-feed": "Page: social media feed", "stock-market": "Page: stock market dashboard"}, "Basics": {"async-union": "Async + discriminated unions"}}),
  "rust": ("rs", {"Emulation": {"nes-cpu-6502": "NES: 6502 CPU emulator", "nes-tiles": "NES: tile / PPU renderer"}, "Projects": {"game-of-life": "Game of Life", "tic-tac-toe-ai": "Tic-tac-toe AI", "brainfuck": "Brainfuck interpreter", "calculator": "Expression calculator", "maze-bfs": "Maze solver (BFS)"}}),
  "java": ("java", {"Basics": {"hello-java": "Hello, Java"}, "Projects": {"bank-oop": "Bank accounts (OOP)", "sorting-visualizer": "Sorting algorithms", "threads-executor": "Threads & executors", "lru-cache": "LRU cache"}}),
@@ -21,7 +22,9 @@ for lang, (ext, groups) in SPEC.items():
     for g, items in groups.items():
         gr[g] = []
         for stem, title in items.items():
-            with open(os.path.join(ROOT, "examples", lang, stem + "." + ext), encoding="utf-8") as f:
+            # Rust->WASM apps are shown straight from their crate, so the source you read is the source CI compiles
+            path = os.path.join(ROOT, "rust-apps", stem, "src", "lib.rs") if lang == "rustwasm" else os.path.join(ROOT, "examples", lang, stem + "." + ext)
+            with open(path, encoding="utf-8") as f:
                 ex[title] = f.read()
             gr[g].append(title)
     out[lang] = {"examples": ex, "groups": gr}

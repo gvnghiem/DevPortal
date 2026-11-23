@@ -39,6 +39,11 @@ jobs:
           url="https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
           git clone --quiet --depth 1 --branch gh-pages "$url" site 2>/dev/null \
             || { git init --quiet site; git -C site checkout --quiet -b gh-pages; git -C site remote add origin "$url"; }
+      - name: Build the Rust WebAssembly apps (branches that have rust-apps/)
+        if: env.EVENT == 'push' && hashFiles('src/rust-apps/Cargo.toml') != ''
+        env:
+          CARGO_TARGET_DIR: ${{ runner.temp }}/cargo-target
+        run: bash src/tools/build-wasm.sh src
       - name: Publish this branch
         if: env.EVENT == 'push'
         run: bash ctl/tools/publish-preview.sh "$BRANCH" src site
@@ -52,7 +57,7 @@ jobs:
         run: |
           cd site
           git config user.name "github-actions[bot]"; git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
+          git add -A -f    # published trees may carry ignored files (built apps/); never let a stray .gitignore hide them
           git diff --cached --quiet && { echo "nothing to publish"; exit 0; }
           git commit --quiet -m "preview: $EVENT $BRANCH @ ${GITHUB_SHA::7}"
           git push --quiet origin gh-pages

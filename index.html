@@ -144,7 +144,7 @@
   <div class="group"><select id="langSel" aria-label="Language" title="Language">
     <optgroup label="Web"><option value="javascript">JavaScript (+ React, PlayCanvas)</option><option value="typescript">TypeScript</option></optgroup>
     <optgroup label="Scripting"><option value="python">Python</option><option value="shell">Shell (Bash)</option></optgroup>
-    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option><option value="csharp">C#</option></optgroup>
+    <optgroup label="Systems"><option value="rust">Rust</option><option value="c">C</option><option value="cpp">C++</option><option value="java">Java</option><option value="csharp">C#</option><option value="rustwasm">Rust → WASM apps</option></optgroup>
     <optgroup label="Databases"><option value="sql">SQL</option></optgroup>
     <optgroup label="Infrastructure"><option value="terraform">Terraform</option><option value="ansible">Ansible</option></optgroup>
   </select><select id="engine" aria-label="C/C++ engine" title="C/C++ engine: the offline simulator is isolated in your browser; the real compiler sends your code to a public online sandbox (Judge0)" style="display:none"><option value="sim">Simulator (offline)</option><option value="real">Real compiler (online)</option></select></div>
@@ -1121,6 +1121,7 @@ builtins.input = _no_input
     c:          { ...withNew(gx("c"), gg("c")), ext: ".c", mime: "text/x-csrc", indent: "    ", def: "Hello, C", key: "c" },
     cpp:        { ...withNew(gx("cpp"), gg("cpp")), ext: ".cpp", mime: "text/x-c++src", indent: "    ", def: "Hello, C++", key: "cpp" },
     java:       { ...withNew(gx("java"), gg("java")), ext: ".java", mime: "text/x-java", indent: "    ", def: "Hello, Java", key: "java" },
+    rustwasm:   { ...withNew(gx("rustwasm"), gg("rustwasm")), ext: ".rs", mime: "text/x-rust", indent: "    ", def: "Hello, canvas", key: "rsw" },
     csharp:     { ...withNew(gx("csharp"), gg("csharp")), ext: ".cs", mime: "text/x-csharp", indent: "    ", def: "Hello, C#", key: "cs" },
     terraform:  { ...withNew(window.TF_EXAMPLES, window.TF_GROUPS), ext: ".tf", mime: "text/plain", indent: "  ", def: "Start here: VPC + EC2", key: "tf" },
     sql:        { ...withNew(gx("sql"), gg("sql")), ext: ".sql", mime: "application/sql", indent: "  ", def: "SQLite: hello, temp table", key: "sql" },
@@ -1252,6 +1253,9 @@ builtins.input = _no_input
       ["std", "https://doc.rust-lang.org/std/"], ["Cargo", "https://doc.rust-lang.org/cargo/"], ["Error index", "https://doc.rust-lang.org/error_codes/"], ["Playground", "https://play.rust-lang.org/"]] },
     java: { tab: "Java Docs", title: "Java docs", home: "https://docs.oracle.com/en/java/javase/21/docs/api/", links: [
       ["API (Java 21)", "https://docs.oracle.com/en/java/javase/21/docs/api/"], ["Learn Java", "https://dev.java/learn/"], ["Tutorials", "https://docs.oracle.com/javase/tutorial/"], ["Language spec", "https://docs.oracle.com/javase/specs/jls/se21/html/index.html"]] },
+    rustwasm: { tab: "Wasm Docs", title: "Rust + WebAssembly", home: "https://rustwasm.github.io/docs/book/", links: [
+      ["Rust and WebAssembly book", "https://rustwasm.github.io/docs/book/"], ["MDN: WebAssembly", "https://developer.mozilla.org/en-US/docs/WebAssembly"], ["Canvas 2D API", "https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D"],
+      ["wasm32-unknown-unknown", "https://doc.rust-lang.org/nightly/rustc/platform-support/wasm32-unknown-unknown.html"], ["std::fmt (format!)", "https://doc.rust-lang.org/std/fmt/"]] },
     csharp: { tab: "C# Docs", title: "C# docs", home: "https://learn.microsoft.com/en-us/dotnet/csharp/", links: [
       ["C# guide", "https://learn.microsoft.com/en-us/dotnet/csharp/"], ["Tour of C#", "https://learn.microsoft.com/en-us/dotnet/csharp/tour-of-csharp/"], ["LINQ", "https://learn.microsoft.com/en-us/dotnet/csharp/linq/"], ["Async / await", "https://learn.microsoft.com/en-us/dotnet/csharp/asynchronous-programming/"], [".NET API browser", "https://learn.microsoft.com/en-us/dotnet/api/"], ["Language spec", "https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/language-specification/introduction"]] },
     c: { tab: "C Docs", title: "C reference", home: "https://en.cppreference.com/w/c", links: [
@@ -1424,6 +1428,87 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     addLine("sys", "▶ ran at " + new Date().toLocaleTimeString());
   }
 
+
+
+  /* ----- Rust -> WebAssembly apps: the .wasm is built by CI (rust-apps/), this page only hosts it ----- */
+  /* The host side of the `dp` ABI (rust-apps/dp). It runs INSIDE the sandboxed iframe as ordinary page code;
+     `canvas` and `console` are provided by buildDoc(). Imports here must match rust-apps/dp/src/host.rs. */
+  function wasmHostMain(b64){
+    var ABI = 1, bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var ctx = canvas.getContext("2d"), dpr = window.devicePixelRatio || 1, W = 1, H = 1, inst = null, mem = null, dead = false, dec = new TextDecoder();
+    var cursors = ["default", "pointer", "crosshair", "move", "grab", "ns-resize", "ew-resize", "text"];
+    function str(p, n){ return dec.decode(new Uint8Array(mem.buffer, p, n)); }
+    function col(c){ c = c >>> 0; return "rgba(" + (c >>> 24) + "," + ((c >>> 16) & 255) + "," + ((c >>> 8) & 255) + "," + ((c & 255) / 255) + ")"; }
+    function fit(){
+      var r = canvas.getBoundingClientRect(); W = Math.max(1, Math.round(r.width)); H = Math.max(1, Math.round(r.height));
+      canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr); ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+    }
+    function call(name){
+      if (dead) return;
+      try { inst.exports[name].apply(null, [].slice.call(arguments, 1)); }
+      catch (e) { dead = true; console.error("Rust app stopped: " + (e && e.message || e) + " (see the panic message above, if any)"); }
+    }
+    var env = {
+      dp_clear: function(c){ ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = col(c); ctx.fillRect(0, 0, canvas.width, canvas.height); ctx.restore(); },
+      dp_rect: function(x, y, w, h, c, fill){ if (fill) { ctx.fillStyle = col(c); ctx.fillRect(x, y, w, h); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h); } },
+      dp_line: function(x1, y1, x2, y2, w, c){ ctx.strokeStyle = col(c); ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); },
+      dp_circle: function(x, y, r, c, fill){ ctx.beginPath(); ctx.arc(x, y, Math.max(0, r), 0, 6.283185307179586); if (fill) { ctx.fillStyle = col(c); ctx.fill(); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.stroke(); } },
+      dp_poly: function(p, n, c, fill){
+        if (n < 2) return; var a = new Float32Array(mem.buffer, p, n * 2); ctx.beginPath(); ctx.moveTo(a[0], a[1]);
+        for (var k = 1; k < n; k++) ctx.lineTo(a[2 * k], a[2 * k + 1]);
+        if (fill) { ctx.closePath(); ctx.fillStyle = col(c); ctx.fill(); } else { ctx.strokeStyle = col(c); ctx.lineWidth = 1; ctx.stroke(); }
+      },
+      dp_text: function(p, n, x, y, size, c){ ctx.font = size + "px system-ui, sans-serif"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = col(c); ctx.fillText(str(p, n), x, y); },
+      dp_cursor: function(k){ canvas.style.cursor = cursors[k] || "default"; },
+      dp_log: function(p, n){ console.log(str(p, n)); }
+    };
+    WebAssembly.compile(bytes).then(function(m){
+      WebAssembly.Module.imports(m).forEach(function(im){
+        if (im.module !== "env" || typeof env[im.name] !== "function") throw new Error("the app imports " + im.module + "." + im.name + ", which this page does not provide (built against a newer dp ABI?)");
+      });
+      return WebAssembly.instantiate(m, { env: env });
+    }).then(function(inst0){
+      inst = inst0; mem = inst.exports.memory;
+      ["dp_abi_version", "dp_init", "dp_resize", "dp_frame", "dp_pointer", "dp_key"].forEach(function(n){ if (typeof inst.exports[n] !== "function") throw new Error("missing export " + n + " — did you forget dp::dp_app!(...)?"); });
+      if (inst.exports.dp_abi_version() !== ABI) throw new Error("app was built for dp ABI " + inst.exports.dp_abi_version() + ", this page speaks " + ABI);
+      canvas.tabIndex = 0; fit(); call("dp_init", W, H);
+      function ptr(kind, e, delta){ var r = canvas.getBoundingClientRect(); call("dp_pointer", kind, e.clientX - r.left, e.clientY - r.top, e.buttons, delta || 0); }
+      canvas.addEventListener("pointermove", function(e){ ptr(0, e); });
+      canvas.addEventListener("pointerdown", function(e){ canvas.focus(); try { canvas.setPointerCapture(e.pointerId); } catch (x) {} ptr(1, e); e.preventDefault(); });
+      canvas.addEventListener("pointerup", function(e){ ptr(2, e); });
+      canvas.addEventListener("pointercancel", function(e){ ptr(2, e); });
+      canvas.addEventListener("wheel", function(e){ e.preventDefault(); ptr(3, e, e.deltaY); }, { passive: false });
+      canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+      function key(down){ return function(e){
+        if (e.ctrlKey || e.metaKey) { if (e.keyCode === 65 || e.keyCode === 90 || e.keyCode === 89 || e.keyCode === 68) e.preventDefault(); }
+        else if ([8, 9, 32, 37, 38, 39, 40, 46].indexOf(e.keyCode) >= 0) e.preventDefault();
+        call("dp_key", e.keyCode, down ? 1 : 0, (e.shiftKey ? 1 : 0) | (e.ctrlKey ? 2 : 0) | (e.altKey ? 4 : 0) | (e.metaKey ? 8 : 0));
+      }; }
+      window.addEventListener("keydown", key(true)); window.addEventListener("keyup", key(false));
+      window.addEventListener("resize", function(){ fit(); call("dp_resize", W, H); });
+      (function loop(t){ call("dp_frame", t); if (!dead) requestAnimationFrame(loop); })(performance.now());
+    }).catch(function(e){ console.error("Rust app failed to start: " + (e && e.message || e)); });
+  }
+  async function runRustWasm(){
+    const m = /^\s*\/\/\s*devportal-app:\s*([a-z0-9_]+)/m.exec(code.value.slice(0, 400));
+    if (!m) { addLine("error", "Start the file with a line like  // devportal-app: hello_canvas  — it names the compiled apps/<name>.wasm to run."); showTab("console"); return; }
+    const name = m[1], url = "apps/" + name + ".wasm";
+    addLine("sys", "▶ loading " + url + " …");
+    try {
+      const r = await fetch(url, { cache: "no-cache" });
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const buf = new Uint8Array(await r.arrayBuffer());
+      let s = ""; for (let i = 0; i < buf.length; i += 0x8000) s += String.fromCharCode.apply(null, buf.subarray(i, i + 0x8000));
+      if (lang !== "rustwasm") return;                      // the user switched language while it downloaded
+      runJs("(" + wasmHostMain.toString() + ")(" + JSON.stringify(btoa(s)) + ");");
+      addLine("sys", name + ".wasm (" + Math.round(buf.length / 1024) + " KB) is running. This source is for reading: the .wasm is compiled by CI, so editing it here changes nothing — change rust-apps/, push a branch and open its preview.");
+    } catch (e) {
+      addLine("error", "Couldn't load " + url + " (" + e.message + "). The .wasm files are built by CI (or locally with tools/build-wasm.sh) and published next to index.html; they are missing when the page is opened from disk or from the claude.ai viewer.");
+      showTab("console");
+    }
+  }
 
   /* ----- TypeScript (compiled in the browser with the TypeScript compiler) ----- */
   let tsLoading = null, tsToken = 0;
@@ -1615,7 +1700,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     }
     Object.values(SIMS).forEach(x => x && x.deactivate());
     clearConsole(); showTab("preview");
-    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "typescript") runTs();
+    if (lang === "python") runPython(); else if (lang === "rust") runRust(); else if (lang === "rustwasm") runRustWasm(); else if (lang === "typescript") runTs();
     else if (lang === "java") runJudge(62, "Main.java"); else if (lang === "csharp") runJudge(51, "Program.cs"); else if (lang === "c" || lang === "cpp") { if ($("engine").value === "real") runJudge(lang === "c" ? 50 : 54, "main." + lang); else runCpp(); }
     else runJs();
   }
