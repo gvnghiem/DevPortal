@@ -1434,7 +1434,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   /* The host side of the `dp` ABI (rust-apps/dp). It runs INSIDE the sandboxed iframe as ordinary page code;
      `canvas` and `console` are provided by buildDoc(). Imports here must match rust-apps/dp/src/host.rs. */
   function wasmHostMain(b64){
-    var ABI = 1, bin = atob(b64), bytes = new Uint8Array(bin.length);
+    var ABI_MAX = 2, bin = atob(b64), bytes = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     var ctx = canvas.getContext("2d"), dpr = window.devicePixelRatio || 1, W = 1, H = 1, inst = null, mem = null, dead = false, dec = new TextDecoder();
     var cursors = ["default", "pointer", "crosshair", "move", "grab", "ns-resize", "ew-resize", "text"];
@@ -1462,8 +1462,27 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       },
       dp_text: function(p, n, x, y, size, c){ ctx.font = size + "px system-ui, sans-serif"; ctx.textBaseline = "alphabetic"; ctx.fillStyle = col(c); ctx.fillText(str(p, n), x, y); },
       dp_cursor: function(k){ canvas.style.cursor = cursors[k] || "default"; },
-      dp_log: function(p, n){ console.log(str(p, n)); }
+      dp_log: function(p, n){ console.log(str(p, n)); },
+      dp_blit: function(p, sw, sh, x, y, w, h){
+        var n = sw * sh * 4;
+        if (!(sw > 0 && sh > 0 && sw <= 4096 && sh <= 4096) || p + n > mem.buffer.byteLength) return;
+        if (!blitCv || blitCv.width !== sw || blitCv.height !== sh) { blitCv = document.createElement("canvas"); blitCv.width = sw; blitCv.height = sh; blitCx = blitCv.getContext("2d"); }
+        blitCx.putImageData(new ImageData(new Uint8ClampedArray(mem.buffer, p, n), sw, sh), 0, 0);
+        ctx.imageSmoothingEnabled = false; ctx.drawImage(blitCv, x, y, w, h);
+      },
+      dp_open_file: function(){ if (!picker) { picker = document.createElement("input"); picker.type = "file"; picker.onchange = function(){ if (picker.files[0]) sendFile(picker.files[0]); picker.value = ""; }; } picker.click(); }
     };
+    var blitCv = null, blitCx = null, picker = null;
+    function sendFile(f){
+      if (f.size > 16 * 1048576) { console.error("That file is " + Math.round(f.size / 1048576) + " MB; the limit is 16 MB."); return; }
+      f.arrayBuffer().then(function(buf){
+        if (dead || typeof inst.exports.dp_file !== "function") return;
+        var nm = new TextEncoder().encode(f.name), data = new Uint8Array(buf);
+        var p = inst.exports.dp_alloc(data.length); new Uint8Array(mem.buffer, p, data.length).set(data);
+        var q = inst.exports.dp_alloc(nm.length); new Uint8Array(mem.buffer, q, nm.length).set(nm);
+        call("dp_file", p, data.length, q, nm.length);
+      });
+    }
     WebAssembly.compile(bytes).then(function(m){
       WebAssembly.Module.imports(m).forEach(function(im){
         if (im.module !== "env" || typeof env[im.name] !== "function") throw new Error("the app imports " + im.module + "." + im.name + ", which this page does not provide (built against a newer dp ABI?)");
@@ -1472,7 +1491,8 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     }).then(function(inst0){
       inst = inst0; mem = inst.exports.memory;
       ["dp_abi_version", "dp_init", "dp_resize", "dp_frame", "dp_pointer", "dp_key"].forEach(function(n){ if (typeof inst.exports[n] !== "function") throw new Error("missing export " + n + " — did you forget dp::dp_app!(...)?"); });
-      if (inst.exports.dp_abi_version() !== ABI) throw new Error("app was built for dp ABI " + inst.exports.dp_abi_version() + ", this page speaks " + ABI);
+      var ver = inst.exports.dp_abi_version();
+      if (ver < 1 || ver > ABI_MAX) throw new Error("app was built for dp ABI " + ver + ", this page speaks 1 to " + ABI_MAX);
       canvas.tabIndex = 0; fit(); call("dp_init", W, H);
       function ptr(kind, e, delta){ var r = canvas.getBoundingClientRect(); call("dp_pointer", kind, e.clientX - r.left, e.clientY - r.top, e.buttons, delta || 0); }
       canvas.addEventListener("pointermove", function(e){ ptr(0, e); });
@@ -1481,6 +1501,8 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       canvas.addEventListener("pointercancel", function(e){ ptr(2, e); });
       canvas.addEventListener("wheel", function(e){ e.preventDefault(); ptr(3, e, e.deltaY); }, { passive: false });
       canvas.addEventListener("contextmenu", function(e){ e.preventDefault(); });
+      window.addEventListener("dragover", function(e){ e.preventDefault(); });
+      window.addEventListener("drop", function(e){ e.preventDefault(); if (e.dataTransfer && e.dataTransfer.files[0]) sendFile(e.dataTransfer.files[0]); });
       function key(down){ return function(e){
         if (e.ctrlKey || e.metaKey) { if (e.keyCode === 65 || e.keyCode === 90 || e.keyCode === 89 || e.keyCode === 68) e.preventDefault(); }
         else if ([8, 9, 32, 37, 38, 39, 40, 46].indexOf(e.keyCode) >= 0) e.preventDefault();

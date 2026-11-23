@@ -11,6 +11,8 @@ pub enum Cmd {
     Text { s: String, x: f32, y: f32, size: f32, c: Rgba },
     Cursor(Cursor),
     Log(String),
+    Blit { sw: u32, sh: u32, x: f32, y: f32, w: f32, h: f32, pixels: Vec<u8> },
+    OpenFile,
 }
 
 #[derive(Default)]
@@ -31,4 +33,6 @@ impl Gfx for Recorder {
     fn text(&mut self, s: &str, x: f32, y: f32, size: f32, c: Rgba) { self.cmds.push(Cmd::Text { s: s.to_string(), x, y, size, c }) }
     fn cursor(&mut self, k: Cursor) { self.cmds.push(Cmd::Cursor(k)) }
     fn log(&mut self, s: &str) { self.cmds.push(Cmd::Log(s.to_string())) }
+    fn blit(&mut self, pixels: &[u8], sw: u32, sh: u32, (x, y, w, h): (f32, f32, f32, f32)) { self.cmds.push(Cmd::Blit { sw, sh, x, y, w, h, pixels: pixels.to_vec() }) }
+    fn open_file(&mut self) { self.cmds.push(Cmd::OpenFile) }
 }
