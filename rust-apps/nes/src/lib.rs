@@ -30,6 +30,12 @@ const ACCENT: Rgba = Rgba::rgb(255, 196, 61);
 const OK: Rgba = Rgba::rgb(110, 220, 140);
 const BAD: Rgba = Rgba::rgb(255, 120, 120);
 
+/// `s`, cut with an ellipsis so it fits `max_w` pixels at roughly `per_char` pixels per character.
+fn fit(s: &str, max_w: f32, per_char: f32) -> String {
+    let max = (max_w / per_char).floor().max(1.0) as usize;
+    if s.chars().count() <= max { s.to_string() } else { s.chars().take(max.saturating_sub(1)).chain(std::iter::once('…')).collect() }
+}
+
 /// Screen geometry for the current window size (see `NesApp::layout`).
 struct Layout { top: f32, screen: (f32, f32, f32, f32), scale: f32, panel: Option<(f32, f32, f32, f32)> }
 
@@ -183,11 +189,14 @@ impl NesApp {
     }
 
     fn footer(&self, g: &mut dyn Gfx, left: &str) {
-        g.text(left, 12.0, self.h - 12.0, 12.0, arcade::DIM);
-        let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · L scanlines · O open · D debug";
-        let hint_w = hint.chars().count() as f32 * 5.9;
-        let fits = left.chars().count() as f32 * 7.0 + hint_w + 40.0 < self.w;       // otherwise the hint gets its own line
-        g.text(hint, (self.w - hint_w - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, arcade::DIM);
+        let left = fit(left, self.w - 24.0, 7.0);
+        g.text(&left, 12.0, self.h - 12.0, 12.0, arcade::DIM);
+        let full = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · L scanlines · O open · D debug";
+        let short = "X A · Z B · Enter Start · M mute · L scanlines";
+        let width = |t: &str| t.chars().count() as f32 * 6.3;
+        let hint = if width(full) <= self.w - 24.0 { full } else { short };
+        let fits = left.chars().count() as f32 * 7.0 + width(hint) + 40.0 < self.w;       // otherwise the hint gets its own line
+        g.text(&fit(hint, self.w - 24.0, 6.3), (self.w - width(hint) - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, arcade::DIM);
     }
 
     fn draw_prompt(&self, g: &mut dyn Gfx) {
@@ -208,9 +217,10 @@ impl NesApp {
         self.glass(g, &lay);
         if let Some((px, py, pw, ph)) = lay.panel { arcade::controller(g, (px, py, pw, ph), self.p1(), self.pads.len() >= 2, self.neon()); }
         let pad_line = if self.pads.is_empty() { "Xbox, PlayStation, Luna and other standard controllers work too: connect one and press a button.".to_string() } else { format!("{} controller(s) connected.", self.pads.len()) };
-        g.text(&format!("Supported mappers: {}. Use a ROM you own.   {pad_line}", Cart::SUPPORTED_MAPPERS), 12.0, self.h - 12.0 - 15.0, 11.0, arcade::DIM);
+        g.text(&fit(&format!("Supported mappers: {}. Use a ROM you own.", Cart::SUPPORTED_MAPPERS), self.w - 24.0, 6.0), 12.0, self.h - 27.0, 11.0, arcade::DIM);
+        g.text(&fit(&pad_line, self.w - 24.0, 6.0), 12.0, self.h - 12.0, 11.0, arcade::DIM);
         g.text("Click to open a .nes ROM — or drop one here", cx - 130.0, y + h + 36.0, 14.0, TEXT);
-        if let Some(e) = &self.error { g.text(e, 12.0, self.h - 12.0, 13.0, BAD); }
+        if let Some(e) = &self.error { g.text(&fit(e, self.w - 24.0, 7.5), 12.0, self.h - 44.0, 13.0, BAD); }
     }
 
     fn draw_game(&self, g: &mut dyn Gfx, n: &Nes) {
@@ -446,7 +456,7 @@ mod tests {
     #[test]
     fn the_status_line_and_key_hint_never_share_a_row_when_narrow() {
         let mut a = NesApp::new(); a.file("a-long-rom-name.nes", rom(&[0x4C, 0x00, 0x80]));
-        a.gamepad(0, Some(Gamepad::default())); a.resize(700.0, 500.0);
+        a.gamepad(0, Some(Gamepad::default())); a.resize(480.0, 500.0);
         let r = frame(&mut a);
         let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
         assert_eq!(ys.len(), 2); assert_ne!(ys[0], ys[1], "{ys:?}");
@@ -454,6 +464,16 @@ mod tests {
         let r = frame(&mut a);
         let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
         assert_eq!(ys[0], ys[1], "wide windows keep one row");
+    }
+
+    #[test]
+    fn footer_text_is_shortened_to_the_window_width() {
+        assert_eq!(fit("hello world", 1000.0, 7.0), "hello world");
+        assert_eq!(fit("hello world", 42.0, 7.0), "hello…");
+        let mut a = NesApp::new(); a.init(360.0, 300.0); a.file("some-rather-long-game-name-here.nes", rom(&[0x4C, 0x00, 0x80]));
+        for t in frame(&mut a).cmds.iter().filter_map(|c| if let Cmd::Text { s, x, size, .. } = c { Some((s, x, size)) } else { None }) {
+            if *t.2 <= 12.0 && !t.0.is_empty() { assert!(t.1 + t.0.chars().count() as f32 * 5.5 <= 360.0 + 20.0, "'{}' at x={} runs off a 360px window", t.0, t.1); }
+        }
     }
 
     #[test]
