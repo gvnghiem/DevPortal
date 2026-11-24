@@ -145,9 +145,12 @@ impl NesApp {
         let status = if !self.running { "paused" } else { "" };
         let pads = match self.pads.len() { 0 => String::new(), 1 => "  🎮 controller".into(), k => format!("  🎮 {k} controllers") };
         let mute = if self.muted { "  🔇 muted" } else { "" };
-        g.text(&format!("{}  {}{}{}", self.name, status, pads, mute), 12.0, self.h - 12.0, 12.0, DIM);
+        let left = format!("{}  {}{}{}", self.name, status, pads, mute);
+        g.text(&left, 12.0, self.h - 12.0, 12.0, DIM);
         let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · O open · D debug";
-        g.text(hint, self.w - hint.len() as f32 * 5.9 - 12.0, self.h - 12.0, 11.0, DIM);
+        let hint_w = hint.chars().count() as f32 * 5.9;
+        let fits = left.chars().count() as f32 * 7.0 + hint_w + 40.0 < self.w;       // otherwise the hint gets its own line
+        g.text(hint, (self.w - hint_w - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, DIM);
         if n.cpu.halted { g.text("CPU locked up (KIL opcode) — press R to reset", 12.0, 22.0, 14.0, BAD); }
         if let Some(e) = &self.error { g.text(e, 12.0, 40.0, 13.0, BAD); }
     }
@@ -356,6 +359,19 @@ mod tests {
     }
 
     fn pad_state(buttons: &[u32], axes: [f32; 4]) -> Gamepad { Gamepad { buttons: buttons.iter().fold(0, |m, b| m | 1 << b), axes } }
+
+    #[test]
+    fn the_status_line_and_key_hint_never_share_a_row_when_narrow() {
+        let mut a = NesApp::new(); a.file("a-long-rom-name.nes", rom(&[0x4C, 0x00, 0x80]));
+        a.gamepad(0, Some(Gamepad::default())); a.resize(700.0, 500.0);
+        let r = frame(&mut a);
+        let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
+        assert_eq!(ys.len(), 2); assert_ne!(ys[0], ys[1], "{ys:?}");
+        a.resize(1400.0, 500.0);
+        let r = frame(&mut a);
+        let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
+        assert_eq!(ys[0], ys[1], "wide windows keep one row");
+    }
 
     #[test]
     fn standard_controller_buttons_map_to_the_nes_pad() {
