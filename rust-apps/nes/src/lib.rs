@@ -6,6 +6,7 @@
 //! Keys: arrows · X = A · Z = B · Enter = Start · Shift or Tab = Select.
 //! Emulator: Space pause · R reset · O open another ROM · D debug view (CPU registers, RAM map) · S step one
 //! instruction · T run nestest in its no-picture "automation" mode.
+pub mod apu;
 pub mod bus;
 pub mod cart;
 pub mod cpu;
@@ -15,7 +16,7 @@ pub mod system;
 use bus::pad;
 use cart::{Cart, Mirroring};
 use cpu::Cpu;
-use dp::{keys, App, Cursor, Gfx, Mods, Pointer, PointerKind, Rgba};
+use dp::{keys, App, Cursor, Gamepad, Gfx, Mods, Pointer, PointerKind, Rgba};
 use system::Nes;
 
 /// NTSC: 60.0988 frames per second.
@@ -38,14 +39,38 @@ pub struct NesApp {
     want_picker: bool,
     debug: bool,
     auto: bool,
+    /// Keyboard buttons held (see [`pad`]).
     pad: u8,
+    /// Connected game controllers as (browser index, NES buttons), lowest index first: the first is player 1, the second player 2.
+    pads: Vec<(u32, u8)>,
+    muted: bool,
+    /// Sample rate the APU is currently producing (0 = not yet told).
+    audio_rate: u32,
     last_t: Option<f64>,
     acc: f64,
 }
 
+/// Translate a controller in the browser's "standard" layout (Xbox, PlayStation, Luna, Switch Pro, ...) to NES buttons.
+/// The NES A/B sit where a Nintendo pad's do — A on the right, B below it — so the right/bottom face buttons map to A and B
+/// whichever logo they carry, and the left/top face buttons duplicate them (handy for two-thumb "run and jump" play).
+pub fn map_gamepad(g: &Gamepad) -> u8 {
+    const DEADZONE: f32 = 0.5;
+    let mut m = 0;
+    let mut set = |on: bool, bit: u8| if on { m |= bit };
+    set(g.pressed(1) || g.pressed(3), pad::A);
+    set(g.pressed(0) || g.pressed(2), pad::B);
+    set(g.pressed(8), pad::SELECT);
+    set(g.pressed(9), pad::START);
+    set(g.pressed(12) || g.axes[1] < -DEADZONE, pad::UP);
+    set(g.pressed(13) || g.axes[1] > DEADZONE, pad::DOWN);
+    set(g.pressed(14) || g.axes[0] < -DEADZONE, pad::LEFT);
+    set(g.pressed(15) || g.axes[0] > DEADZONE, pad::RIGHT);
+    m
+}
+
 impl NesApp {
     pub fn new() -> Self {
-        NesApp { w: 900.0, h: 600.0, nes: None, name: String::new(), running: false, error: None, want_picker: false, debug: false, auto: false, pad: 0, last_t: None, acc: 0.0 }
+        NesApp { w: 900.0, h: 600.0, nes: None, name: String::new(), running: false, error: None, want_picker: false, debug: false, auto: false, pad: 0, pads: Vec::new(), muted: false, audio_rate: 0, last_t: None, acc: 0.0 }
     }
 
     fn load(&mut self, name: &str, data: &[u8]) {
@@ -55,9 +80,15 @@ impl NesApp {
                 self.name = name.to_string();
                 self.error = None; self.running = true; self.auto = false;
                 self.acc = FRAME_MS; self.last_t = None;                 // draw the first frame right away
+                self.audio_rate = 0;                                      // re-tell the new APU the page's sample rate
             }
             Err(e) => self.error = Some(format!("{name}: {e}")),
         }
+    }
+
+    fn sync_pads(&mut self) {
+        let (p1, p2) = (self.pad | self.pads.first().map_or(0, |p| p.1), self.pads.get(1).map_or(0, |p| p.1));
+        if let Some(n) = self.nes.as_mut() { n.bus.pad = p1; n.bus.pad2 = p2; }
     }
 
     /// nestest's "automation" entry: jump straight to $C000, which runs every CPU test.
@@ -75,7 +106,8 @@ impl NesApp {
         self.last_t = Some(t);
         let stop = if self.auto { Some(NESTEST_END) } else { None };
         let nes = self.nes.as_mut().expect("checked above");
-        nes.bus.pad = self.pad;
+        nes.bus.pad = self.pad | self.pads.first().map_or(0, |p| p.1);
+        nes.bus.pad2 = self.pads.get(1).map_or(0, |p| p.1);
         let mut ran = 0;
         while self.acc >= FRAME_MS && ran < 3 {
             if nes.run_frame(stop) { self.running = false; self.acc = 0.0; return; }
@@ -98,7 +130,9 @@ impl NesApp {
         g.rect(cx - 230.0, cy - 60.0, 460.0, 120.0, ACCENT, false);
         g.text("Click to open a .nes ROM — or drop one here", cx - 190.0, cy - 8.0, 16.0, TEXT);
         g.text(&format!("Supported mappers: {}. Use a ROM you own.", Cart::SUPPORTED_MAPPERS), cx - 214.0, cy + 18.0, 12.0, DIM);
-        g.text("Arrows · X = A · Z = B · Enter = Start · Shift = Select", cx - 190.0, cy + 90.0, 13.0, DIM);
+        g.text("Arrows · X = A · Z = B · Enter = Start · Shift = Select · M = mute", cx - 215.0, cy + 90.0, 13.0, DIM);
+        let pad_line = if self.pads.is_empty() { "Xbox, PlayStation, Luna and other standard controllers work too: connect one and press a button.".to_string() } else { format!("{} controller(s) connected.", self.pads.len()) };
+        g.text(&pad_line, cx - 230.0, cy + 112.0, 12.0, DIM);
         if let Some(e) = &self.error { g.text(e, 24.0, self.h - 24.0, 13.0, BAD); }
     }
 
@@ -109,9 +143,14 @@ impl NesApp {
         let (dw, dh) = (ppu::WIDTH as f32 * scale, ppu::HEIGHT as f32 * scale);
         g.blit(&n.bus.ppu.fb, ppu::WIDTH as u32, ppu::HEIGHT as u32, (((self.w - dw) / 2.0).floor(), ((avail_h - dh) / 2.0).floor().max(0.0), dw, dh));
         let status = if !self.running { "paused" } else { "" };
-        g.text(&format!("{}  {}", self.name, status), 12.0, self.h - 12.0, 12.0, DIM);
-        let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · O open · D debug";
-        g.text(hint, self.w - hint.len() as f32 * 5.9 - 12.0, self.h - 12.0, 11.0, DIM);
+        let pads = match self.pads.len() { 0 => String::new(), 1 => "  🎮 controller".into(), k => format!("  🎮 {k} controllers") };
+        let mute = if self.muted { "  🔇 muted" } else { "" };
+        let left = format!("{}  {}{}{}", self.name, status, pads, mute);
+        g.text(&left, 12.0, self.h - 12.0, 12.0, DIM);
+        let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · O open · D debug";
+        let hint_w = hint.chars().count() as f32 * 5.9;
+        let fits = left.chars().count() as f32 * 7.0 + hint_w + 40.0 < self.w;       // otherwise the hint gets its own line
+        g.text(hint, (self.w - hint_w - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, DIM);
         if n.cpu.halted { g.text("CPU locked up (KIL opcode) — press R to reset", 12.0, 22.0, 14.0, BAD); }
         if let Some(e) = &self.error { g.text(e, 12.0, 40.0, 13.0, BAD); }
     }
@@ -156,7 +195,16 @@ impl App for NesApp {
     fn resize(&mut self, w: f32, h: f32) { self.w = w; self.h = h; }
 
     fn frame(&mut self, g: &mut dyn Gfx, t: f64) {
+        let rate = g.audio_rate();
+        if rate > 0 && rate != self.audio_rate {
+            self.audio_rate = rate;
+            if let Some(n) = self.nes.as_mut() { n.bus.apu.set_sample_rate(rate); }
+        }
         self.advance(t);
+        if let Some(n) = self.nes.as_mut() {
+            let samples = n.bus.apu.take_samples();                       // always drained, so muting or pausing can't pile them up
+            if !self.muted && self.running && rate > 0 { g.audio_push(&samples); }
+        }
         g.clear(BG);
         match self.nes.as_ref() {
             None => self.draw_prompt(g),
@@ -183,7 +231,7 @@ impl App for NesApp {
         };
         if bit != 0 {
             if down { self.pad |= bit } else { self.pad &= !bit }
-            if let Some(n) = self.nes.as_mut() { n.bus.pad = self.pad; }
+            self.sync_pads();
             return;
         }
         if !down || mods.ctrl() || mods.meta() { return; }
@@ -197,8 +245,18 @@ impl App for NesApp {
             x if x == keys::letter('r') => { if let Some(n) = self.nes.as_mut() { n.reset(); } self.auto = false; }
             x if x == keys::letter('t') => self.nestest_auto(),
             x if x == keys::letter('o') => self.want_picker = true,
+            x if x == keys::letter('m') => self.muted = !self.muted,
             _ => {}
         }
+    }
+
+    fn gamepad(&mut self, index: u32, state: Option<Gamepad>) {
+        self.pads.retain(|p| p.0 != index);
+        if let Some(g) = state {
+            self.pads.push((index, map_gamepad(&g)));
+            self.pads.sort_by_key(|p| p.0);
+        }
+        self.sync_pads();
     }
 
     fn file(&mut self, name: &str, data: Vec<u8>) { self.load(name, &data); }
@@ -298,6 +356,92 @@ mod tests {
             a.key(k, false, Mods(0)); assert_eq!(a.nes.as_ref().unwrap().bus.pad & bit, 0);
         }
         a.key(keys::LEFT, true, Mods(1)); assert_eq!(a.nes.as_ref().unwrap().bus.pad, pad::LEFT, "shift held doesn't stop pad keys");
+    }
+
+    fn pad_state(buttons: &[u32], axes: [f32; 4]) -> Gamepad { Gamepad { buttons: buttons.iter().fold(0, |m, b| m | 1 << b), axes } }
+
+    #[test]
+    fn the_status_line_and_key_hint_never_share_a_row_when_narrow() {
+        let mut a = NesApp::new(); a.file("a-long-rom-name.nes", rom(&[0x4C, 0x00, 0x80]));
+        a.gamepad(0, Some(Gamepad::default())); a.resize(700.0, 500.0);
+        let r = frame(&mut a);
+        let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
+        assert_eq!(ys.len(), 2); assert_ne!(ys[0], ys[1], "{ys:?}");
+        a.resize(1400.0, 500.0);
+        let r = frame(&mut a);
+        let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
+        assert_eq!(ys[0], ys[1], "wide windows keep one row");
+    }
+
+    #[test]
+    fn standard_controller_buttons_map_to_the_nes_pad() {
+        let none = [0.0; 4];
+        for (b, bit) in [(1, pad::A), (3, pad::A), (0, pad::B), (2, pad::B), (8, pad::SELECT), (9, pad::START), (12, pad::UP), (13, pad::DOWN), (14, pad::LEFT), (15, pad::RIGHT)] {
+            assert_eq!(map_gamepad(&pad_state(&[b], none)), bit, "button {b}");
+        }
+        assert_eq!(map_gamepad(&pad_state(&[4, 5, 6, 7, 10, 11, 16], none)), 0, "bumpers, triggers, stick clicks and home do nothing");
+        assert_eq!(map_gamepad(&pad_state(&[1, 0, 9], none)), pad::A | pad::B | pad::START, "chords work");
+    }
+
+    #[test]
+    fn the_left_stick_acts_as_a_d_pad_outside_the_dead_zone() {
+        assert_eq!(map_gamepad(&pad_state(&[], [0.3, -0.4, 0.0, 0.0])), 0, "drift inside the dead zone is ignored");
+        assert_eq!(map_gamepad(&pad_state(&[], [-0.9, 0.0, 0.0, 0.0])), pad::LEFT);
+        assert_eq!(map_gamepad(&pad_state(&[], [0.9, 0.9, 0.0, 0.0])), pad::RIGHT | pad::DOWN);
+        assert_eq!(map_gamepad(&pad_state(&[], [0.0, -0.9, 0.0, 0.0])), pad::UP);
+        assert_eq!(map_gamepad(&pad_state(&[], [0.0, 0.0, 0.9, 0.9])), 0, "the right stick is not used");
+    }
+
+    #[test]
+    fn controllers_are_players_in_connection_order_and_merge_with_the_keyboard() {
+        let mut a = NesApp::new(); a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        let start = pad_state(&[9], [0.0; 4]); let jump = pad_state(&[1], [0.0; 4]);
+        a.gamepad(3, Some(jump)); a.gamepad(1, Some(start));            // index 1 is the lower: it becomes player 1
+        { let b = &a.nes.as_ref().unwrap().bus; assert_eq!((b.pad, b.pad2), (pad::START, pad::A)); }
+        a.key(keys::letter('z'), true, Mods(0));
+        assert_eq!(a.nes.as_ref().unwrap().bus.pad, pad::START | pad::B, "keyboard and first controller both drive player 1");
+        a.gamepad(1, None);                                              // unplug player 1: the other pad slides up
+        { let b = &a.nes.as_ref().unwrap().bus; assert_eq!((b.pad, b.pad2), (pad::A | pad::B, 0)); }
+        a.gamepad(3, Some(pad_state(&[], [0.0; 4])));
+        assert_eq!(a.nes.as_ref().unwrap().bus.pad, pad::B, "releasing everything clears the pad");
+    }
+
+    #[test]
+    fn a_pad_connected_before_a_rom_loads_still_works_once_the_game_starts() {
+        let mut a = NesApp::new();
+        a.gamepad(0, Some(pad_state(&[9], [0.0; 4])));
+        a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        frame(&mut a);
+        assert_eq!(a.nes.as_ref().unwrap().bus.pad, pad::START);
+    }
+
+    #[test]
+    fn audio_is_pushed_each_frame_at_the_hosts_rate_and_m_mutes_it() {
+        // LDA #$01; STA $4015; LDA #$BF; STA $4000; LDA #$40; STA $4002; LDA #$08; STA $4003; JMP *
+        let code = [0xA9, 0x01, 0x8D, 0x15, 0x40, 0xA9, 0xBF, 0x8D, 0x00, 0x40, 0xA9, 0x40, 0x8D, 0x02, 0x40, 0xA9, 0x08, 0x8D, 0x03, 0x40, 0x4C, 0x14, 0x80];
+        let mut a = NesApp::new(); a.file("t.nes", rom(&code));
+        let mut r = Recorder::new(); r.audio_rate = 44_100;
+        a.frame(&mut r, 0.0);
+        let mut t = 0.0; for _ in 0..20 { t += FRAME_MS; a.frame(&mut r, t); }
+        let pushed = r.audio();
+        assert!((pushed.len() as i32 - 20 * 44_100 / 60).abs() < 44_100 / 10, "about 20 frames of audio at 44.1 kHz, got {}", pushed.len());
+        assert!(pushed.iter().fold(0f32, |m, x| m.max(x.abs())) > 0.05, "the square wave is audible");
+        a.key(keys::letter('m'), true, Mods(0));
+        let mut m = Recorder::new(); m.audio_rate = 44_100;
+        for _ in 0..5 { t += FRAME_MS; a.frame(&mut m, t); }
+        assert!(m.audio().is_empty(), "muted: nothing pushed");
+        a.key(keys::letter('m'), true, Mods(0));
+        for _ in 0..5 { t += FRAME_MS; a.frame(&mut m, t); }
+        assert!(!m.audio().is_empty(), "unmuted again");
+    }
+
+    #[test]
+    fn nothing_is_pushed_while_paused() {
+        let mut a = NesApp::new(); a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        let mut r = Recorder::new(); a.frame(&mut r, 0.0);
+        a.key(keys::SPACE, true, Mods(0));
+        let mut p = Recorder::new(); for i in 1..6 { a.frame(&mut p, i as f64 * FRAME_MS); }
+        assert!(p.audio().is_empty());
     }
 
     #[test]
