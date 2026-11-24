@@ -1,12 +1,12 @@
 // devportal-app: nes
-//! NES emulator, step 2 of 3: you can play. Cartridge loader, 6502 CPU, dot-stepped PPU (background, sprites,
-//! scrolling, sprite-0 hit, NMI), controller 1 on the keyboard, mappers 0 / 2 / 3 / 7. No sound yet (step 3,
-//! together with MMC1 and MMC3). Open a .nes file you own (click, or drop one on the canvas).
+//! NES emulator in an arcade-cabinet UI. Cartridge loader, 6502 CPU, dot-stepped PPU, APU sound, keyboard and
+//! standard game controllers, mappers 0 / 2 / 3 / 7 (MMC1 and MMC3 to come). Open a .nes file you own (click, or drop one on the canvas).
 //!
-//! Keys: arrows · X = A · Z = B · Enter = Start · Shift or Tab = Select.
+//! Keys: arrows · X = A · Z = B · Enter = Start · Shift or Tab = Select · M mute · L scanlines.
 //! Emulator: Space pause · R reset · O open another ROM · D debug view (CPU registers, RAM map) · S step one
 //! instruction · T run nestest in its no-picture "automation" mode.
 pub mod apu;
+pub mod arcade;
 pub mod bus;
 pub mod cart;
 pub mod cpu;
@@ -23,12 +23,15 @@ use system::Nes;
 const FRAME_MS: f64 = 1000.0 / 60.0988;
 /// nestest's last instruction (an RTS) is at $C66E; reaching it means every check ran.
 const NESTEST_END: u16 = 0xC66E;
-const BG: Rgba = Rgba::rgb(14, 15, 22);
+const BG: Rgba = arcade::BG;
 const TEXT: Rgba = Rgba::rgb(222, 228, 242);
-const DIM: Rgba = Rgba::rgb(135, 145, 170);
+const DIM: Rgba = arcade::DIM;
 const ACCENT: Rgba = Rgba::rgb(255, 196, 61);
 const OK: Rgba = Rgba::rgb(110, 220, 140);
 const BAD: Rgba = Rgba::rgb(255, 120, 120);
+
+/// Screen geometry for the current window size (see `NesApp::layout`).
+struct Layout { top: f32, screen: (f32, f32, f32, f32), scale: f32, panel: Option<(f32, f32, f32, f32)> }
 
 pub struct NesApp {
     w: f32, h: f32,
@@ -44,6 +47,9 @@ pub struct NesApp {
     /// Connected game controllers as (browser index, NES buttons), lowest index first: the first is player 1, the second player 2.
     pads: Vec<(u32, u8)>,
     muted: bool,
+    scanlines: bool,
+    /// Page clock (ms) of the latest frame: drives the animation.
+    clock: f64,
     /// Sample rate the APU is currently producing (0 = not yet told).
     audio_rate: u32,
     last_t: Option<f64>,
@@ -70,7 +76,7 @@ pub fn map_gamepad(g: &Gamepad) -> u8 {
 
 impl NesApp {
     pub fn new() -> Self {
-        NesApp { w: 900.0, h: 600.0, nes: None, name: String::new(), running: false, error: None, want_picker: false, debug: false, auto: false, pad: 0, pads: Vec::new(), muted: false, audio_rate: 0, last_t: None, acc: 0.0 }
+        NesApp { w: 900.0, h: 600.0, nes: None, name: String::new(), running: false, error: None, want_picker: false, debug: false, auto: false, pad: 0, pads: Vec::new(), muted: false, scanlines: true, clock: 0.0, audio_rate: 0, last_t: None, acc: 0.0 }
     }
 
     fn load(&mut self, name: &str, data: &[u8]) {
@@ -123,36 +129,111 @@ impl NesApp {
         Some((n.peek(0x6000), text))
     }
 
+    /// Where everything goes for a window of this size; small windows drop the marquee and the controller panel first.
+    fn layout(&self) -> Layout {
+        let (w, h) = (self.w, self.h);
+        let top = if h >= 480.0 { 64.0 } else if h >= 380.0 { 36.0 } else { 0.0 };
+        let panel_h = if h >= 600.0 { 100.0 } else { 0.0 };
+        let (footer, pad) = (36.0, 16.0);
+        let avail_w = (w - 2.0 * pad - 16.0).max(64.0);
+        let avail_h = (h - top - panel_h - footer - 2.0 * pad - 8.0).max(48.0);
+        let fit = (avail_w / ppu::WIDTH as f32).min(avail_h / ppu::HEIGHT as f32);
+        let scale = if fit >= 1.0 { fit.floor() } else { fit.max(0.1) };           // whole-number scaling keeps pixels crisp
+        let (sw, sh) = (ppu::WIDTH as f32 * scale, ppu::HEIGHT as f32 * scale);
+        let region_h = h - top - panel_h - footer;
+        let sx = ((w - sw) / 2.0).floor();
+        let sy = (top + (region_h - sh) / 2.0).floor().max(top);
+        let pw = (w - 24.0).clamp(0.0, 640.0);
+        let panel = if panel_h > 0.0 { Some((((w - pw) / 2.0).floor(), h - footer - panel_h + 6.0, pw, panel_h - 12.0)) } else { None };
+        Layout { top, screen: (sx, sy, sw, sh), scale, panel }
+    }
+
+    fn neon(&self) -> Rgba { arcade::lerp(arcade::CYAN, arcade::MAGENTA, ((self.clock / 3200.0).sin() as f32) * 0.5 + 0.5) }
+    fn p1(&self) -> u8 { self.pad | self.pads.first().map_or(0, |p| p.1) }
+
+    /// "NES ARCADE" marquee, with 1UP / 2UP lamps.
+    fn marquee(&self, g: &mut dyn Gfx, top: f32) {
+        if top <= 0.0 { return; }
+        let cell = if top >= 64.0 { 4.0 } else { 2.5 };
+        let y = ((top - 7.0 * cell) / 2.0).floor();
+        arcade::pixel_text_centered(g, "NES ARCADE", self.w / 2.0, y, cell, self.neon(), true);
+        let lamp = |on: bool, c: Rgba| if on { c } else { c.with_alpha(70) };
+        let blink = (self.clock / 500.0) as i64 % 2 == 0;
+        let small = if top >= 64.0 { 2.0 } else { 1.5 };
+        arcade::pixel_text(g, "1UP", 16.0, y + 7.0 * (cell - small) / 2.0, small, lamp(self.nes.is_none() && blink || self.nes.is_some(), arcade::AMBER), self.nes.is_some());
+        let two = "2UP"; arcade::pixel_text(g, two, self.w - 16.0 - arcade::text_width(two, small), y + 7.0 * (cell - small) / 2.0, small, lamp(self.pads.len() >= 2, arcade::GREEN), self.pads.len() >= 2);
+        g.line(self.w * 0.2, top - 2.0, self.w * 0.8, top - 2.0, 1.0, self.neon().with_alpha(120));
+    }
+
+    /// The cabinet: glowing bezel, the screen rectangle (drawn black here; the caller fills it), and a glass glint.
+    fn cabinet(&self, g: &mut dyn Gfx, lay: &Layout) {
+        let (x, y, w, h) = lay.screen;
+        let neon = self.neon();
+        arcade::halo(g, x - 14.0, y - 14.0, w + 28.0, h + 28.0, neon);
+        arcade::chamfer(g, (x - 14.0, y - 14.0, w + 28.0, h + 28.0), 12.0, arcade::PANEL, true);
+        arcade::chamfer(g, (x - 14.0, y - 14.0, w + 28.0, h + 28.0), 12.0, neon, false);
+        arcade::chamfer(g, (x - 6.0, y - 6.0, w + 12.0, h + 12.0), 6.0, arcade::PANEL_HI, false);
+        g.rect(x, y, w, h, Rgba::rgb(0, 0, 0), true);
+    }
+
+    fn glass(&self, g: &mut dyn Gfx, lay: &Layout) {
+        let (x, y, w, h) = lay.screen;
+        arcade::scanlines(g, x, y, w, lay.scale, ppu::HEIGHT as u32, if self.scanlines { 70 } else { 0 });
+        g.poly(&[(x, y), (x + w * 0.42, y), (x, y + h * 0.32)], Rgba::rgba(255, 255, 255, 9), true);   // glint in the top-left corner
+    }
+
+    fn footer(&self, g: &mut dyn Gfx, left: &str) {
+        g.text(left, 12.0, self.h - 12.0, 12.0, arcade::DIM);
+        let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · L scanlines · O open · D debug";
+        let hint_w = hint.chars().count() as f32 * 5.9;
+        let fits = left.chars().count() as f32 * 7.0 + hint_w + 40.0 < self.w;       // otherwise the hint gets its own line
+        g.text(hint, (self.w - hint_w - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, arcade::DIM);
+    }
+
     fn draw_prompt(&self, g: &mut dyn Gfx) {
-        let (cx, cy) = (self.w / 2.0, self.h / 2.0);
-        g.text("NES emulator", cx - 70.0, cy - 90.0, 24.0, TEXT);
-        g.rect(cx - 230.0, cy - 60.0, 460.0, 120.0, Rgba::rgba(255, 255, 255, 14), true);
-        g.rect(cx - 230.0, cy - 60.0, 460.0, 120.0, ACCENT, false);
-        g.text("Click to open a .nes ROM — or drop one here", cx - 190.0, cy - 8.0, 16.0, TEXT);
-        g.text(&format!("Supported mappers: {}. Use a ROM you own.", Cart::SUPPORTED_MAPPERS), cx - 214.0, cy + 18.0, 12.0, DIM);
-        g.text("Arrows · X = A · Z = B · Enter = Start · Shift = Select · M = mute", cx - 215.0, cy + 90.0, 13.0, DIM);
+        let lay = self.layout();
+        arcade::backdrop(g, self.w, self.h, self.clock);
+        self.marquee(g, lay.top);
+        self.cabinet(g, &lay);
+        let (x, y, w, h) = lay.screen;
+        let cx = x + w / 2.0;
+        let cell = (w * 0.9 / 60.0).floor().clamp(1.0, 6.0);                     // "INSERT ROM" is 10 glyphs = 60 cells wide
+        let blink = (self.clock / 600.0) as i64 % 2 == 0;
+        arcade::pixel_text_centered(g, "INSERT ROM", cx, y + h * 0.34, cell, if blink { arcade::AMBER } else { arcade::AMBER.with_alpha(90) }, true);
+        let sub = "CLICK OR DROP A .NES FILE";
+        let c2 = (w * 0.88 / (sub.len() as f32 * 6.0)).floor().clamp(1.0, 3.0);
+        arcade::pixel_text_centered(g, sub, cx, y + h * 0.34 + 7.0 * cell + 18.0 * c2, c2, arcade::CYAN, true);
+        let beam = (((self.clock / 2400.0) % 1.0) as f32) * h;                      // a slow light band sweeping down the glass
+        g.rect(x, y + beam, w, (h * 0.08).max(2.0), Rgba::rgba(255, 255, 255, 8), true);
+        self.glass(g, &lay);
+        if let Some((px, py, pw, ph)) = lay.panel { arcade::controller(g, (px, py, pw, ph), self.p1(), self.pads.len() >= 2, self.neon()); }
         let pad_line = if self.pads.is_empty() { "Xbox, PlayStation, Luna and other standard controllers work too: connect one and press a button.".to_string() } else { format!("{} controller(s) connected.", self.pads.len()) };
-        g.text(&pad_line, cx - 230.0, cy + 112.0, 12.0, DIM);
-        if let Some(e) = &self.error { g.text(e, 24.0, self.h - 24.0, 13.0, BAD); }
+        g.text(&format!("Supported mappers: {}. Use a ROM you own.   {pad_line}", Cart::SUPPORTED_MAPPERS), 12.0, self.h - 12.0 - 15.0, 11.0, arcade::DIM);
+        g.text("Click to open a .nes ROM — or drop one here", cx - 130.0, y + h + 36.0, 14.0, TEXT);
+        if let Some(e) = &self.error { g.text(e, 12.0, self.h - 12.0, 13.0, BAD); }
     }
 
     fn draw_game(&self, g: &mut dyn Gfx, n: &Nes) {
-        let avail_h = self.h - 34.0;
-        let fit = (self.w / ppu::WIDTH as f32).min(avail_h / ppu::HEIGHT as f32);
-        let scale = if fit >= 1.0 { fit.floor() } else { fit.max(0.1) };           // whole-number scaling keeps pixels crisp
-        let (dw, dh) = (ppu::WIDTH as f32 * scale, ppu::HEIGHT as f32 * scale);
-        g.blit(&n.bus.ppu.fb, ppu::WIDTH as u32, ppu::HEIGHT as u32, (((self.w - dw) / 2.0).floor(), ((avail_h - dh) / 2.0).floor().max(0.0), dw, dh));
+        let lay = self.layout();
+        arcade::backdrop(g, self.w, self.h, self.clock);
+        self.marquee(g, lay.top);
+        self.cabinet(g, &lay);
+        let (x, y, w, h) = lay.screen;
+        g.blit(&n.bus.ppu.fb, ppu::WIDTH as u32, ppu::HEIGHT as u32, (x, y, w, h));
+        self.glass(g, &lay);
+        if !self.running {
+            g.rect(x, y, w, h, Rgba::rgba(0, 0, 0, 120), true);
+            let cell = (w / 72.0).floor().clamp(2.0, 8.0);
+            if (self.clock / 500.0) as i64 % 2 == 0 { arcade::pixel_text_centered(g, "PAUSED", x + w / 2.0, y + h / 2.0 - 3.5 * cell, cell, arcade::AMBER, true); }
+        }
+        if let Some((px, py, pw, ph)) = lay.panel { arcade::controller(g, (px, py, pw, ph), self.p1(), self.pads.len() >= 2, self.neon()); }
         let status = if !self.running { "paused" } else { "" };
         let pads = match self.pads.len() { 0 => String::new(), 1 => "  🎮 controller".into(), k => format!("  🎮 {k} controllers") };
-        let mute = if self.muted { "  🔇 muted" } else { "" };
-        let left = format!("{}  {}{}{}", self.name, status, pads, mute);
-        g.text(&left, 12.0, self.h - 12.0, 12.0, DIM);
-        let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · O open · D debug";
-        let hint_w = hint.chars().count() as f32 * 5.9;
-        let fits = left.chars().count() as f32 * 7.0 + hint_w + 40.0 < self.w;       // otherwise the hint gets its own line
-        g.text(hint, (self.w - hint_w - 12.0).max(12.0), if fits { self.h - 12.0 } else { self.h - 27.0 }, 11.0, DIM);
-        if n.cpu.halted { g.text("CPU locked up (KIL opcode) — press R to reset", 12.0, 22.0, 14.0, BAD); }
-        if let Some(e) = &self.error { g.text(e, 12.0, 40.0, 13.0, BAD); }
+        let mute = if self.muted { "  🔇 muted" } else if self.audio_rate == 0 { "  🔇 click the game or press a key for sound" } else { "" };
+        let crt = if self.scanlines { "" } else { "  · scanlines off" };
+        self.footer(g, &format!("{}  {}{}{}{}", self.name, status, pads, mute, crt));
+        if n.cpu.halted { g.text("CPU locked up (KIL opcode) — press R to reset", 12.0, lay.top + 22.0, 14.0, BAD); }
+        if let Some(e) = &self.error { g.text(e, 12.0, lay.top + 40.0, 13.0, BAD); }
     }
 
     fn draw_debug(&self, g: &mut dyn Gfx, n: &Nes) {
@@ -200,15 +281,15 @@ impl App for NesApp {
             self.audio_rate = rate;
             if let Some(n) = self.nes.as_mut() { n.bus.apu.set_sample_rate(rate); }
         }
+        self.clock = t;
         self.advance(t);
         if let Some(n) = self.nes.as_mut() {
             let samples = n.bus.apu.take_samples();                       // always drained, so muting or pausing can't pile them up
             if !self.muted && self.running && rate > 0 { g.audio_push(&samples); }
         }
-        g.clear(BG);
         match self.nes.as_ref() {
             None => self.draw_prompt(g),
-            Some(n) if self.debug => self.draw_debug(g, n),
+            Some(n) if self.debug => { g.clear(BG); self.draw_debug(g, n) }
             Some(n) => self.draw_game(g, n),
         }
         if std::mem::take(&mut self.want_picker) { g.open_file(); }
@@ -246,6 +327,7 @@ impl App for NesApp {
             x if x == keys::letter('t') => self.nestest_auto(),
             x if x == keys::letter('o') => self.want_picker = true,
             x if x == keys::letter('m') => self.muted = !self.muted,
+            x if x == keys::letter('l') => self.scanlines = !self.scanlines,
             _ => {}
         }
     }
@@ -312,8 +394,9 @@ mod tests {
         a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
         let (sw, sh, (x, y, w, h), px) = blit_of(&frame(&mut a)).expect("picture");
         assert_eq!((sw, sh, px.len()), (256, 240, 256 * 240 * 4));
-        assert_eq!((w, h), (768.0, 720.0), "3x: the largest whole scale that fits 1000x766");
-        assert_eq!((x, y), (116.0, 23.0));
+        assert_eq!((w, h), (512.0, 480.0), "2x: the largest whole scale that fits once the bezel, marquee and controller panel are reserved");
+        assert_eq!(x, ((1000.0 - w) / 2.0f32).floor(), "centred horizontally");
+        assert!(y >= 64.0 && y + h <= 800.0 - 36.0 - 100.0, "sits between the marquee and the controller panel, got y={y}");
         a.init(200.0, 200.0);
         let (_, _, (_, _, w, h), _) = blit_of(&frame(&mut a)).unwrap();
         assert!(w < 256.0 && (w / h - 256.0 / 240.0).abs() < 1e-3, "small panes shrink but keep the aspect ratio");
@@ -371,6 +454,49 @@ mod tests {
         let r = frame(&mut a);
         let ys: Vec<f32> = r.cmds.iter().filter_map(|c| if let Cmd::Text { s, y, .. } = c { if s.contains("a-long-rom-name") || s.contains("M mute") { Some(*y) } else { None } } else { None }).collect();
         assert_eq!(ys[0], ys[1], "wide windows keep one row");
+    }
+
+    #[test]
+    fn small_windows_drop_the_marquee_and_panel_but_the_screen_always_fits() {
+        for (w, h) in [(1500.0f32, 900.0f32), (1000.0, 800.0), (700.0, 520.0), (500.0, 400.0), (320.0, 240.0), (120.0, 90.0)] {
+            let mut a = NesApp::new(); a.init(w, h);
+            let l = a.layout(); let (x, y, sw, sh) = l.screen;
+            assert!(x >= 0.0 && y >= l.top && x + sw <= w + 0.5 && y + sh <= h - 36.0 + 0.5, "{w}x{h}: screen {x},{y} {sw}x{sh}");
+            if l.scale >= 1.0 { assert_eq!(l.scale, l.scale.floor(), "{w}x{h}: whole-number scale"); }
+            assert_eq!(l.panel.is_some(), h >= 600.0, "{w}x{h}");
+        }
+    }
+
+    #[test]
+    fn the_empty_screen_invites_a_rom_and_the_game_screen_has_the_cabinet_and_pad_lights() {
+        let mut a = NesApp::new(); a.init(1000.0, 800.0);
+        let empty = frame(&mut a);
+        assert!(empty.texts().iter().any(|t| t.contains("Click to open")));
+        a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        a.key(keys::letter('x'), true, Mods(0));
+        let g = frame(&mut a);
+        assert!(g.cmds.iter().any(|c| matches!(c, Cmd::Poly { .. })), "chamfered bezel and panel are polygons");
+        let a_button_lit = g.cmds.iter().any(|c| matches!(c, Cmd::Circle { fill: true, .. }));
+        assert!(a_button_lit, "buttons are drawn");
+        assert!(g.texts().contains(&"SELECT") && g.texts().contains(&"START"), "controller labels");
+    }
+
+    #[test]
+    fn l_toggles_scanlines_and_they_are_drawn_between_the_pixel_rows() {
+        let mut a = NesApp::new(); a.init(1000.0, 800.0); a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        let count = |r: &Recorder| r.cmds.iter().filter(|c| matches!(c, Cmd::Rect { c: col, w, .. } if col.0 == 0x0000_0046 && *w > 100.0)).count();
+        assert_eq!(count(&frame(&mut a)), 240, "one dark line per source row at 2x");
+        a.key(keys::letter('l'), true, Mods(0));
+        assert_eq!(count(&frame(&mut a)), 0);
+        assert!(frame(&mut a).texts().iter().any(|t| t.contains("scanlines off")));
+    }
+
+    #[test]
+    fn pixel_font_covers_the_title_and_stays_inside_its_5x7_cells() {
+        for ch in "NES ARCADE INSERT ROM PAUSED 1UP 2UP CLICK OR DROP A .NES FILE".chars() { if ch != ' ' && ch != '.' { assert!(arcade::glyph(ch).iter().any(|r| *r != 0), "{ch} has a glyph"); } }
+        for ch in ('A'..='Z').chain('0'..='9') { assert!(arcade::glyph(ch).iter().all(|r| *r < 32), "{ch} fits 5 columns"); }
+        assert_eq!(arcade::text_width("AB", 2.0), 22.0);
+        assert_eq!(arcade::glyph('a'), arcade::glyph('A'));
     }
 
     #[test]
