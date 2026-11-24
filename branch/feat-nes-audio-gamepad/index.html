@@ -1470,7 +1470,12 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
         blitCx.putImageData(new ImageData(new Uint8ClampedArray(mem.buffer, p, n), sw, sh), 0, 0);
         ctx.imageSmoothingEnabled = false; ctx.drawImage(blitCv, x, y, w, h);
       },
-      dp_audio_rate: function(){ var a = audioCtx(); return a ? Math.round(a.sampleRate) : 0; },
+      dp_audio_rate: function(){            // 0 = sound isn't playing (yet): the app shows a hint, and starts sound once the browser allows it
+        var a = audioCtx(); if (!a) return 0;
+        if (a.state === "running") return Math.round(a.sampleRate);
+        if (!audioHinted) { audioHinted = true; console.log("Sound is waiting for a click or key press inside the game (browsers don't count controller buttons or file drops)."); }
+        return 0;
+      },
       dp_audio_push: function(p, n){
         var a = audioCtx();
         if (!a || a.state !== "running" || n <= 0 || n > 96000 || (p & 3) || p + n * 4 > mem.buffer.byteLength) return;
@@ -1484,7 +1489,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       },
       dp_open_file: function(){ if (!picker) { picker = document.createElement("input"); picker.type = "file"; picker.onchange = function(){ if (picker.files[0]) sendFile(picker.files[0]); picker.value = ""; }; } picker.click(); }
     };
-    var blitCv = null, blitCx = null, picker = null, actx = null, nextT = 0, padSeen = {}, padBlocked = false;
+    var blitCv = null, blitCx = null, picker = null, actx = null, audioHinted = false, nextT = 0, padSeen = {}, padBlocked = false;
     function audioCtx(){
       if (!actx) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { actx = new AC({ latencyHint: "interactive" }); } catch (e) { actx = null; } } }
       return actx;

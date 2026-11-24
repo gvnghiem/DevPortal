@@ -144,7 +144,7 @@ impl NesApp {
         g.blit(&n.bus.ppu.fb, ppu::WIDTH as u32, ppu::HEIGHT as u32, (((self.w - dw) / 2.0).floor(), ((avail_h - dh) / 2.0).floor().max(0.0), dw, dh));
         let status = if !self.running { "paused" } else { "" };
         let pads = match self.pads.len() { 0 => String::new(), 1 => "  🎮 controller".into(), k => format!("  🎮 {k} controllers") };
-        let mute = if self.muted { "  🔇 muted" } else { "" };
+        let mute = if self.muted { "  🔇 muted" } else if self.audio_rate == 0 { "  🔇 click the game or press a key for sound" } else { "" };
         let left = format!("{}  {}{}{}", self.name, status, pads, mute);
         g.text(&left, 12.0, self.h - 12.0, 12.0, DIM);
         let hint = "arrows · X A · Z B · Enter Start · Shift Select · Space pause · R reset · M mute · O open · D debug";
@@ -196,6 +196,7 @@ impl App for NesApp {
 
     fn frame(&mut self, g: &mut dyn Gfx, t: f64) {
         let rate = g.audio_rate();
+        if rate == 0 { self.audio_rate = 0; }
         if rate > 0 && rate != self.audio_rate {
             self.audio_rate = rate;
             if let Some(n) = self.nes.as_mut() { n.bus.apu.set_sample_rate(rate); }
@@ -433,6 +434,19 @@ mod tests {
         a.key(keys::letter('m'), true, Mods(0));
         for _ in 0..5 { t += FRAME_MS; a.frame(&mut m, t); }
         assert!(!m.audio().is_empty(), "unmuted again");
+    }
+
+    #[test]
+    fn the_status_line_says_when_the_browser_is_not_playing_sound_yet_and_sound_starts_once_it_is() {
+        let mut a = NesApp::new(); a.file("t.nes", rom(&[0x4C, 0x00, 0x80]));
+        let mut silent = Recorder::new(); silent.audio_rate = 0;
+        a.frame(&mut silent, 0.0);
+        assert!(silent.texts().iter().any(|t| t.contains("for sound")), "hint shown");
+        assert!(silent.audio().is_empty());
+        let mut live = Recorder::new(); live.audio_rate = 48_000;
+        a.frame(&mut live, FRAME_MS * 2.0); a.frame(&mut live, FRAME_MS * 4.0);
+        assert!(!live.texts().iter().any(|t| t.contains("for sound")), "hint gone");
+        assert!(!live.audio().is_empty(), "audio flows once the host reports a rate");
     }
 
     #[test]
