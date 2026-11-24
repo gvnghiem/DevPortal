@@ -13,6 +13,8 @@ extern "C" {
     fn dp_log(ptr: *const u8, len: u32);
     fn dp_blit(ptr: *const u8, sw: u32, sh: u32, x: f32, y: f32, w: f32, h: f32);
     fn dp_open_file();
+    fn dp_audio_rate() -> u32;
+    fn dp_audio_push(ptr: *const f32, n: u32);
 }
 
 pub struct HostGfx;
@@ -33,6 +35,8 @@ impl Gfx for HostGfx {
         if pixels.len() as u64 == sw as u64 * sh as u64 * 4 { unsafe { dp_blit(pixels.as_ptr(), sw, sh, x, y, w, h) } }
     }
     fn open_file(&mut self) { unsafe { dp_open_file() } }
+    fn audio_rate(&mut self) -> u32 { unsafe { dp_audio_rate() } }
+    fn audio_push(&mut self, samples: &[f32]) { if !samples.is_empty() { unsafe { dp_audio_push(samples.as_ptr(), samples.len() as u32) } } }
 }
 
 /// Panics become a message in the DevPortal Console (then the module traps and the page stops the loop).

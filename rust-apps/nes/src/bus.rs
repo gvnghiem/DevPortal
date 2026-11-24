@@ -1,5 +1,6 @@
 //! The CPU's address space: RAM, PPU registers, OAM DMA, controller 1, PRG-RAM and the cartridge.
-//! APU registers are accepted and ignored until step 3.
+//! The APU lives here too ($4000-$4017 other than the pads and $4014).
+use crate::apu::Apu;
 use crate::cart::Cart;
 use crate::cpu::Bus;
 use crate::ppu::Ppu;
@@ -21,9 +22,12 @@ pub struct NesBus {
     pub prg_ram: [u8; 0x2000],
     pub cart: Cart,
     pub ppu: Ppu,
-    /// Buttons currently held on controller 1 (see [`pad`]).
+    pub apu: Apu,
+    /// Buttons currently held on controllers 1 and 2 (see [`pad`]).
     pub pad: u8,
+    pub pad2: u8,
     shift: u8,
+    shift2: u8,
     strobe: bool,
     dma_stall: u32,
     /// Set by the system before each instruction: OAM DMA takes one extra cycle on odd CPU cycles.
@@ -32,7 +36,7 @@ pub struct NesBus {
 
 impl NesBus {
     pub fn new(cart: Cart) -> Self {
-        NesBus { ram: [0; 0x800], prg_ram: [0; 0x2000], cart, ppu: Ppu::new(), pad: 0, shift: 0, strobe: false, dma_stall: 0, odd_cycle: false }
+        NesBus { ram: [0; 0x800], prg_ram: [0; 0x2000], cart, ppu: Ppu::new(), apu: Apu::default(), pad: 0, pad2: 0, shift: 0, shift2: 0, strobe: false, dma_stall: 0, odd_cycle: false }
     }
 
     /// Read without any side effects (for debug views and tests). PPU/IO registers read as 0.
@@ -49,11 +53,16 @@ impl NesBus {
     pub fn take_dma_stall(&mut self) -> u32 { std::mem::take(&mut self.dma_stall) }
 
     /// Opposite directions can't both be pressed on a real pad; some games glitch if they are.
-    fn pad_state(&self) -> u8 {
-        let mut p = self.pad;
+    fn clean(mut p: u8) -> u8 {
         if p & (pad::LEFT | pad::RIGHT) == pad::LEFT | pad::RIGHT { p &= !(pad::LEFT | pad::RIGHT); }
         if p & (pad::UP | pad::DOWN) == pad::UP | pad::DOWN { p &= !(pad::UP | pad::DOWN); }
         p
+    }
+
+    /// Shift one bit out of a controller (or return the A button continuously while strobing).
+    fn serial(strobe: bool, held: u8, shift: &mut u8) -> u8 {
+        let bit = if strobe { Self::clean(held) & 1 } else { let b = *shift & 1; *shift = *shift >> 1 | 0x80; b };
+        bit | 0x40
     }
 }
 
@@ -61,11 +70,9 @@ impl Bus for NesBus {
     fn read(&mut self, a: u16) -> u8 {
         match a {
             0x2000..=0x3FFF => self.ppu.read_reg(a, &self.cart),
-            0x4016 => {
-                let bit = if self.strobe { self.pad_state() & 1 } else { let b = self.shift & 1; self.shift = self.shift >> 1 | 0x80; b };
-                bit | 0x40
-            }
-            0x4017 => 0x40,
+            0x4015 => self.apu.read_status(),
+            0x4016 => Self::serial(self.strobe, self.pad, &mut self.shift),
+            0x4017 => Self::serial(self.strobe, self.pad2, &mut self.shift2),
             _ => self.peek(a),
         }
     }
@@ -80,7 +87,8 @@ impl Bus for NesBus {
                 self.ppu.dma(&page);
                 self.dma_stall = 513 + self.odd_cycle as u32;
             }
-            0x4016 => { self.strobe = v & 1 != 0; if self.strobe { self.shift = self.pad_state(); } }
+            0x4016 => { self.strobe = v & 1 != 0; if self.strobe { self.shift = Self::clean(self.pad); self.shift2 = Self::clean(self.pad2); } }
+            0x4000..=0x4013 | 0x4015 | 0x4017 => self.apu.write(a, v),
             0x6000..=0x7FFF => self.prg_ram[a as usize - 0x6000] = v,
             0x8000..=0xFFFF => self.cart.cpu_write(a, v),
             _ => {}
@@ -148,6 +156,27 @@ mod tests {
         let mut b = bus(1);
         b.pad = pad::A; b.write(0x4016, 1);
         assert_eq!((b.read(0x4016) & 1, b.read(0x4016) & 1), (1, 1));
+    }
+
+    #[test]
+    fn controller_two_is_read_at_4017_and_shares_the_strobe() {
+        let mut b = bus(1);
+        b.pad = pad::A; b.pad2 = pad::B | pad::DOWN;
+        b.write(0x4016, 1); b.write(0x4016, 0);
+        let p1: Vec<u8> = (0..8).map(|_| b.read(0x4016) & 1).collect();
+        let p2: Vec<u8> = (0..8).map(|_| b.read(0x4017) & 1).collect();
+        assert_eq!(p1, [1, 0, 0, 0, 0, 0, 0, 0]);
+        assert_eq!(p2, [0, 1, 0, 0, 0, 1, 0, 0]);
+    }
+
+    #[test]
+    fn apu_registers_and_status_are_reachable_from_the_cpu() {
+        let mut b = bus(1);
+        b.write(0x4015, 0x01); b.write(0x4003, 0x08);
+        assert_eq!(b.read(0x4015) & 1, 1, "length counter is running");
+        b.write(0x4015, 0x00);
+        assert_eq!(b.read(0x4015) & 1, 0);
+        b.write(0x4017, 0x40); assert!(!b.apu.irq());
     }
 
     #[test]

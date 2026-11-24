@@ -1419,7 +1419,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
     if (pyFrame) pyFrame.style.display = "none";
     jsFrame = document.createElement("iframe");
     jsFrame.setAttribute("sandbox", "allow-scripts allow-popups");
-    jsFrame.setAttribute("allow", "fullscreen; autoplay; encrypted-media; picture-in-picture");
+    jsFrame.setAttribute("allow", "fullscreen; autoplay; gamepad; encrypted-media; picture-in-picture");
     jsFrame.setAttribute("allowfullscreen", "");
     wrap.appendChild(jsFrame);
     void jsFrame.offsetWidth;                      // force layout so the canvas gets a real size
@@ -1434,7 +1434,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
   /* The host side of the `dp` ABI (rust-apps/dp). It runs INSIDE the sandboxed iframe as ordinary page code;
      `canvas` and `console` are provided by buildDoc(). Imports here must match rust-apps/dp/src/host.rs. */
   function wasmHostMain(b64){
-    var ABI_MAX = 2, bin = atob(b64), bytes = new Uint8Array(bin.length);
+    var ABI_MAX = 3, bin = atob(b64), bytes = new Uint8Array(bin.length);
     for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
     var ctx = canvas.getContext("2d"), dpr = window.devicePixelRatio || 1, W = 1, H = 1, inst = null, mem = null, dead = false, dec = new TextDecoder();
     var cursors = ["default", "pointer", "crosshair", "move", "grab", "ns-resize", "ew-resize", "text"];
@@ -1470,9 +1470,38 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
         blitCx.putImageData(new ImageData(new Uint8ClampedArray(mem.buffer, p, n), sw, sh), 0, 0);
         ctx.imageSmoothingEnabled = false; ctx.drawImage(blitCv, x, y, w, h);
       },
+      dp_audio_rate: function(){ var a = audioCtx(); return a ? Math.round(a.sampleRate) : 0; },
+      dp_audio_push: function(p, n){
+        var a = audioCtx();
+        if (!a || a.state !== "running" || n <= 0 || n > 96000 || (p & 3) || p + n * 4 > mem.buffer.byteLength) return;
+        var ahead = nextT - a.currentTime;
+        if (ahead > 0.2) return;                                    // too far ahead: drop audio so the delay can't grow
+        if (ahead < 0.01) { nextT = a.currentTime + 0.06; ahead = 0.06; }   // ran dry: restart with a small cushion
+        var buf = a.createBuffer(1, n, a.sampleRate); buf.getChannelData(0).set(new Float32Array(mem.buffer, p, n));
+        var s = a.createBufferSource(); s.buffer = buf; s.connect(a.destination);
+        s.playbackRate.value = ahead > 0.12 ? 1.004 : (ahead < 0.04 ? 0.996 : 1);   // nudge speed to follow the display clock
+        s.start(nextT); nextT += n / a.sampleRate / s.playbackRate.value;
+      },
       dp_open_file: function(){ if (!picker) { picker = document.createElement("input"); picker.type = "file"; picker.onchange = function(){ if (picker.files[0]) sendFile(picker.files[0]); picker.value = ""; }; } picker.click(); }
     };
-    var blitCv = null, blitCx = null, picker = null;
+    var blitCv = null, blitCx = null, picker = null, actx = null, nextT = 0, padSeen = {}, padBlocked = false;
+    function audioCtx(){
+      if (!actx) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) { try { actx = new AC({ latencyHint: "interactive" }); } catch (e) { actx = null; } } }
+      return actx;
+    }
+    function wakeAudio(){ var a = audioCtx(); if (a && a.state === "suspended") a.resume().catch(function(){}); }   // browsers only start audio after a click or key
+    function pollPads(){
+      if (typeof inst.exports.dp_gamepad !== "function" || !navigator.getGamepads || padBlocked) return;
+      var list; try { list = navigator.getGamepads(); } catch (e) { padBlocked = true; console.warn("Controller access is blocked in this frame: " + (e && e.message || e)); return; }
+      for (var i = 0; i < list.length; i++) {
+        var g = list[i];
+        if (g && g.connected) {
+          if (!padSeen[i]) { padSeen[i] = 1; console.log("Controller " + (i + 1) + " connected: " + g.id + (g.mapping === "standard" ? "" : "  (not a standard layout, so buttons may be mapped wrongly)")); }
+          var m = 0; for (var b = 0; b < g.buttons.length && b < 31; b++) if (g.buttons[b].pressed) m |= (1 << b);
+          var ax = g.axes; call("dp_gamepad", i, 1, m, ax[0] || 0, ax[1] || 0, ax[2] || 0, ax[3] || 0);
+        } else if (padSeen[i]) { padSeen[i] = 0; console.log("Controller " + (i + 1) + " disconnected"); call("dp_gamepad", i, 0, 0, 0, 0, 0, 0); }
+      }
+    }
     function sendFile(f){
       if (f.size > 16 * 1048576) { console.error("That file is " + Math.round(f.size / 1048576) + " MB; the limit is 16 MB."); return; }
       f.arrayBuffer().then(function(buf){
@@ -1496,7 +1525,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       canvas.tabIndex = 0; fit(); call("dp_init", W, H);
       function ptr(kind, e, delta){ var r = canvas.getBoundingClientRect(); call("dp_pointer", kind, e.clientX - r.left, e.clientY - r.top, e.buttons, delta || 0); }
       canvas.addEventListener("pointermove", function(e){ ptr(0, e); });
-      canvas.addEventListener("pointerdown", function(e){ canvas.focus(); try { canvas.setPointerCapture(e.pointerId); } catch (x) {} ptr(1, e); e.preventDefault(); });
+      canvas.addEventListener("pointerdown", function(e){ wakeAudio(); canvas.focus(); try { canvas.setPointerCapture(e.pointerId); } catch (x) {} ptr(1, e); e.preventDefault(); });
       canvas.addEventListener("pointerup", function(e){ ptr(2, e); });
       canvas.addEventListener("pointercancel", function(e){ ptr(2, e); });
       canvas.addEventListener("wheel", function(e){ e.preventDefault(); ptr(3, e, e.deltaY); }, { passive: false });
@@ -1504,6 +1533,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       window.addEventListener("dragover", function(e){ e.preventDefault(); });
       window.addEventListener("drop", function(e){ e.preventDefault(); if (e.dataTransfer && e.dataTransfer.files[0]) sendFile(e.dataTransfer.files[0]); });
       function key(down){ return function(e){
+        wakeAudio();
         if (e.ctrlKey || e.metaKey) { if (e.keyCode === 65 || e.keyCode === 90 || e.keyCode === 89 || e.keyCode === 68) e.preventDefault(); }
         else if ([8, 9, 32, 37, 38, 39, 40, 46].indexOf(e.keyCode) >= 0) e.preventDefault();
         call("dp_key", e.keyCode, down ? 1 : 0, (e.shiftKey ? 1 : 0) | (e.ctrlKey ? 2 : 0) | (e.altKey ? 4 : 0) | (e.metaKey ? 8 : 0));
@@ -1511,7 +1541,7 @@ html,body{margin:0;height:100%;background:${theme.bg};color:${theme.fg};font-fam
       window.addEventListener("keydown", key(true)); window.addEventListener("keyup", key(false));
       window.addEventListener("resize", function(){ fit(); call("dp_resize", W, H); });
       if (window.ResizeObserver) new ResizeObserver(function(){ var r = canvas.getBoundingClientRect(); if (Math.round(r.width) !== W || Math.round(r.height) !== H) { fit(); call("dp_resize", W, H); } }).observe(canvas);
-      (function loop(t){ call("dp_frame", t); if (!dead) requestAnimationFrame(loop); })(performance.now());
+      (function loop(t){ pollPads(); call("dp_frame", t); if (!dead) requestAnimationFrame(loop); })(performance.now());
     }).catch(function(e){ console.error("Rust app failed to start: " + (e && e.message || e)); });
   }
   async function runRustWasm(){

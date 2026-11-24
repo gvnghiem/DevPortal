@@ -40,11 +40,17 @@ macro_rules! rom_tests {
 
 // Known gaps (not asserted): ppu_vbl_nmi 02, 05-08, 10 and vbl_nmi_timing need the CPU and PPU interleaved per cycle
 // (this core catches the PPU up after each instruction); oam_stress, ppu_open_bus, ppu_read_buffer test hardware
-// quirks no game relies on.
+// quirks no game relies on. apu_test 4-jitter, 5-len_timing, 6-irq_flag_timing (and the apu_reset power-on ones) need
+// cycle-exact frame-counter timing and register power-up state.
 rom_tests! {
     ppu_vbl_basics: "ppu_vbl_nmi/rom_singles/01-vbl_basics.nes", 900;
     ppu_vbl_clear_time: "ppu_vbl_nmi/rom_singles/03-vbl_clear_time.nes", 900;
     ppu_nmi_control: "ppu_vbl_nmi/rom_singles/04-nmi_control.nes", 900;
     ppu_even_odd_frames: "ppu_vbl_nmi/rom_singles/09-even_odd_frames.nes", 900;
     oam_read: "oam_read/oam_read.nes", 900;
+    apu_len_ctr: "apu_test/rom_singles/1-len_ctr.nes", 900;
+    apu_len_table: "apu_test/rom_singles/2-len_table.nes", 900;
+    apu_irq_flag: "apu_test/rom_singles/3-irq_flag.nes", 900;
+    apu_dmc_basics: "apu_test/rom_singles/7-dmc_basics.nes", 900;
+    apu_dmc_rates: "apu_test/rom_singles/8-dmc_rates.nes", 900;
 }
