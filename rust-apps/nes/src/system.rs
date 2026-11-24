@@ -20,10 +20,20 @@ impl Nes {
     /// One instruction (or NMI entry) plus the PPU time that passes meanwhile; returns CPU cycles used.
     pub fn step(&mut self) -> u32 {
         self.bus.odd_cycle = self.cpu.cycles & 1 == 1;
-        let mut cycles = if self.bus.ppu.take_nmi() { self.cpu.nmi(&mut self.bus) } else { self.cpu.step(&mut self.bus) };
+        let mut cycles = if self.bus.ppu.take_nmi() { self.cpu.nmi(&mut self.bus) }
+            else if self.bus.apu.irq() && self.cpu.p & crate::cpu::I == 0 { self.cpu.irq(&mut self.bus) }
+            else { self.cpu.step(&mut self.bus) };
         let stall = self.bus.take_dma_stall();
         self.cpu.cycles += stall as u64;
         cycles += stall;
+        let mut dmc_stall = 0;
+        for _ in 0..cycles {
+            if let Some(a) = self.bus.apu.tick() {                       // the DMC reads its sample bytes straight from the CPU bus
+                let b = self.bus.peek(a); self.bus.apu.supply_dmc(b); dmc_stall += 4;
+            }
+        }
+        self.cpu.cycles += dmc_stall as u64;
+        cycles += dmc_stall;
         for _ in 0..cycles * 3 { self.bus.ppu.tick(&mut self.bus.cart); }
         cycles
     }
@@ -90,6 +100,33 @@ mod tests {
         let before = n.cpu.cycles;
         n.step();                                            // STA $4014
         assert!(n.cpu.cycles - before >= 513 + 4);
+    }
+
+    #[test]
+    fn a_frame_of_emulation_makes_about_a_frame_of_audio() {
+        let mut n = nes(&[0x4C, 0x00, 0x80], &[]);
+        n.bus.apu.set_sample_rate(48_000);
+        n.run_frame(None); n.bus.apu.take_samples();               // the first call only covers the tail of the power-on frame
+        for _ in 0..10 { n.run_frame(None); }
+        let s = n.bus.apu.take_samples().len();
+        assert!((7_950..=8_050).contains(&s), "10 frames at 60.1 fps = 0.1664 s = ~7987 samples, got {s}");
+    }
+
+    #[test]
+    fn the_frame_irq_interrupts_the_cpu_only_when_unmasked() {
+        // reset: CLI; spin.   IRQ vector -> $9100: INC $12; LDA $4015 (acknowledge); RTI
+        let mut v = vec![b'N', b'E', b'S', 0x1a, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        let mut prg = vec![0xEA; 16384];
+        prg[..4].copy_from_slice(&[0x58, 0x4C, 0x01, 0x80]);
+        prg[0x1100..0x1106].copy_from_slice(&[0xE6, 0x12, 0xAD, 0x15, 0x40, 0x40]);
+        prg[0x3FFE] = 0x00; prg[0x3FFF] = 0x91; prg[0x3FFC] = 0x00; prg[0x3FFD] = 0x80;
+        v.extend(prg); v.extend(vec![0; 8192]);
+        let mut n = Nes::new(Cart::parse(&v).unwrap());
+        for _ in 0..9 { n.run_frame(None); }
+        assert!((7..=8).contains(&n.peek(0x12)), "one frame-counter IRQ per frame, got {}", n.peek(0x12));
+        let mut masked = nes(&[0x78, 0x4C, 0x01, 0x80], &[]);                 // SEI: never interrupted
+        for _ in 0..6 { masked.run_frame(None); }
+        assert_eq!(masked.peek(0x12), 0);
     }
 
     #[test]

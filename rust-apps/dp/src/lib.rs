@@ -14,8 +14,9 @@ pub mod recorder;
 pub mod host;
 
 /// Bump when an import/export signature changes; the page refuses an app built for another version.
-/// v2 (additive): `blit` + `open_file` imports, `dp_alloc` + `dp_file` exports. The page accepts v1 and v2 apps.
-pub const ABI_VERSION: u32 = 2;
+/// v2 (additive): `blit` + `open_file` imports, `dp_alloc` + `dp_file` exports.
+/// v3 (additive): `audio_rate` + `audio_push` imports, `dp_gamepad` export. The page accepts v1, v2 and v3 apps.
+pub const ABI_VERSION: u32 = 3;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Rgba(pub u32);
@@ -69,6 +70,22 @@ pub trait Gfx {
     /// Ask the page to show a file picker. Only works from inside a click/key handler (browser rule);
     /// the chosen file (or one dropped on the canvas) arrives in [`App::file`].
     fn open_file(&mut self);
+    /// Sample rate (Hz) of the page's audio output — fixed once the page starts. 0 if audio is unavailable.
+    fn audio_rate(&mut self) -> u32;
+    /// Queue mono samples (-1.0..1.0) for playback. Call every frame with that frame's worth of audio;
+    /// the page keeps a short buffer and drops audio rather than letting the delay grow.
+    fn audio_push(&mut self, samples: &[f32]);
+}
+
+/// A connected game controller, as the browser's Gamepad API reports it (the "standard" layout used by
+/// Xbox, PlayStation and most other pads): bit *n* of `buttons` is standard button *n*
+/// (0 = bottom face, 1 = right, 2 = left, 3 = top, 4/5 = bumpers, 6/7 = triggers, 8 = back/select,
+/// 9 = start, 10/11 = stick clicks, 12-15 = d-pad up/down/left/right, 16 = home). Axes: left stick x/y, right stick x/y, -1..1.
+#[derive(Clone, Copy, Debug, Default, PartialEq)]
+pub struct Gamepad { pub buttons: u32, pub axes: [f32; 4] }
+
+impl Gamepad {
+    pub fn pressed(&self, button: u32) -> bool { button < 32 && self.buttons & (1 << button) != 0 }
 }
 
 pub trait App: Send {
@@ -79,9 +96,12 @@ pub trait App: Send {
     fn key(&mut self, _code: u32, _down: bool, _mods: Mods) {}
     /// A file the user picked or dropped.
     fn file(&mut self, _name: &str, _data: Vec<u8>) {}
+    /// Controller `index` (the browser's slot number) is connected and in this state, or `None` when it was unplugged.
+    /// Sent every frame while connected, before `frame`.
+    fn gamepad(&mut self, _index: u32, _state: Option<Gamepad>) {}
 }
 
-/// Export the entry points the page calls: `dp_init`, `dp_resize`, `dp_frame`, `dp_pointer`, `dp_key`, `dp_alloc`, `dp_file`.
+/// Export the entry points the page calls: `dp_init`, `dp_resize`, `dp_frame`, `dp_pointer`, `dp_key`, `dp_alloc`, `dp_file`, `dp_gamepad`.
 /// `dp_app!(MyApp::new())` — the expression is evaluated once, on `dp_init`. Does nothing off-wasm (tests).
 #[macro_export]
 macro_rules! dp_app {
@@ -144,6 +164,13 @@ macro_rules! dp_app {
             // SAFETY: both pointers came from `dp_alloc` with exactly these lengths and the page uses each once.
             let (data, name) = unsafe { (Vec::from_raw_parts(ptr, len as usize, len as usize), Vec::from_raw_parts(name_ptr, name_len as usize, name_len as usize)) };
             if let Some(a) = DP_APP.lock().unwrap().as_mut() { a.file(&String::from_utf8_lossy(&name), data); }
+        }
+
+        #[cfg(target_arch = "wasm32")]
+        #[no_mangle]
+        pub extern "C" fn dp_gamepad(index: u32, connected: u32, buttons: u32, lx: f32, ly: f32, rx: f32, ry: f32) {
+            let state = if connected != 0 { Some($crate::Gamepad { buttons, axes: [lx, ly, rx, ry] }) } else { None };
+            if let Some(a) = DP_APP.lock().unwrap().as_mut() { a.gamepad(index, state); }
         }
     };
 }

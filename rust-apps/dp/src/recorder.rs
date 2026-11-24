@@ -13,12 +13,16 @@ pub enum Cmd {
     Log(String),
     Blit { sw: u32, sh: u32, x: f32, y: f32, w: f32, h: f32, pixels: Vec<u8> },
     OpenFile,
+    Audio(Vec<f32>),
 }
 
 #[derive(Default)]
-pub struct Recorder { pub cmds: Vec<Cmd> }
+pub struct Recorder { pub cmds: Vec<Cmd>, /// What `Gfx::audio_rate` reports (tests may change it).
+    pub audio_rate: u32 }
 impl Recorder {
-    pub fn new() -> Self { Self::default() }
+    pub fn new() -> Self { Recorder { cmds: Vec::new(), audio_rate: 48_000 } }
+    /// All audio samples pushed so far, in order.
+    pub fn audio(&self) -> Vec<f32> { self.cmds.iter().filter_map(|c| if let Cmd::Audio(a) = c { Some(a.as_slice()) } else { None }).flatten().copied().collect() }
     pub fn texts(&self) -> Vec<&str> {
         self.cmds.iter().filter_map(|c| if let Cmd::Text { s, .. } = c { Some(s.as_str()) } else { None }).collect()
     }
@@ -35,4 +39,6 @@ impl Gfx for Recorder {
     fn log(&mut self, s: &str) { self.cmds.push(Cmd::Log(s.to_string())) }
     fn blit(&mut self, pixels: &[u8], sw: u32, sh: u32, (x, y, w, h): (f32, f32, f32, f32)) { self.cmds.push(Cmd::Blit { sw, sh, x, y, w, h, pixels: pixels.to_vec() }) }
     fn open_file(&mut self) { self.cmds.push(Cmd::OpenFile) }
+    fn audio_rate(&mut self) -> u32 { self.audio_rate }
+    fn audio_push(&mut self, samples: &[f32]) { self.cmds.push(Cmd::Audio(samples.to_vec())) }
 }
